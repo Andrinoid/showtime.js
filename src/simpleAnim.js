@@ -202,7 +202,7 @@ class Animator {
         //hello
         this.options = {
             effect: 'linear',
-            duration: 1000, //duration slow down animation but does not animate all the time
+            duration: 6000, //duration slow down animation but does not animate all the time
         };
         _.extend(this.options, options);
 
@@ -338,7 +338,7 @@ class Tooltip {
             title.style.display = 'none';
         }
 
-        inner.innerHTML = this.default.html;
+        inner.innerHTML = this.default.content;
         this.popover = div.children[0];
 
     }
@@ -368,17 +368,17 @@ class Tooltip {
         if (placement === 'top') {
             top = elDim.top - popDim.height;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2);
-            if(this.default.collision === 'fit' && top < 0) {
+            if (this.default.collision === 'fit' && top < 0) {
                 top = 0;
             }
-            if(this.default.collision === 'fit' && left < 0) {
+            if (this.default.collision === 'fit' && left < 0) {
                 left = 0;
             }
         }
         if (placement === 'left') {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2);
             left = elDim.left - popDim.width;
-            if(this.default.collision === 'fit' && left < 0) {
+            if (this.default.collision === 'fit' && left < 0) {
                 left = 0;
             }
         }
@@ -408,8 +408,12 @@ class Tooltip {
  */
 class Focus {
 
-    constructor() {
+    constructor(config) {
 
+        this.default = {
+            padding: 10
+        }
+        _.extend(this.default, config);
         this.buildDom();
 
         this.animator = new Animator(this.focusBox.middle, {
@@ -428,7 +432,7 @@ class Focus {
                 css: {
                     position: 'absolute',
                     top: '50%',
-                    left: '50%'
+                    left: '50%',
                 }
             }, document.body),
             right: new Elm('div.to_right', {}, document.body),
@@ -439,7 +443,7 @@ class Focus {
 
     }
 
-    focusOnElm(elm) {
+    focusOn(elm) {
         let focusElm = normalizeElement(elm);
         let styles = focusElm.getBoundingClientRect();
 
@@ -461,25 +465,25 @@ class Focus {
             top: 0,
             left: 0,
             right: 0,
-            height: dimentions.top + 'px'
+            height: dimentions.top - this.default.padding + 'px'
         });
         setStyles(this.focusBox.bottom, {
-            top: dimentions.top + dimentions.height + 'px',
+            top: dimentions.top + dimentions.height + this.default.padding + 'px',
             bottom: 0,
-            left: dimentions.left + 'px',
-            width: dimentions.width + 'px'
+            left: dimentions.left - this.default.padding + 'px',
+            width: dimentions.width + (this.default.padding * 2) + 'px'
         });
         setStyles(this.focusBox.right, {
-            top: dimentions.top + 'px',
+            top: dimentions.top - this.default.padding + 'px',
             bottom: 0,
             right: 0,
-            left: dimentions.left + dimentions.width + 'px',
+            left: dimentions.left + dimentions.width + this.default.padding + 'px',
         });
         setStyles(this.focusBox.left, {
-            top: dimentions.top + 'px',
+            top: dimentions.top - this.default.padding + 'px',
             bottom: 0,
             left: 0,
-            width: dimentions.left + 'px'
+            width: dimentions.left - this.default.padding + 'px'
         });
     }
 
@@ -650,7 +654,7 @@ var ChainWork = (function () {
             try {
                 this.chain[this.index + 1]['assigned'] = assignment;
             }
-            catch(err) {
+            catch (err) {
                 //pass
                 //this error happens when pause component is added to the end of the chain.
             }
@@ -836,6 +840,15 @@ var ChainWork = (function () {
         this.isPlay = false;
         this.isAbort = false;
         this.callchain(caller);
+    };
+
+    ChainWork.prototype.previous = function(caller) {
+        var caller = caller || 'user';
+        this.isPlay = false;
+        this.isAbort = false;
+        this.index < 1 ? this.index = 0 : this.index--;
+        this.callchain(caller);
+
     };
 
     ChainWork.prototype.stop = function () {
@@ -1097,6 +1110,39 @@ var components = {
 };
 
 
+components.showtime = {
+    name: 'showtime',
+    settings: {
+        element: null,
+        padding: 10,
+        clickThrough: true,//TODO
+        title: '',
+        placement: 'right',
+        focus: null,
+        content: ''
+    },
+    job: function() {
+        //remove last tooltip
+        try {
+            this.parent.tooltip.remove();
+        } catch (err) {
+            //tooltip does not excist
+        }
+        console.log(this.settings.content);
+        let tooltip = this.parent.tooltip = new Tooltip(this.settings.element, {
+            content: this.settings.content,
+            title: this.settings.title,
+            placement: this.settings.placement
+        });
+
+        tooltip.show();
+        this.settings.focus.focusOn(this.settings.element);
+        this.parent.componentDone();
+
+    }
+};
+
+
 /**
  * ------------------------------------------------------------------------
  * Tour / Showtime
@@ -1105,34 +1151,45 @@ var components = {
  */
 class Tour {
 
-    constructor() {
+    constructor(options) {
         this.chain = new ChainWork();
         this.focus = new Focus();
+
+        this.default = {
+            focus: new Focus()
+        };
+
     }
 
-    show(options) {
-        this.chain.add(()=> {
-            try {
-                this.tooltip.remove();
-            } catch (err) {
-                //tooltip does not excist
-            }
-
-            this.focus.focusOnElm(options.element);
-            this.tooltip = new Tooltip(options.element, {
-                html: '<p>halló</p>',
-                content: '<p>foobar</p>',
-                title: 'foobar',
-                placement: 'top'
-            });
-            this.tooltip.show();
-        })
-        .add('pause', {delay: 0});
+    show(settings) {
+        _.extend(settings, this.default);
+        this.chain.add('showtime', settings).add('pause');
         return this;
     }
 
     start() {
+        this.chain.reset();
         this.chain.play();
     }
+
+    next() {
+        console.log('next');
+        this.chain.play();
+    }
+
+    previous() {
+        this.chain.previous();
+    }
+
+    reset() {
+        this.chain.reset();
+    }
+
+    startOver() {
+        this.chain.reset();
+        this.chain.play();
+    }
+
+
 
 }

@@ -1,11 +1,3 @@
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 /**
  * --------------------------------------------------------------------------
  * tour.js
@@ -18,6 +10,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 //Polyfill for requestAnimationFrame and cancelAnimationFrame
 //Source: https://github.com/darius/requestAnimationFrame
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
 if (!Date.now) Date.now = function () {
     return new Date().getTime();
 };
@@ -88,7 +86,7 @@ var setStyles = function setStyles(el, styles) {
  * ------------------------------------------------------------------------
  */
 
-var Elm = function () {
+var Elm = (function () {
     //Simple element generator. Mootools style
     //tries to find method for keys in options and run it
 
@@ -137,6 +135,15 @@ var Elm = function () {
 
         return this.element;
     }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Animations
+     * Animates element from current location to given style/location
+     *
+     * TODO Duration is not working and animate-able styles are limeted.
+     * ------------------------------------------------------------------------
+     */
 
     _createClass(Elm, [{
         key: '_setClass',
@@ -195,25 +202,16 @@ var Elm = function () {
     }]);
 
     return Elm;
-}();
+})();
 
-/**
- * ------------------------------------------------------------------------
- * Animations
- * Animates element from current location to given style/location
- *
- * TODO Duration is not working and animate-able styles are limeted.
- * ------------------------------------------------------------------------
- */
-
-var Animator = function () {
+var Animator = (function () {
     function Animator(elm, options) {
         _classCallCheck(this, Animator);
 
         //hello
         this.options = {
             effect: 'linear',
-            duration: 1000 };
+            duration: 6000 };
         //duration slow down animation but does not animate all the time
         _.extend(this.options, options);
 
@@ -237,6 +235,16 @@ var Animator = function () {
             }
         };
     }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Tooltip
+     * Creates bootstrap-like tooltip with position relative to given element
+     *
+     * TODO Create nice animation for show hide
+     * TODO prevent overflow of viewport
+     * ------------------------------------------------------------------------
+     */
 
     _createClass(Animator, [{
         key: 'animate',
@@ -263,7 +271,6 @@ var Animator = function () {
         }
 
         //method to override
-
     }, {
         key: 'step',
         value: function step() {}
@@ -274,7 +281,6 @@ var Animator = function () {
         }
 
         //Note that this function also retrives the current size and position of the focus element
-
     }, {
         key: 'applyStyles',
         value: function applyStyles(delta) {
@@ -304,26 +310,16 @@ var Animator = function () {
     }]);
 
     return Animator;
-}();
+})();
 
-/**
- * ------------------------------------------------------------------------
- * Tooltip
- * Creates bootstrap-like tooltip with position relative to given element
- *
- * TODO Create nice animation for show hide
- * TODO prevent overflow of viewport
- * ------------------------------------------------------------------------
- */
-
-var Tooltip = function () {
+var Tooltip = (function () {
     function Tooltip(element, config) {
         _classCallCheck(this, Tooltip);
 
         this.element = normalizeElement(element);
         this.popover = null;
 
-        this.default = {
+        this['default'] = {
             animation: true,
             template: '\n             <div class="popover" role="tooltip">\n                <div class="arrow"></div>\n                <h3 class="popover-title"></h3>\n                <div class="popover-content"></div>\n             </div>',
             title: '',
@@ -333,12 +329,23 @@ var Tooltip = function () {
             offset: '0 0',
             collision: 'fit'
         };
-        _.extend(this.default, config);
+        _.extend(this['default'], config);
 
         this.setElementContents();
         this.setDirection();
         this.create();
     }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Focus
+     * Creates 4 transparent overlay around the given element
+     *
+     * TODO Create nice animation for show hide
+     * TODO prevent overflow of viewport
+     * TODO add padding option
+     * ------------------------------------------------------------------------
+     */
 
     _createClass(Tooltip, [{
         key: 'getTipElement',
@@ -349,26 +356,26 @@ var Tooltip = function () {
         key: 'setElementContents',
         value: function setElementContents(selector) {
             var div = document.createElement('div');
-            div.innerHTML = this.default.template;
+            div.innerHTML = this['default'].template;
             var title = div.querySelector('.popover-title');
             var inner = div.querySelector('.popover-content');
 
-            if (!this.default.content) {
+            if (!this['default'].content) {
                 throw new Error('Tooltip has no content');
             }
-            if (this.default.title) {
-                title.innerText = this.default.title;
+            if (this['default'].title) {
+                title.innerText = this['default'].title;
             } else {
                 title.style.display = 'none';
             }
 
-            inner.innerHTML = this.default.html;
+            inner.innerHTML = this['default'].content;
             this.popover = div.children[0];
         }
     }, {
         key: 'setDirection',
         value: function setDirection() {
-            setClass(this.popover, this.default.placement);
+            setClass(this.popover, this['default'].placement);
         }
     }, {
         key: 'create',
@@ -389,7 +396,7 @@ var Tooltip = function () {
     }, {
         key: 'setPosition',
         value: function setPosition() {
-            var placement = this.default.placement;
+            var placement = this['default'].placement;
             var elDim = this.element.getBoundingClientRect();
             var popDim = this.popover.getBoundingClientRect();
             var top = undefined,
@@ -397,17 +404,17 @@ var Tooltip = function () {
             if (placement === 'top') {
                 top = elDim.top - popDim.height;
                 left = elDim.left + elDim.width / 2 - popDim.width / 2;
-                if (this.default.collision === 'fit' && top < 0) {
+                if (this['default'].collision === 'fit' && top < 0) {
                     top = 0;
                 }
-                if (this.default.collision === 'fit' && left < 0) {
+                if (this['default'].collision === 'fit' && left < 0) {
                     left = 0;
                 }
             }
             if (placement === 'left') {
                 top = elDim.top + elDim.height / 2 - popDim.height / 2;
                 left = elDim.left - popDim.width;
-                if (this.default.collision === 'fit' && left < 0) {
+                if (this['default'].collision === 'fit' && left < 0) {
                     left = 0;
                 }
             }
@@ -426,23 +433,16 @@ var Tooltip = function () {
     }]);
 
     return Tooltip;
-}();
+})();
 
-/**
- * ------------------------------------------------------------------------
- * Focus
- * Creates 4 transparent overlay around the given element
- *
- * TODO Create nice animation for show hide
- * TODO prevent overflow of viewport
- * TODO add padding option
- * ------------------------------------------------------------------------
- */
-
-var Focus = function () {
-    function Focus() {
+var Focus = (function () {
+    function Focus(config) {
         _classCallCheck(this, Focus);
 
+        this['default'] = {
+            padding: 10
+        };
+        _.extend(this['default'], config);
         this.buildDom();
 
         this.animator = new Animator(this.focusBox.middle, {
@@ -453,6 +453,18 @@ var Focus = function () {
         //    self.setBackdropPos(this.ghost);
         //};
     }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Chainwork
+     * Synchronous way of running components with complete controls
+     *
+     * TODO This is the whole chainwork framework. we need a lighter version of it in es6
+     *
+     * ------------------------------------------------------------------------
+     */
+
+    //typeOf based on mootools typeOf
 
     _createClass(Focus, [{
         key: 'buildDom',
@@ -472,8 +484,8 @@ var Focus = function () {
             };
         }
     }, {
-        key: 'focusOnElm',
-        value: function focusOnElm(elm) {
+        key: 'focusOn',
+        value: function focusOn(elm) {
             var _this4 = this;
 
             var focusElm = normalizeElement(elm);
@@ -498,47 +510,34 @@ var Focus = function () {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: dimentions.top + 'px'
+                height: dimentions.top - this['default'].padding + 'px'
             });
             setStyles(this.focusBox.bottom, {
-                top: dimentions.top + dimentions.height + 'px',
+                top: dimentions.top + dimentions.height + this['default'].padding + 'px',
                 bottom: 0,
-                left: dimentions.left + 'px',
-                width: dimentions.width + 'px'
+                left: dimentions.left - this['default'].padding + 'px',
+                width: dimentions.width + this['default'].padding * 2 + 'px'
             });
             setStyles(this.focusBox.right, {
-                top: dimentions.top + 'px',
+                top: dimentions.top - this['default'].padding + 'px',
                 bottom: 0,
                 right: 0,
-                left: dimentions.left + dimentions.width + 'px'
+                left: dimentions.left + dimentions.width + this['default'].padding + 'px'
             });
             setStyles(this.focusBox.left, {
-                top: dimentions.top + 'px',
+                top: dimentions.top - this['default'].padding + 'px',
                 bottom: 0,
                 left: 0,
-                width: dimentions.left + 'px'
+                width: dimentions.left - this['default'].padding + 'px'
             });
         }
     }]);
 
     return Focus;
-}();
-
-/**
- * ------------------------------------------------------------------------
- * Chainwork
- * Synchronous way of running components with complete controls
- *
- * TODO This is the whole chainwork framework. we need a lighter version of it in es6
- *
- * ------------------------------------------------------------------------
- */
-
-//typeOf based on mootools typeOf
+})();
 
 function typeOf(item) {
     'use strict';
-
     if (item === null) {
         return 'null';
     }
@@ -559,10 +558,10 @@ function typeOf(item) {
             return 'collection';
         }
     }
-    return typeof item === 'undefined' ? 'undefined' : _typeof(item);
+    return typeof item;
 }
 
-var ChainWork = function () {
+var ChainWork = (function () {
     function ChainWork(options) {
         var self = this;
         var options = options || {};
@@ -869,6 +868,14 @@ var ChainWork = function () {
         this.callchain(caller);
     };
 
+    ChainWork.prototype.previous = function (caller) {
+        var caller = caller || 'user';
+        this.isPlay = false;
+        this.isAbort = false;
+        this.index < 1 ? this.index = 0 : this.index--;
+        this.callchain(caller);
+    };
+
     ChainWork.prototype.stop = function () {
         this.isPlay = false;
         this.isAbort = true;
@@ -983,7 +990,7 @@ var ChainWork = function () {
     };
 
     return ChainWork;
-}();
+})();
 
 /*
  ---
@@ -992,7 +999,7 @@ var ChainWork = function () {
  *returns one compenent and runs it
  *e.g Component.run('name', {someSettings: 'foo'});
  */
-var _Component = function () {
+var _Component = (function () {
 
     function Component() {
         this.run = function (name, settings) {
@@ -1007,7 +1014,7 @@ var _Component = function () {
     }
 
     return Component;
-}();
+})();
 
 var Component = new _Component();
 
@@ -1123,6 +1130,37 @@ var components = {
     }
 };
 
+components.showtime = {
+    name: 'showtime',
+    settings: {
+        element: null,
+        padding: 10,
+        clickThrough: true, //TODO
+        title: '',
+        placement: 'right',
+        focus: null,
+        content: ''
+    },
+    job: function job() {
+        //remove last tooltip
+        try {
+            this.parent.tooltip.remove();
+        } catch (err) {
+            //tooltip does not excist
+        }
+        console.log(this.settings.content);
+        var tooltip = this.parent.tooltip = new Tooltip(this.settings.element, {
+            content: this.settings.content,
+            title: this.settings.title,
+            placement: this.settings.placement
+        });
+
+        tooltip.show();
+        this.settings.focus.focusOn(this.settings.element);
+        this.parent.componentDone();
+    }
+};
+
 /**
  * ------------------------------------------------------------------------
  * Tour / Showtime
@@ -1130,45 +1168,56 @@ var components = {
  * ------------------------------------------------------------------------
  */
 
-var Tour = function () {
-    function Tour() {
+var Tour = (function () {
+    function Tour(options) {
         _classCallCheck(this, Tour);
 
         this.chain = new ChainWork();
         this.focus = new Focus();
+
+        this['default'] = {
+            focus: new Focus()
+        };
     }
 
     _createClass(Tour, [{
         key: 'show',
-        value: function show(options) {
-            var _this5 = this;
-
-            this.chain.add(function () {
-                try {
-                    _this5.tooltip.remove();
-                } catch (err) {
-                    //tooltip does not excist
-                }
-
-                _this5.focus.focusOnElm(options.element);
-                _this5.tooltip = new Tooltip(options.element, {
-                    html: '<p>halló</p>',
-                    content: '<p>foobar</p>',
-                    title: 'foobar',
-                    placement: 'top'
-                });
-                _this5.tooltip.show();
-            }).add('pause', { delay: 0 });
+        value: function show(settings) {
+            _.extend(settings, this['default']);
+            this.chain.add('showtime', settings).add('pause');
             return this;
         }
     }, {
         key: 'start',
         value: function start() {
+            this.chain.reset();
+            this.chain.play();
+        }
+    }, {
+        key: 'next',
+        value: function next() {
+            console.log('next');
+            this.chain.play();
+        }
+    }, {
+        key: 'previous',
+        value: function previous() {
+            this.chain.previous();
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            this.chain.reset();
+        }
+    }, {
+        key: 'startOver',
+        value: function startOver() {
+            this.chain.reset();
             this.chain.play();
         }
     }]);
 
     return Tour;
-}();
+})();
 
 //# sourceMappingURL=simpleAnim-compiled.js.map

@@ -8,15 +8,6 @@
 <body>
 
 <style>
-    .ball {
-        background: black;
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        position: absolute;
-        left: 20px;
-        top: 20px;
-    }
 
     .popover {
         position: absolute;
@@ -188,6 +179,16 @@
         background: transparent;
     }
 
+    .ball {
+        background: black;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        position: absolute;
+        left: 130px;
+        top: 20px;
+    }
+
     .two {
         position: relative;
         left: 400px;
@@ -196,53 +197,74 @@
         height: 80px;
         background: black;
     }
+
+    .three {
+        margin-top: 490px;
+        float: right;
+        margin-right: 40px;
+        width: 60px;
+        height: 40px;
+        background: lightblue;
+        box-shadow: 1px 0 0 2px #000;
+    }
 </style>
 <div class="ball"></div>
 
 <div class="two"></div>
-
+<div class="three">lorem ipsum</div>
+<button onclick="tour.start()" style="position: relative; z-index: 10000;">Take a tour</button>
+<button onclick="tour.next()" style="position: relative; z-index: 10000;">Next</button>
+<button onclick="tour.startOver()" style="position: relative; z-index: 10000;">StartOver</button>
 
 <script src="src/simpleAnim-compiled.js"></script>
 <!--<script src="src/tutorial-compiled.js"></script>-->
 <script>
-    //    var animator = new Animator('.ball', {
-    //        duration: 60000
-    //    });
-    //    animator.start({left: 500});
+//        var animator = new Animator('.ball', {
+//            duration: 60000
+//        });
+//        animator.start({left: 500, top: 400});
 
-    //    var animator = new Animator('.ball', {
-    //        effect: 'easeOut',
-    //        duration: 60000
-    //    });
-    //    animator.start({left: 300});
+//        var animator = new Animator('.ball', {
+//            effect: 'linear',
+//            duration: 3000000
+//        });
+//        animator.start({left: 1000});
+//
+//        var tooltip = new Tooltip('.ball', {
+//            html: '<p>halló</p>',
+//            content: '<p>foobar</p>',
+//            title: 'foobar',
+//            placement: 'right'
+//        });
+//        tooltip.show();
 
-    //    var tooltip = new Tooltip('.ball', {
-    //        html: '<p>halló</p>',
-    //        content: '<p>foobar</p>',
-    //        title: 'foobar',
-    //        placement: 'top'
-    //    });
-    //    tooltip.show();
 
-
-    //    var focus = new Focus();
-    //    var chain = new ChainWork()
-    //        .add(function() {
-    //            focus.focusOnElm('.two');
-    //        })
-    //        .add('pause', {delay: 2000})
-    //        .add(function() {
-    //            focus.focusOnElm('.ball');
-    //        }).play();
+//        var focus = new Focus();
+//        var chain = new ChainWork()
+//            .add(function() {
+//                focus.focusOn('.two');
+//            })
+//            .add('pause', {delay: 500})
+//            .add(function() {
+//                focus.focusOnElm('.ball');
+//            }).play();
 
     var tour = new Tour()
             .show({
                 element: '.ball',
+                placement: 'right',
+                content: '<p>This is a circle</p>'
             })
             .show({
-                element: '.two'
+                element: '.two',
+                placement: 'top',
+                content: '<p>This is a box</p>'
+            })
+            .show({
+                element: '.three',
+                placement: 'top',
+                content: '<p>What is this?</p>'
             });
-    tour.start();
 
 </script>
 
