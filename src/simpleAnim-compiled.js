@@ -261,7 +261,7 @@ var Animator = (function () {
                 var delta = _this2.effects[_this2.options.effect](progress);
                 _this2.applyStyles(delta);
                 if (progress === 1) {
-
+                    _this2.complete();
                     return;
                 }
                 _this2.step();
@@ -269,6 +269,9 @@ var Animator = (function () {
             };
             this.loopID = requestAnimationFrame(repeat);
         }
+    }, {
+        key: 'complete',
+        value: function complete() {}
 
         //method to override
     }, {
@@ -327,8 +330,8 @@ var Tooltip = (function () {
             delay: 0,
             placement: 'top', //top, left, right, bottom
             offset: '0 0',
-            collision: 'fit'
-        };
+            collision: 'fit' };
+        //TODO RIGHT BOTTOM
         _.extend(this['default'], config);
 
         this.setElementContents();
@@ -394,6 +397,16 @@ var Tooltip = (function () {
             this.setPosition();
         }
     }, {
+        key: 'getOffset',
+        value: function getOffset() {
+            var val = this['default'].offset.split(' ');
+            console.log(val);
+            if (!val.length > 1) {
+                return { x: parseInt(val[0]), y: parseInt(val[0]) };
+            }
+            return { x: parseInt(val[0]), y: parseInt(val[1]) };
+        }
+    }, {
         key: 'setPosition',
         value: function setPosition() {
             var placement = this['default'].placement;
@@ -401,9 +414,10 @@ var Tooltip = (function () {
             var popDim = this.popover.getBoundingClientRect();
             var top = undefined,
                 left = undefined;
+            var offset = this.getOffset();
             if (placement === 'top') {
-                top = elDim.top - popDim.height;
-                left = elDim.left + elDim.width / 2 - popDim.width / 2;
+                top = elDim.top - popDim.height + offset.y;
+                left = elDim.left + elDim.width / 2 - popDim.width / 2 + offset.x;
                 if (this['default'].collision === 'fit' && top < 0) {
                     top = 0;
                 }
@@ -412,19 +426,19 @@ var Tooltip = (function () {
                 }
             }
             if (placement === 'left') {
-                top = elDim.top + elDim.height / 2 - popDim.height / 2;
-                left = elDim.left - popDim.width;
+                top = elDim.top + elDim.height / 2 - popDim.height / 2 + offset.y;
+                left = elDim.left - popDim.width + offset.x;
                 if (this['default'].collision === 'fit' && left < 0) {
                     left = 0;
                 }
             }
             if (placement === 'right') {
-                top = elDim.top + elDim.height / 2 - popDim.height / 2;
-                left = elDim.left + elDim.width;
+                top = elDim.top + elDim.height / 2 - popDim.height / 2 + offset.y;
+                left = elDim.left + elDim.width + offset.x;
             }
             if (placement === 'bottom') {
-                top = elDim.top + elDim.height;
-                left = elDim.left + elDim.width / 2 - popDim.width / 2;
+                top = elDim.top + elDim.height + offset.y;
+                left = elDim.left + elDim.width / 2 - popDim.width / 2 + offset.x;
             }
 
             this.popover.style.top = top + 'px';
@@ -437,6 +451,8 @@ var Tooltip = (function () {
 
 var Focus = (function () {
     function Focus(config) {
+        var _this4 = this;
+
         _classCallCheck(this, Focus);
 
         this['default'] = {
@@ -449,9 +465,9 @@ var Focus = (function () {
             effect: 'easeOut',
             duration: 60000
         });
-        //this.animator.step = function() {
-        //    self.setBackdropPos(this.ghost);
-        //};
+        this.animator.complete = function () {
+            _this4.complete();
+        };
     }
 
     /**
@@ -467,6 +483,9 @@ var Focus = (function () {
     //typeOf based on mootools typeOf
 
     _createClass(Focus, [{
+        key: 'complete',
+        value: function complete() {}
+    }, {
         key: 'buildDom',
         value: function buildDom() {
             this.focusBox = {
@@ -486,7 +505,7 @@ var Focus = (function () {
     }, {
         key: 'focusOn',
         value: function focusOn(elm) {
-            var _this4 = this;
+            var _this5 = this;
 
             var focusElm = normalizeElement(elm);
             var styles = focusElm.getBoundingClientRect();
@@ -498,7 +517,7 @@ var Focus = (function () {
                 top: styles.top
             });
             this.animator.step = function (el) {
-                _this4.setCoverPos(el);
+                _this5.setCoverPos(el);
             };
         }
     }, {
@@ -1141,22 +1160,41 @@ components.showtime = {
         focus: null,
         content: ''
     },
+
+    resolveOffsets: function resolveOffsets() {
+        if (this.settings.placement = 'right') {
+            return this.settings.padding + ' 0';
+        }
+        if (this.settings.placement = 'left') {
+            return -this.settings.padding + ' 0';
+        }
+        if (this.settings.placement = 'top') {
+            return '0 ' + this.settings.padding;
+        }
+        if (this.settings.placement = 'bottom') {
+            return '0 ' + -this.settings.padding;
+        }
+    },
+
     job: function job() {
         //remove last tooltip
+        console.log('hey', this.resolveOffsets());
         try {
             this.parent.tooltip.remove();
         } catch (err) {
             //tooltip does not excist
         }
-        console.log(this.settings.content);
         var tooltip = this.parent.tooltip = new Tooltip(this.settings.element, {
             content: this.settings.content,
             title: this.settings.title,
-            placement: this.settings.placement
+            placement: this.settings.placement,
+            offset: this.resolveOffsets()
         });
 
-        tooltip.show();
         this.settings.focus.focusOn(this.settings.element);
+        this.settings.focus.complete = function () {
+            tooltip.show();
+        };
         this.parent.componentDone();
     }
 };
@@ -1174,9 +1212,9 @@ var Tour = (function () {
 
         this.chain = new ChainWork();
         this.focus = new Focus();
-
         this['default'] = {
-            focus: new Focus()
+            //we create the focus instance here so wee can reuse it in the componet.
+            focus: this.focus
         };
     }
 

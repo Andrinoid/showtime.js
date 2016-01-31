@@ -238,7 +238,7 @@ class Animator {
             let delta = this.effects[this.options.effect](progress);
             this.applyStyles(delta);
             if (progress === 1) {
-
+                this.complete();
                 return;
             }
             this.step();
@@ -248,6 +248,9 @@ class Animator {
 
     }
 
+    complete() {
+
+    }
 
     //method to override
     step() {
@@ -309,7 +312,7 @@ class Tooltip {
             delay: 0,
             placement: 'top',//top, left, right, bottom
             offset: '0 0',
-            collision: 'fit',
+            collision: 'fit',//TODO RIGHT BOTTOM
         };
         _.extend(this.default, config);
 
@@ -360,14 +363,24 @@ class Tooltip {
         this.setPosition();
     }
 
+    getOffset() {
+        let val = this.default.offset.split(' ');
+        console.log(val);
+        if (!val.length > 1) {
+            return {x: parseInt(val[0]), y: parseInt(val[0])};
+        }
+        return {x: parseInt(val[0]), y: parseInt(val[1])};
+    }
+
     setPosition() {
         let placement = this.default.placement;
         let elDim = this.element.getBoundingClientRect();
         let popDim = this.popover.getBoundingClientRect();
         let top, left;
+        let offset = this.getOffset();
         if (placement === 'top') {
-            top = elDim.top - popDim.height;
-            left = elDim.left + (elDim.width / 2) - (popDim.width / 2);
+            top = elDim.top - popDim.height + offset.y;
+            left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
             if (this.default.collision === 'fit' && top < 0) {
                 top = 0;
             }
@@ -376,19 +389,19 @@ class Tooltip {
             }
         }
         if (placement === 'left') {
-            top = elDim.top + (elDim.height / 2) - (popDim.height / 2);
-            left = elDim.left - popDim.width;
+            top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y;
+            left = elDim.left - popDim.width + offset.x;
             if (this.default.collision === 'fit' && left < 0) {
                 left = 0;
             }
         }
         if (placement === 'right') {
-            top = elDim.top + (elDim.height / 2) - (popDim.height / 2);
-            left = elDim.left + elDim.width;
+            top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y;
+            left = elDim.left + elDim.width + offset.x;
         }
         if (placement === 'bottom') {
-            top = elDim.top + elDim.height;
-            left = elDim.left + (elDim.width / 2) - (popDim.width / 2);
+            top = elDim.top + elDim.height + offset.y;
+            left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
         }
 
         this.popover.style.top = top + 'px';
@@ -420,9 +433,13 @@ class Focus {
             effect: 'easeOut',
             duration: 60000
         });
-        //this.animator.step = function() {
-        //    self.setBackdropPos(this.ghost);
-        //};
+        this.animator.complete = ()=> {
+            this.complete();
+        }
+
+    }
+
+    complete() {
 
     }
 
@@ -842,7 +859,7 @@ var ChainWork = (function () {
         this.callchain(caller);
     };
 
-    ChainWork.prototype.previous = function(caller) {
+    ChainWork.prototype.previous = function (caller) {
         var caller = caller || 'user';
         this.isPlay = false;
         this.isAbort = false;
@@ -1121,22 +1138,42 @@ components.showtime = {
         focus: null,
         content: ''
     },
-    job: function() {
+
+    resolveOffsets: function () {
+        if (this.settings.placement = 'right') {
+            return this.settings.padding + ' 0';
+        }
+        if (this.settings.placement = 'left') {
+            return -this.settings.padding + ' 0';
+        }
+        if (this.settings.placement = 'top') {
+            return '0 ' + this.settings.padding;
+        }
+        if (this.settings.placement = 'bottom') {
+            return '0 ' + -this.settings.padding;
+        }
+    },
+
+    job: function () {
         //remove last tooltip
+        console.log('hey', this.resolveOffsets());
         try {
             this.parent.tooltip.remove();
         } catch (err) {
             //tooltip does not excist
         }
-        console.log(this.settings.content);
         let tooltip = this.parent.tooltip = new Tooltip(this.settings.element, {
             content: this.settings.content,
             title: this.settings.title,
-            placement: this.settings.placement
+            placement: this.settings.placement,
+            offset: this.resolveOffsets()
         });
 
-        tooltip.show();
+
         this.settings.focus.focusOn(this.settings.element);
+        this.settings.focus.complete = function () {
+            tooltip.show();
+        }
         this.parent.componentDone();
 
     }
@@ -1154,9 +1191,9 @@ class Tour {
     constructor(options) {
         this.chain = new ChainWork();
         this.focus = new Focus();
-
         this.default = {
-            focus: new Focus()
+            //we create the focus instance here so wee can reuse it in the componet.
+            focus: this.focus,
         };
 
     }
@@ -1189,7 +1226,6 @@ class Tour {
         this.chain.reset();
         this.chain.play();
     }
-
 
 
 }
