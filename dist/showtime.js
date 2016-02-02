@@ -388,6 +388,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * ------------------------------------------------------------------------
      */
 
+    var STYLES = '\n    <style>\n    .popover {\n        position: absolute;\n        box-sizing: border-box;\n        min-width: 250px;\n        top: 0;\n        left: 0;\n        z-index: 1060;\n        display: none;\n        max-width: 276px;\n        padding: 1px;\n        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n        font-style: normal;\n        font-weight: normal;\n        letter-spacing: normal;\n        line-break: auto;\n        line-height: 1.42857143;\n        text-align: left;\n        text-align: start;\n        text-decoration: none;\n        text-shadow: none;\n        text-transform: none;\n        white-space: normal;\n        word-break: normal;\n        word-spacing: normal;\n        word-wrap: normal;\n        font-size: 14px;\n        background-color: #fff;\n        background-clip: padding-box;\n        border: 1px solid #ccc;\n        border: 1px solid rgba(0, 0, 0, 0.2);\n        border-radius: 2px;\n        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n    }\n\n    .popover.top {\n        margin-top: -10px;\n    }\n\n    .popover.right {\n        margin-left: 10px;\n    }\n\n    .popover.bottom {\n        margin-top: 10px;\n    }\n\n    .popover.left {\n        margin-left: -10px;\n    }\n\n    .popover-title {\n        margin: 0;\n        padding: 8px 14px;\n        font-size: 14px;\n        background-color: #f7f7f7;\n        border-bottom: 1px solid #ebebeb;\n        border-radius: 1px 1px 0 0;\n        box-sizing: border-box;\n\n    }\n\n    .popover-content {\n        padding: 9px 14px;\n        box-sizing: border-box;\n\n    }\n\n    .popover > .arrow,\n    .popover > .arrow:after {\n        position: absolute;\n        display: block;\n        width: 0;\n        height: 0;\n        border-color: transparent;\n        border-style: solid;\n    }\n\n    .popover > .arrow {\n        border-width: 11px;\n    }\n\n    .popover > .arrow:after {\n        border-width: 10px;\n        content: "";\n    }\n\n    .popover.top > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-bottom-width: 0;\n        border-top-color: #999999;\n        border-top-color: rgba(0, 0, 0, 0.25);\n        bottom: -11px;\n    }\n\n    .popover.top > .arrow:after {\n        content: " ";\n        bottom: 1px;\n        margin-left: -10px;\n        border-bottom-width: 0;\n        border-top-color: #fff;\n    }\n\n    .popover.right > .arrow {\n        top: 50%;\n        left: -11px;\n        margin-top: -11px;\n        border-left-width: 0;\n        border-right-color: #999999;\n        border-right-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.right > .arrow:after {\n        content: " ";\n        left: 1px;\n        bottom: -10px;\n        border-left-width: 0;\n        border-right-color: #fff;\n    }\n\n    .popover.bottom > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-top-width: 0;\n        border-bottom-color: #999999;\n        border-bottom-color: rgba(0, 0, 0, 0.25);\n        top: -11px;\n    }\n\n    .popover.bottom > .arrow:after {\n        content: " ";\n        top: 1px;\n        margin-left: -10px;\n        border-top-width: 0;\n        border-bottom-color: #fff;\n    }\n\n    .popover.left > .arrow {\n        top: 50%;\n        right: -11px;\n        margin-top: -11px;\n        border-right-width: 0;\n        border-left-color: #999999;\n        border-left-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.left > .arrow:after {\n        content: " ";\n        right: 1px;\n        border-right-width: 0;\n        border-left-color: #fff;\n        bottom: -10px;\n    }\n\n    .to_left,\n    .to_right,\n    .to_top,\n    .to_bottom {\n        position: fixed;\n        background: black;\n        opacity: .5;\n        filter: alpha(opacity=50);\n        z-index: 1000;\n    }\n\n    .ghost-focus {\n        background: transparent;\n    }\n    </style>';
+
     var Tooltip = function () {
         function Tooltip(element, config) {
             _classCallCheck(this, Tooltip);
@@ -406,13 +408,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 collision: 'fit' };
             //TODO RIGHT BOTTOM
             this.default = extend(this.default, config);
-
+            this._injectStyles();
             this.setElementContents();
             this.setDirection();
             this.create();
         }
 
         _createClass(Tooltip, [{
+            key: '_injectStyles',
+            value: function _injectStyles() {
+                new Elm('div.styleFallback', {
+                    html: STYLES
+                }, document.body);
+            }
+        }, {
             key: 'getTipElement',
             value: function getTipElement() {
                 return this.tip = this.tip || this.config.template;
@@ -546,6 +555,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         return Tooltip;
     }();
+
+    window.Tooltip = Tooltip; //////////////////////////////////////////////Má ekki
 
     /**
      * ------------------------------------------------------------------------
@@ -1324,43 +1335,82 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * ------------------------------------------------------------------------
      */
 
-    var STYLES = '\n    <style>\n    .popover {\n        position: absolute;\n        box-sizing: border-box;\n        min-width: 250px;\n        top: 0;\n        left: 0;\n        z-index: 1060;\n        display: none;\n        max-width: 276px;\n        padding: 1px;\n        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n        font-style: normal;\n        font-weight: normal;\n        letter-spacing: normal;\n        line-break: auto;\n        line-height: 1.42857143;\n        text-align: left;\n        text-align: start;\n        text-decoration: none;\n        text-shadow: none;\n        text-transform: none;\n        white-space: normal;\n        word-break: normal;\n        word-spacing: normal;\n        word-wrap: normal;\n        font-size: 14px;\n        background-color: #fff;\n        background-clip: padding-box;\n        border: 1px solid #ccc;\n        border: 1px solid rgba(0, 0, 0, 0.2);\n        border-radius: 2px;\n        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n    }\n\n    .popover.top {\n        margin-top: -10px;\n    }\n\n    .popover.right {\n        margin-left: 10px;\n    }\n\n    .popover.bottom {\n        margin-top: 10px;\n    }\n\n    .popover.left {\n        margin-left: -10px;\n    }\n\n    .popover-title {\n        margin: 0;\n        padding: 8px 14px;\n        font-size: 14px;\n        background-color: #f7f7f7;\n        border-bottom: 1px solid #ebebeb;\n        border-radius: 1px 1px 0 0;\n        box-sizing: border-box;\n\n    }\n\n    .popover-content {\n        padding: 9px 14px;\n        box-sizing: border-box;\n\n    }\n\n    .popover > .arrow,\n    .popover > .arrow:after {\n        position: absolute;\n        display: block;\n        width: 0;\n        height: 0;\n        border-color: transparent;\n        border-style: solid;\n    }\n\n    .popover > .arrow {\n        border-width: 11px;\n    }\n\n    .popover > .arrow:after {\n        border-width: 10px;\n        content: "";\n    }\n\n    .popover.top > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-bottom-width: 0;\n        border-top-color: #999999;\n        border-top-color: rgba(0, 0, 0, 0.25);\n        bottom: -11px;\n    }\n\n    .popover.top > .arrow:after {\n        content: " ";\n        bottom: 1px;\n        margin-left: -10px;\n        border-bottom-width: 0;\n        border-top-color: #fff;\n    }\n\n    .popover.right > .arrow {\n        top: 50%;\n        left: -11px;\n        margin-top: -11px;\n        border-left-width: 0;\n        border-right-color: #999999;\n        border-right-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.right > .arrow:after {\n        content: " ";\n        left: 1px;\n        bottom: -10px;\n        border-left-width: 0;\n        border-right-color: #fff;\n    }\n\n    .popover.bottom > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-top-width: 0;\n        border-bottom-color: #999999;\n        border-bottom-color: rgba(0, 0, 0, 0.25);\n        top: -11px;\n    }\n\n    .popover.bottom > .arrow:after {\n        content: " ";\n        top: 1px;\n        margin-left: -10px;\n        border-top-width: 0;\n        border-bottom-color: #fff;\n    }\n\n    .popover.left > .arrow {\n        top: 50%;\n        right: -11px;\n        margin-top: -11px;\n        border-right-width: 0;\n        border-left-color: #999999;\n        border-left-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.left > .arrow:after {\n        content: " ";\n        right: 1px;\n        border-right-width: 0;\n        border-left-color: #fff;\n        bottom: -10px;\n    }\n\n    .to_left,\n    .to_right,\n    .to_top,\n    .to_bottom {\n        position: fixed;\n        background: black;\n        opacity: .5;\n        filter: alpha(opacity=50);\n        z-index: 1000;\n    }\n\n    .ghost-focus {\n        background: transparent;\n    }\n    </style>';
-
-    //wee need to fix this mix
-
-    var ExtendChainwork = function ExtendChainwork(options) {
-        _classCallCheck(this, ExtendChainwork);
-
-        ChainWork.prototype.focus = new Focus();
-
-        ChainWork.prototype.show = function (settings) {
-            this.add('showtime', settings);
-            return this;
-        };
-        this.injectStyles();
-    };
-
-    new ExtendChainwork();
-
     var showtime = function () {
         function showtime() {
             _classCallCheck(this, showtime);
 
+            this.chain = [];
+            this.chainIndex = 0;
             this.focus = new Focus();
-            this.injectStyles();
         }
 
         _createClass(showtime, [{
-            key: 'injectStyles',
-            value: function injectStyles() {
-                new Elm('div.styleFallback', {
-                    html: STYLES
-                }, document.body);
+            key: '_callchain',
+            value: function _callchain() {
+                var _this5 = this;
+
+                var settings = this.chain[this.chainIndex];
+
+                //remove last tooltip
+                try {
+                    this.tooltip.remove();
+                } catch (err) {}
+                //tooltip does not excist
+
+                //let tooltip = this.tooltip = new Tooltip(settings.element, {
+                //    content: settings.content,
+                //    title: settings.title,
+                //    placement: settings.placement,
+                //    offset: this._resolveOffsets(settings)
+                //});
+                //tooltip.show();
+                this.tooltip = new Tooltip(settings.element, {
+                    title: settings.title,
+                    content: settings.content,
+                    placement: settings.placement });
+
+                //top, left, right, bottom
+                this.focus.focusOn(settings.element);
+                this.focus.complete = function () {
+                    _this5.tooltip.show();
+                };
+
+                this.chainIndex++;
             }
+        }, {
+            key: '_resolveOffsets',
+            value: function _resolveOffsets(settings) {
+                if (settings.placement === 'right') {
+                    return settings.padding + ' 0';
+                }
+                if (settings.placement === 'left') {
+                    return -settings.padding + ' 0';
+                }
+                if (settings.placement === 'top') {
+                    return '0 ' + -settings.padding;
+                }
+                if (settings.placement === 'bottom') {
+                    return '0 ' + settings.padding;
+                }
+            }
+        }, {
+            key: 'show',
+            value: function show(options) {
+                this.chain.push(options);
+                return this;
+            }
+        }, {
+            key: 'play',
+            value: function play() {
+                this._callchain();
+            }
+        }, {
+            key: 'start',
+            value: function start() {}
         }]);
 
         return showtime;
     }();
 
-    return ChainWork;
+    return showtime;
 });

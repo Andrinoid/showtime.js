@@ -52,40 +52,31 @@
 <script src="dist/showtime.js"></script>
 <script>
 
-    //        var tour = new Showtime()
-    //                .show({
-    //                    element: '.ball',
-    //                    placement: 'right',
-    //                    title: 'Only you...',
-    //                    content: '<p>This is a circle</p>'
-    //                })
-    //                .show({
-    //                    element: '.two',
-    //                    placement: 'top',
-    //                    content: '<p>This is a box</p>'
-    //                })
-    //                .show({
-    //                    element: '.three',
-    //                    placement: 'top',
-    //                    content: '<p>What is this?</p>'
-    //                });
+//    var tooltip = new Tooltip('.ball', {
+//        title: 'foobar',
+//        content: '<p>sdfsdfsdf</p>',
+//        placement: 'right',//top, left, right, bottom
+//    });
+//
+//    tooltip.show();
 
 
     var tour = new Showtime({debug: true})
             .show({
                 element: '.ball',
-                placement: 'top',
-                content: '<p>This is a box</p>'
+                title: 'hey I have a title again.',
+                placement: 'right',
+                content: '<p>This is a ball</p>'
             })
             .show({
                 element: '.two',
                 placement: 'top',
-                content: '<p>This is a box</p>'
+                content: '<p>This is a box1</p>'
             })
             .show({
                 element: '.three',
-                placement: 'top',
-                content: '<p>This is a box</p>'
+                placement: 'left',
+                content: '<p>This is a box2</p>'
             });
 
 
