@@ -827,65 +827,65 @@
             this.componentStamp();
         };
 
-        //ChainWork.prototype.runSingle = function (componentRef, onDone) {
-        //    var self = this;
-        //    //var component = _.cloneDeep(components[componentRef.componentName]);
-        //    var component = clone(components[componentRef.componentName]);
-        //    //apply settings
-        //    //var refSettings = componentRef.settings;
-        //
-        //
-        //    var refSettings = _.mapValues(componentRef.settings, function (value, key) {
-        //        //dont reveal function that start with on or call.
-        //        if (key.slice(0, 2) === 'on' || key.slice(0, 4) === 'call')
-        //            return value;
-        //        //reveal functions values. this allows the chain to give settings as function to reveal values on chain runtime insted of being collected as static values onLoad
-        //        if (typeOf(value) === 'function')
-        //            return value();
-        //        return value;
-        //    });
-        //    var compontentSettings = component['settings'];
-        //
-        //
-        //    //_.assign(compontentSettings, refSettings);
-        //    compontentSettings = extend(compontentSettings, refSettings);
-        //
-        //
-        //    //set parent property to component. We dont want the parallel components to affect the rest of the chain so the get a fake parent
-        //    var fakeParent = {
-        //        componentDone: function () {
-        //            onDone();
-        //            self.extendGlobal();//DEPRICATED
-        //            //We should collect componentDone calls to know when the par component is done and user could set it to whait for it
-        //            //we must know how many par component is in the collection maybe we can do it in the component
-        //        },
-        //        caller: 'chain',//?
-        //        stop: self.stop,
-        //        debug: self.debug,
-        //
-        //    };
-        //    component['parent'] = fakeParent;
-        //
-        //    //Check if component has pre function
-        //    if (component ? hasOwnProperty.call('pre') : false) {
-        //        component.pre();
-        //    }
-        //    //this gives pre function chance to abort if needed e.g force user action
-        //    if (this.isAbort) {
-        //        return false;
-        //    }
-        //    component.job();
-        //    //this gives job function chance to abort if needed e.g force user action
-        //    if (this.isAbort) {
-        //        return false;
-        //    }
-        //    //set component stamp
-        //    this.stamps.push(componentRef.componentName);
-        //    if (this.debug) {
-        //        var name = component['name'];
-        //        console.log('running component: ' + name);
-        //    }
-        //};
+        ChainWork.prototype.runSingle = function (componentRef, onDone) {
+            var self = this;
+            //var component = _.cloneDeep(components[componentRef.componentName]);
+            var component = clone(components[componentRef.componentName]);
+            //apply settings
+            //var refSettings = componentRef.settings;
+
+
+            var refSettings = _.mapValues(componentRef.settings, function (value, key) {
+                //dont reveal function that start with on or call.
+                if (key.slice(0, 2) === 'on' || key.slice(0, 4) === 'call')
+                    return value;
+                //reveal functions values. this allows the chain to give settings as function to reveal values on chain runtime insted of being collected as static values onLoad
+                if (typeOf(value) === 'function')
+                    return value();
+                return value;
+            });
+            var compontentSettings = component['settings'];
+
+
+            //_.assign(compontentSettings, refSettings);
+            compontentSettings = extend(compontentSettings, refSettings);
+
+
+            //set parent property to component. We dont want the parallel components to affect the rest of the chain so the get a fake parent
+            var fakeParent = {
+                componentDone: function () {
+                    onDone();
+                    self.extendGlobal();//DEPRICATED
+                    //We should collect componentDone calls to know when the par component is done and user could set it to whait for it
+                    //we must know how many par component is in the collection maybe we can do it in the component
+                },
+                caller: 'chain',//?
+                stop: self.stop,
+                debug: self.debug,
+
+            };
+            component['parent'] = fakeParent;
+
+            //Check if component has pre function
+            if (component ? hasOwnProperty.call('pre') : false) {
+                component.pre();
+            }
+            //this gives pre function chance to abort if needed e.g force user action
+            if (this.isAbort) {
+                return false;
+            }
+            component.job();
+            //this gives job function chance to abort if needed e.g force user action
+            if (this.isAbort) {
+                return false;
+            }
+            //set component stamp
+            this.stamps.push(componentRef.componentName);
+            if (this.debug) {
+                var name = component['name'];
+                console.log('running component: ' + name);
+            }
+        };
 
         ChainWork.prototype.componentDone = function () {
             var self = this;
@@ -1450,12 +1450,11 @@
     }
     </style>`;
 
-    class Tour {
+    class Hour {
 
         constructor(options) {
-
             this.injectStyles();
-
+            console.log('test');
             this.chain = new ChainWork();
             this.focus = new Focus();
             this.default = {

@@ -860,65 +860,60 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.componentStamp();
         };
 
-        //ChainWork.prototype.runSingle = function (componentRef, onDone) {
-        //    var self = this;
-        //    //var component = _.cloneDeep(components[componentRef.componentName]);
-        //    var component = clone(components[componentRef.componentName]);
-        //    //apply settings
-        //    //var refSettings = componentRef.settings;
-        //
-        //
-        //    var refSettings = _.mapValues(componentRef.settings, function (value, key) {
-        //        //dont reveal function that start with on or call.
-        //        if (key.slice(0, 2) === 'on' || key.slice(0, 4) === 'call')
-        //            return value;
-        //        //reveal functions values. this allows the chain to give settings as function to reveal values on chain runtime insted of being collected as static values onLoad
-        //        if (typeOf(value) === 'function')
-        //            return value();
-        //        return value;
-        //    });
-        //    var compontentSettings = component['settings'];
-        //
-        //
-        //    //_.assign(compontentSettings, refSettings);
-        //    compontentSettings = extend(compontentSettings, refSettings);
-        //
-        //
-        //    //set parent property to component. We dont want the parallel components to affect the rest of the chain so the get a fake parent
-        //    var fakeParent = {
-        //        componentDone: function () {
-        //            onDone();
-        //            self.extendGlobal();//DEPRICATED
-        //            //We should collect componentDone calls to know when the par component is done and user could set it to whait for it
-        //            //we must know how many par component is in the collection maybe we can do it in the component
-        //        },
-        //        caller: 'chain',//?
-        //        stop: self.stop,
-        //        debug: self.debug,
-        //
-        //    };
-        //    component['parent'] = fakeParent;
-        //
-        //    //Check if component has pre function
-        //    if (component ? hasOwnProperty.call('pre') : false) {
-        //        component.pre();
-        //    }
-        //    //this gives pre function chance to abort if needed e.g force user action
-        //    if (this.isAbort) {
-        //        return false;
-        //    }
-        //    component.job();
-        //    //this gives job function chance to abort if needed e.g force user action
-        //    if (this.isAbort) {
-        //        return false;
-        //    }
-        //    //set component stamp
-        //    this.stamps.push(componentRef.componentName);
-        //    if (this.debug) {
-        //        var name = component['name'];
-        //        console.log('running component: ' + name);
-        //    }
-        //};
+        ChainWork.prototype.runSingle = function (componentRef, onDone) {
+            var self = this;
+            //var component = _.cloneDeep(components[componentRef.componentName]);
+            var component = clone(components[componentRef.componentName]);
+            //apply settings
+            //var refSettings = componentRef.settings;
+
+            var refSettings = _.mapValues(componentRef.settings, function (value, key) {
+                //dont reveal function that start with on or call.
+                if (key.slice(0, 2) === 'on' || key.slice(0, 4) === 'call') return value;
+                //reveal functions values. this allows the chain to give settings as function to reveal values on chain runtime insted of being collected as static values onLoad
+                if (typeOf(value) === 'function') return value();
+                return value;
+            });
+            var compontentSettings = component['settings'];
+
+            //_.assign(compontentSettings, refSettings);
+            compontentSettings = extend(compontentSettings, refSettings);
+
+            //set parent property to component. We dont want the parallel components to affect the rest of the chain so the get a fake parent
+            var fakeParent = {
+                componentDone: function componentDone() {
+                    onDone();
+                    self.extendGlobal(); //DEPRICATED
+                    //We should collect componentDone calls to know when the par component is done and user could set it to whait for it
+                    //we must know how many par component is in the collection maybe we can do it in the component
+                },
+                caller: 'chain', //?
+                stop: self.stop,
+                debug: self.debug
+
+            };
+            component['parent'] = fakeParent;
+
+            //Check if component has pre function
+            if (component ? hasOwnProperty.call('pre') : false) {
+                component.pre();
+            }
+            //this gives pre function chance to abort if needed e.g force user action
+            if (this.isAbort) {
+                return false;
+            }
+            component.job();
+            //this gives job function chance to abort if needed e.g force user action
+            if (this.isAbort) {
+                return false;
+            }
+            //set component stamp
+            this.stamps.push(componentRef.componentName);
+            if (this.debug) {
+                var name = component['name'];
+                console.log('running component: ' + name);
+            }
+        };
 
         ChainWork.prototype.componentDone = function () {
             var self = this;
@@ -1303,12 +1298,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var STYLES = '\n    <style>\n    .popover {\n        position: absolute;\n        box-sizing: border-box;\n        min-width: 250px;\n        top: 0;\n        left: 0;\n        z-index: 1060;\n        display: none;\n        max-width: 276px;\n        padding: 1px;\n        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n        font-style: normal;\n        font-weight: normal;\n        letter-spacing: normal;\n        line-break: auto;\n        line-height: 1.42857143;\n        text-align: left;\n        text-align: start;\n        text-decoration: none;\n        text-shadow: none;\n        text-transform: none;\n        white-space: normal;\n        word-break: normal;\n        word-spacing: normal;\n        word-wrap: normal;\n        font-size: 14px;\n        background-color: #fff;\n        background-clip: padding-box;\n        border: 1px solid #ccc;\n        border: 1px solid rgba(0, 0, 0, 0.2);\n        border-radius: 2px;\n        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n    }\n\n    .popover.top {\n        margin-top: -10px;\n    }\n\n    .popover.right {\n        margin-left: 10px;\n    }\n\n    .popover.bottom {\n        margin-top: 10px;\n    }\n\n    .popover.left {\n        margin-left: -10px;\n    }\n\n    .popover-title {\n        margin: 0;\n        padding: 8px 14px;\n        font-size: 14px;\n        background-color: #f7f7f7;\n        border-bottom: 1px solid #ebebeb;\n        border-radius: 1px 1px 0 0;\n        box-sizing: border-box;\n\n    }\n\n    .popover-content {\n        padding: 9px 14px;\n        box-sizing: border-box;\n\n    }\n\n    .popover > .arrow,\n    .popover > .arrow:after {\n        position: absolute;\n        display: block;\n        width: 0;\n        height: 0;\n        border-color: transparent;\n        border-style: solid;\n    }\n\n    .popover > .arrow {\n        border-width: 11px;\n    }\n\n    .popover > .arrow:after {\n        border-width: 10px;\n        content: "";\n    }\n\n    .popover.top > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-bottom-width: 0;\n        border-top-color: #999999;\n        border-top-color: rgba(0, 0, 0, 0.25);\n        bottom: -11px;\n    }\n\n    .popover.top > .arrow:after {\n        content: " ";\n        bottom: 1px;\n        margin-left: -10px;\n        border-bottom-width: 0;\n        border-top-color: #fff;\n    }\n\n    .popover.right > .arrow {\n        top: 50%;\n        left: -11px;\n        margin-top: -11px;\n        border-left-width: 0;\n        border-right-color: #999999;\n        border-right-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.right > .arrow:after {\n        content: " ";\n        left: 1px;\n        bottom: -10px;\n        border-left-width: 0;\n        border-right-color: #fff;\n    }\n\n    .popover.bottom > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-top-width: 0;\n        border-bottom-color: #999999;\n        border-bottom-color: rgba(0, 0, 0, 0.25);\n        top: -11px;\n    }\n\n    .popover.bottom > .arrow:after {\n        content: " ";\n        top: 1px;\n        margin-left: -10px;\n        border-top-width: 0;\n        border-bottom-color: #fff;\n    }\n\n    .popover.left > .arrow {\n        top: 50%;\n        right: -11px;\n        margin-top: -11px;\n        border-right-width: 0;\n        border-left-color: #999999;\n        border-left-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.left > .arrow:after {\n        content: " ";\n        right: 1px;\n        border-right-width: 0;\n        border-left-color: #fff;\n        bottom: -10px;\n    }\n\n    .to_left,\n    .to_right,\n    .to_top,\n    .to_bottom {\n        position: fixed;\n        background: black;\n        opacity: .5;\n        filter: alpha(opacity=50);\n        z-index: 1000;\n    }\n\n    .ghost-focus {\n        background: transparent;\n    }\n    </style>';
 
-    var Tour = function () {
-        function Tour(options) {
-            _classCallCheck(this, Tour);
+    var Hour = function () {
+        function Hour(options) {
+            _classCallCheck(this, Hour);
 
             this.injectStyles();
-
+            console.log('test');
             this.chain = new ChainWork();
             this.focus = new Focus();
             this.default = {
@@ -1317,7 +1312,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             };
         }
 
-        _createClass(Tour, [{
+        _createClass(Hour, [{
             key: 'injectStyles',
             value: function injectStyles() {
                 //Skoða þessa pælingu
@@ -1374,7 +1369,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
         }]);
 
-        return Tour;
+        return Hour;
     }();
 
     return Tour;
