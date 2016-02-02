@@ -6,3 +6,5 @@
 *.map
 
 *.iml
+
+node_modules

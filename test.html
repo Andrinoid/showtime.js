@@ -3,182 +3,14 @@
 <head>
     <title></title>
     <meta charset="utf-8">
-    <script src="lib/lodash.js"></script>
 </head>
 <body>
 
 <style>
-
-    .popover {
-        position: absolute;
-        box-sizing: border-box;
-        min-width: 250px;
-        top: 0;
-        left: 0;
-        z-index: 1060;
-        display: none;
-        max-width: 276px;
-        padding: 1px;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-style: normal;
-        font-weight: normal;
-        letter-spacing: normal;
-        line-break: auto;
-        line-height: 1.42857143;
-        text-align: left;
-        text-align: start;
-        text-decoration: none;
-        text-shadow: none;
-        text-transform: none;
-        white-space: normal;
-        word-break: normal;
-        word-spacing: normal;
-        word-wrap: normal;
-        font-size: 14px;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ccc;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        border-radius: 2px;
-        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .popover.top {
-        margin-top: -10px;
-    }
-
-    .popover.right {
-        margin-left: 10px;
-    }
-
-    .popover.bottom {
-        margin-top: 10px;
-    }
-
-    .popover.left {
-        margin-left: -10px;
-    }
-
-    .popover-title {
+    body {
         margin: 0;
-        padding: 8px 14px;
-        font-size: 14px;
-        background-color: #f7f7f7;
-        border-bottom: 1px solid #ebebeb;
-        border-radius: 1px 1px 0 0;
-        box-sizing: border-box;
-
+        padding: 0;
     }
-
-    .popover-content {
-        padding: 9px 14px;
-        box-sizing: border-box;
-
-    }
-
-    .popover > .arrow,
-    .popover > .arrow:after {
-        position: absolute;
-        display: block;
-        width: 0;
-        height: 0;
-        border-color: transparent;
-        border-style: solid;
-    }
-
-    .popover > .arrow {
-        border-width: 11px;
-    }
-
-    .popover > .arrow:after {
-        border-width: 10px;
-        content: "";
-    }
-
-    .popover.top > .arrow {
-        left: 50%;
-        margin-left: -11px;
-        border-bottom-width: 0;
-        border-top-color: #999999;
-        border-top-color: rgba(0, 0, 0, 0.25);
-        bottom: -11px;
-    }
-
-    .popover.top > .arrow:after {
-        content: " ";
-        bottom: 1px;
-        margin-left: -10px;
-        border-bottom-width: 0;
-        border-top-color: #fff;
-    }
-
-    .popover.right > .arrow {
-        top: 50%;
-        left: -11px;
-        margin-top: -11px;
-        border-left-width: 0;
-        border-right-color: #999999;
-        border-right-color: rgba(0, 0, 0, 0.25);
-    }
-
-    .popover.right > .arrow:after {
-        content: " ";
-        left: 1px;
-        bottom: -10px;
-        border-left-width: 0;
-        border-right-color: #fff;
-    }
-
-    .popover.bottom > .arrow {
-        left: 50%;
-        margin-left: -11px;
-        border-top-width: 0;
-        border-bottom-color: #999999;
-        border-bottom-color: rgba(0, 0, 0, 0.25);
-        top: -11px;
-    }
-
-    .popover.bottom > .arrow:after {
-        content: " ";
-        top: 1px;
-        margin-left: -10px;
-        border-top-width: 0;
-        border-bottom-color: #fff;
-    }
-
-    .popover.left > .arrow {
-        top: 50%;
-        right: -11px;
-        margin-top: -11px;
-        border-right-width: 0;
-        border-left-color: #999999;
-        border-left-color: rgba(0, 0, 0, 0.25);
-    }
-
-    .popover.left > .arrow:after {
-        content: " ";
-        right: 1px;
-        border-right-width: 0;
-        border-left-color: #fff;
-        bottom: -10px;
-    }
-
-    .to_left,
-    .to_right,
-    .to_top,
-    .to_bottom {
-        position: absolute;
-        background: black;
-        opacity: .5;
-        filter: alpha(opacity=50);
-        z-index: 1000;
-    }
-
-    .ghost-focus {
-        background: transparent;
-    }
-
     .ball {
         background: black;
         width: 100px;
@@ -216,41 +48,10 @@
 <button onclick="tour.next()" style="position: relative; z-index: 10000;">Next</button>
 <button onclick="tour.startOver()" style="position: relative; z-index: 10000;">StartOver</button>
 
-<script src="src/showtime-compiled.js"></script>
-<!--<script src="src/tutorial-compiled.js"></script>-->
+<script src="dist/showtime.js"></script>
 <script>
-//        var animator = new Animator('.ball', {
-//            duration: 60000
-//        });
-//        animator.start({left: 500, top: 400});
 
-//        var animator = new Animator('.ball', {
-//            effect: 'linear',
-//            duration: 3000000
-//        });
-//        animator.start({left: 1000});
-//
-//        var tooltip = new Tooltip('.ball', {
-//            html: '<p>halló</p>',
-//            content: '<p>foobar</p>',
-//            title: 'foobar',
-//            placement: 'right',
-//            offset: '10px 0px;'
-//        });
-//        tooltip.show();
-
-
-//        var focus = new Focus();
-//        var chain = new ChainWork()
-//            .add(function() {
-//                focus.focusOn('.two');
-//            })
-//            .add('pause', {delay: 500})
-//            .add(function() {
-//                focus.focusOnElm('.ball');
-//            }).play();
-
-    var tour = new Tour()
+    var tour = new Showtime()
             .show({
                 element: '.ball',
                 placement: 'right',
