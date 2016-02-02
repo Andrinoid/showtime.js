@@ -11,6 +11,7 @@
         margin: 0;
         padding: 0;
     }
+
     .ball {
         background: black;
         width: 100px;
@@ -51,12 +52,30 @@
 <script src="dist/showtime.js"></script>
 <script>
 
-    var tour = new Showtime()
+    //        var tour = new Showtime()
+    //                .show({
+    //                    element: '.ball',
+    //                    placement: 'right',
+    //                    title: 'Only you...',
+    //                    content: '<p>This is a circle</p>'
+    //                })
+    //                .show({
+    //                    element: '.two',
+    //                    placement: 'top',
+    //                    content: '<p>This is a box</p>'
+    //                })
+    //                .show({
+    //                    element: '.three',
+    //                    placement: 'top',
+    //                    content: '<p>What is this?</p>'
+    //                });
+
+
+    var tour = new Showtime({debug: true})
             .show({
                 element: '.ball',
-                placement: 'right',
-                title: 'Only you...',
-                content: '<p>This is a circle</p>'
+                placement: 'top',
+                content: '<p>This is a box</p>'
             })
             .show({
                 element: '.two',
@@ -66,8 +85,9 @@
             .show({
                 element: '.three',
                 placement: 'top',
-                content: '<p>What is this?</p>'
+                content: '<p>This is a box</p>'
             });
+
 
 </script>
 

@@ -88,6 +88,36 @@
         return temp;
     };
 
+    var isObject = function (value) {
+        return value != null && typeof value === 'object';
+    };
+
+    var foreach = function (arg, func) {
+        if (!isArray(arg) && !isObject(arg))
+            var arg = [arg];
+        if (isArray(arg)) {
+            for (var i = 0; i < arg.length; i++) {
+                func.call(window, arg[i], i, arg);
+            }
+        } else if (isObject(arg)) {
+            for (var key in arg) {
+                func.call(window, arg[key], key, arg);
+            }
+        }
+    };
+
+    //array map
+    var map = function (arr, func) {
+        if (!isArray(arr))
+            var arg = [arg];
+        for (var i = 0; i < arr.length; i++) {
+            var result = func.call(window, arr[i]);
+            if (typeof result !== 'undefined')
+                arr[i] = result;
+        }
+        return arr;
+    };
+
     var normalizeElement = function (element) {
         function isElement(obj) {
             return (obj[0] || obj).nodeType
@@ -1217,7 +1247,7 @@
         }
     };
 
-
+    window.mainfocus = new Focus();
     components.showtime = {
         name: 'showtime',
         settings: {
@@ -1260,8 +1290,8 @@
             });
 
 
-            this.settings.focus.focusOn(this.settings.element);
-            this.settings.focus.complete = function () {
+            mainfocus.focusOn(this.settings.element);
+            mainfocus.complete = function () {
                 tooltip.show();
             };
             this.parent.componentDone();
@@ -1450,69 +1480,42 @@
     }
     </style>`;
 
-    class Hour {
+
+    //wee need to fix this mix
+    class ExtendChainwork {
 
         constructor(options) {
-            this.injectStyles();
-            console.log('test');
-            this.chain = new ChainWork();
-            this.focus = new Focus();
-            this.default = {
-                //we create the focus instance here so wee can reuse it in the componet.
-                focus: this.focus,
-            };
+            ChainWork.prototype.focus = new Focus();
 
+            ChainWork.prototype.show = function (settings) {
+                this.add('showtime', settings);
+                return this;
+            };
+            this.injectStyles();
+        }
+
+
+    }
+    new ExtendChainwork();
+
+
+    class showtime {
+
+        constructor() {
+            this.focus = new Focus();
+            this.injectStyles();
         }
 
         injectStyles() {
-            //Skoða þessa pælingu
-            //  function injectStyleSheet( value ) {
-            //
-            //	var tag = document.createElement( 'style' );
-            //	tag.type = 'text/css';
-            //	if( tag.styleSheet ) {
-            //		tag.styleSheet.cssText = value;
-            //	}
-            //	else {
-            //		tag.appendChild( document.createTextNode( value ) );
-            //	}
-            //	document.getElementsByTagName( 'head' )[0].appendChild( tag );
-            //
-            //}
             new Elm('div.styleFallback', {
                 html: STYLES
             }, document.body);
         }
 
-        show(settings) {
-            settings = extend(settings, this.default);
-            this.chain.add('showtime', settings).add('pause');
-            return this;
-        }
-
-        start() {
-            this.chain.reset();
-            this.chain.play();
-        }
-
-        next() {
-            this.chain.play();
-        }
-
-        previous() {
-            this.chain.previous();
-        }
-
-        reset() {
-            this.chain.reset();
-        }
-
-        startOver() {
-            this.chain.reset();
-            this.chain.play();
-        }
     }
 
-    return Tour;
+
+    return ChainWork;
+
 
 }));

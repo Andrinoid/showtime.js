@@ -91,6 +91,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return temp;
     };
 
+    var isObject = function isObject(value) {
+        return value != null && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object';
+    };
+
+    var foreach = function foreach(arg, func) {
+        if (!isArray(arg) && !isObject(arg)) var arg = [arg];
+        if (isArray(arg)) {
+            for (var i = 0; i < arg.length; i++) {
+                func.call(window, arg[i], i, arg);
+            }
+        } else if (isObject(arg)) {
+            for (var key in arg) {
+                func.call(window, arg[key], key, arg);
+            }
+        }
+    };
+
+    //array map
+    var map = function map(arr, func) {
+        if (!isArray(arr)) var arg = [arg];
+        for (var i = 0; i < arr.length; i++) {
+            var result = func.call(window, arr[i]);
+            if (typeof result !== 'undefined') arr[i] = result;
+        }
+        return arr;
+    };
+
     var normalizeElement = function normalizeElement(element) {
         function isElement(obj) {
             return (obj[0] || obj).nodeType;
@@ -1240,6 +1267,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
     };
 
+    window.mainfocus = new Focus();
     components.showtime = {
         name: 'showtime',
         settings: {
@@ -1281,8 +1309,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 offset: this.resolveOffsets()
             });
 
-            this.settings.focus.focusOn(this.settings.element);
-            this.settings.focus.complete = function () {
+            mainfocus.focusOn(this.settings.element);
+            mainfocus.complete = function () {
                 tooltip.show();
             };
             this.parent.componentDone();
@@ -1298,79 +1326,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var STYLES = '\n    <style>\n    .popover {\n        position: absolute;\n        box-sizing: border-box;\n        min-width: 250px;\n        top: 0;\n        left: 0;\n        z-index: 1060;\n        display: none;\n        max-width: 276px;\n        padding: 1px;\n        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n        font-style: normal;\n        font-weight: normal;\n        letter-spacing: normal;\n        line-break: auto;\n        line-height: 1.42857143;\n        text-align: left;\n        text-align: start;\n        text-decoration: none;\n        text-shadow: none;\n        text-transform: none;\n        white-space: normal;\n        word-break: normal;\n        word-spacing: normal;\n        word-wrap: normal;\n        font-size: 14px;\n        background-color: #fff;\n        background-clip: padding-box;\n        border: 1px solid #ccc;\n        border: 1px solid rgba(0, 0, 0, 0.2);\n        border-radius: 2px;\n        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n    }\n\n    .popover.top {\n        margin-top: -10px;\n    }\n\n    .popover.right {\n        margin-left: 10px;\n    }\n\n    .popover.bottom {\n        margin-top: 10px;\n    }\n\n    .popover.left {\n        margin-left: -10px;\n    }\n\n    .popover-title {\n        margin: 0;\n        padding: 8px 14px;\n        font-size: 14px;\n        background-color: #f7f7f7;\n        border-bottom: 1px solid #ebebeb;\n        border-radius: 1px 1px 0 0;\n        box-sizing: border-box;\n\n    }\n\n    .popover-content {\n        padding: 9px 14px;\n        box-sizing: border-box;\n\n    }\n\n    .popover > .arrow,\n    .popover > .arrow:after {\n        position: absolute;\n        display: block;\n        width: 0;\n        height: 0;\n        border-color: transparent;\n        border-style: solid;\n    }\n\n    .popover > .arrow {\n        border-width: 11px;\n    }\n\n    .popover > .arrow:after {\n        border-width: 10px;\n        content: "";\n    }\n\n    .popover.top > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-bottom-width: 0;\n        border-top-color: #999999;\n        border-top-color: rgba(0, 0, 0, 0.25);\n        bottom: -11px;\n    }\n\n    .popover.top > .arrow:after {\n        content: " ";\n        bottom: 1px;\n        margin-left: -10px;\n        border-bottom-width: 0;\n        border-top-color: #fff;\n    }\n\n    .popover.right > .arrow {\n        top: 50%;\n        left: -11px;\n        margin-top: -11px;\n        border-left-width: 0;\n        border-right-color: #999999;\n        border-right-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.right > .arrow:after {\n        content: " ";\n        left: 1px;\n        bottom: -10px;\n        border-left-width: 0;\n        border-right-color: #fff;\n    }\n\n    .popover.bottom > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-top-width: 0;\n        border-bottom-color: #999999;\n        border-bottom-color: rgba(0, 0, 0, 0.25);\n        top: -11px;\n    }\n\n    .popover.bottom > .arrow:after {\n        content: " ";\n        top: 1px;\n        margin-left: -10px;\n        border-top-width: 0;\n        border-bottom-color: #fff;\n    }\n\n    .popover.left > .arrow {\n        top: 50%;\n        right: -11px;\n        margin-top: -11px;\n        border-right-width: 0;\n        border-left-color: #999999;\n        border-left-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.left > .arrow:after {\n        content: " ";\n        right: 1px;\n        border-right-width: 0;\n        border-left-color: #fff;\n        bottom: -10px;\n    }\n\n    .to_left,\n    .to_right,\n    .to_top,\n    .to_bottom {\n        position: fixed;\n        background: black;\n        opacity: .5;\n        filter: alpha(opacity=50);\n        z-index: 1000;\n    }\n\n    .ghost-focus {\n        background: transparent;\n    }\n    </style>';
 
-    var Hour = function () {
-        function Hour(options) {
-            _classCallCheck(this, Hour);
+    //wee need to fix this mix
 
-            this.injectStyles();
-            console.log('test');
-            this.chain = new ChainWork();
+    var ExtendChainwork = function ExtendChainwork(options) {
+        _classCallCheck(this, ExtendChainwork);
+
+        ChainWork.prototype.focus = new Focus();
+
+        ChainWork.prototype.show = function (settings) {
+            this.add('showtime', settings);
+            return this;
+        };
+        this.injectStyles();
+    };
+
+    new ExtendChainwork();
+
+    var showtime = function () {
+        function showtime() {
+            _classCallCheck(this, showtime);
+
             this.focus = new Focus();
-            this.default = {
-                //we create the focus instance here so wee can reuse it in the componet.
-                focus: this.focus
-            };
+            this.injectStyles();
         }
 
-        _createClass(Hour, [{
+        _createClass(showtime, [{
             key: 'injectStyles',
             value: function injectStyles() {
-                //Skoða þessa pælingu
-                //  function injectStyleSheet( value ) {
-                //
-                //	var tag = document.createElement( 'style' );
-                //	tag.type = 'text/css';
-                //	if( tag.styleSheet ) {
-                //		tag.styleSheet.cssText = value;
-                //	}
-                //	else {
-                //		tag.appendChild( document.createTextNode( value ) );
-                //	}
-                //	document.getElementsByTagName( 'head' )[0].appendChild( tag );
-                //
-                //}
                 new Elm('div.styleFallback', {
                     html: STYLES
                 }, document.body);
             }
-        }, {
-            key: 'show',
-            value: function show(settings) {
-                settings = extend(settings, this.default);
-                this.chain.add('showtime', settings).add('pause');
-                return this;
-            }
-        }, {
-            key: 'start',
-            value: function start() {
-                this.chain.reset();
-                this.chain.play();
-            }
-        }, {
-            key: 'next',
-            value: function next() {
-                this.chain.play();
-            }
-        }, {
-            key: 'previous',
-            value: function previous() {
-                this.chain.previous();
-            }
-        }, {
-            key: 'reset',
-            value: function reset() {
-                this.chain.reset();
-            }
-        }, {
-            key: 'startOver',
-            value: function startOver() {
-                this.chain.reset();
-                this.chain.play();
-            }
         }]);
 
-        return Hour;
+        return showtime;
     }();
 
-    return Tour;
+    return ChainWork;
 });
