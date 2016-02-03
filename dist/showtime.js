@@ -576,7 +576,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _classCallCheck(this, Focus);
 
             this.default = {
-                padding: 10
+                padding: 0
             };
             this.default = extend(this.default, config);
             this.buildDom();
@@ -1341,7 +1341,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             this.chain = [];
             this.chainIndex = 0;
-            this.focus = new Focus();
+            this.defaults = {
+                padding: 0
+            };
+            this.focus = new Focus({ padding: this.defaults.padding });
         }
 
         _createClass(showtime, [{
@@ -1349,27 +1352,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function _callchain() {
                 var _this5 = this;
 
-                var settings = this.chain[this.chainIndex];
-
-                //remove last tooltip
+                /*
+                 * We clone the default settings and merge it with the current chain settings.
+                 * Update the focus padding
+                 * create tooltip
+                 * focus on element
+                 */
+                var defaults = clone(this.defaults);
+                var settings = extend(defaults, this.chain[this.chainIndex]);
+                this.focus.default.padding = settings.padding;
+                //remove last tooltip if any
                 try {
                     this.tooltip.remove();
                 } catch (err) {}
                 //tooltip does not excist
 
-                //let tooltip = this.tooltip = new Tooltip(settings.element, {
-                //    content: settings.content,
-                //    title: settings.title,
-                //    placement: settings.placement,
-                //    offset: this._resolveOffsets(settings)
-                //});
-                //tooltip.show();
+                //We create new tooltip for every focus point. This is easier to manage than collecting them
                 this.tooltip = new Tooltip(settings.element, {
                     title: settings.title,
                     content: settings.content,
-                    placement: settings.placement });
-
-                //top, left, right, bottom
+                    placement: settings.placement, //top, left, right, bottom
+                    offset: this._resolveOffsets(settings)
+                });
                 this.focus.focusOn(settings.element);
                 this.focus.complete = function () {
                     _this5.tooltip.show();
@@ -1380,18 +1384,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_resolveOffsets',
             value: function _resolveOffsets(settings) {
+                var padding = settings.padding;
                 if (settings.placement === 'right') {
-                    return settings.padding + ' 0';
+                    return padding + ' 0';
                 }
                 if (settings.placement === 'left') {
-                    return -settings.padding + ' 0';
+                    return -padding + ' 0';
                 }
                 if (settings.placement === 'top') {
-                    return '0 ' + -settings.padding;
+                    return '0 ' + -padding;
                 }
                 if (settings.placement === 'bottom') {
-                    return '0 ' + settings.padding;
+                    return '0 ' + padding;
                 }
+            }
+        }, {
+            key: '_isNext',
+            value: function _isNext() {
+                return this.chainIndex < this.chain.length;
             }
         }, {
             key: 'show',
@@ -1402,6 +1412,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'play',
             value: function play() {
+                if (this._isNext()) this._callchain();
+            }
+        }, {
+            key: 'next',
+            value: function next() {
+                this.play();
+            }
+        }, {
+            key: 'previous',
+            value: function previous() {
+                //control not tested
+                this.chainIndex < 1 ? this.chainindex = 0 : this.chainindex--;
                 this._callchain();
             }
         }, {

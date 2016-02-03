@@ -715,7 +715,7 @@
         constructor(config) {
 
             this.default = {
-                padding: 10
+                padding: 0
             };
             this.default = extend(this.default, config);
             this.buildDom();
@@ -1493,54 +1493,61 @@
         constructor() {
             this.chain = [];
             this.chainIndex = 0;
-            this.focus = new Focus();
+            this.defaults = {
+                padding: 0
+            };
+            this.focus = new Focus({padding: this.defaults.padding});
         }
 
-
         _callchain() {
-            let settings = this.chain[this.chainIndex];
-
-            //remove last tooltip
+            /*
+             * We clone the default settings and merge it with the current chain settings.
+             * Update the focus padding
+             * create tooltip
+             * focus on element
+             */
+            let defaults = clone(this.defaults);
+            let settings = extend(defaults, this.chain[this.chainIndex]);
+            this.focus.default.padding = settings.padding;
+            //remove last tooltip if any
             try {
                 this.tooltip.remove();
             } catch (err) {
                 //tooltip does not excist
             }
-            //let tooltip = this.tooltip = new Tooltip(settings.element, {
-            //    content: settings.content,
-            //    title: settings.title,
-            //    placement: settings.placement,
-            //    offset: this._resolveOffsets(settings)
-            //});
-            //tooltip.show();
+            //We create new tooltip for every focus point. This is easier to manage than collecting them
             this.tooltip = new Tooltip(settings.element, {
                 title: settings.title,
                 content: settings.content,
                 placement: settings.placement,//top, left, right, bottom
+                offset: this._resolveOffsets(settings)
             });
-
             this.focus.focusOn(settings.element);
             this.focus.complete = ()=> {
                 this.tooltip.show();
-
             };
 
             this.chainIndex++;
         }
 
         _resolveOffsets(settings) {
+            let padding = settings.padding;
             if (settings.placement === 'right') {
-                return settings.padding + ' 0';
+                return padding + ' 0';
             }
             if (settings.placement === 'left') {
-                return -settings.padding + ' 0';
+                return -padding + ' 0';
             }
             if (settings.placement === 'top') {
-                return '0 ' + -settings.padding;
+                return '0 ' + -padding;
             }
             if (settings.placement === 'bottom') {
-                return '0 ' + settings.padding;
+                return '0 ' + padding;
             }
+        }
+
+        _isNext() {
+            return this.chainIndex < this.chain.length;
         }
 
 
@@ -1550,6 +1557,16 @@
         }
 
         play() {
+            if(this._isNext())
+                this._callchain();
+        }
+
+        next() {
+            this.play();
+        }
+
+        previous() {//control not tested
+            this.chainIndex < 1 ? this.chainindex = 0 : this.chainindex--;
             this._callchain();
         }
 

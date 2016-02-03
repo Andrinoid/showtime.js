@@ -45,7 +45,7 @@
 
 <div class="two"></div>
 <div class="three">lorem ipsum</div>
-<button onclick="tour.start()" style="position: relative; z-index: 10000;">Take a tour</button>
+<button onclick="tour.play()" style="position: relative; z-index: 10000;">Take a tour</button>
 <button onclick="tour.next()" style="position: relative; z-index: 10000;">Next</button>
 <button onclick="tour.startOver()" style="position: relative; z-index: 10000;">StartOver</button>
 
@@ -66,7 +66,8 @@
                 element: '.ball',
                 title: 'hey I have a title again.',
                 placement: 'right',
-                content: '<p>This is a ball</p>'
+                content: '<p>This is a ball</p>',
+                padding: 10
             })
             .show({
                 element: '.two',
