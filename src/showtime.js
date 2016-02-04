@@ -603,6 +603,20 @@
         border-left-color: #fff;
         bottom: -10px;
     }
+    .popover .btns {
+        padding: 9px 14px;
+        text-align: right;
+    }
+    .popover .popBtn {
+        color: #333;
+        border: solid 1px #333;
+        display: inline-block;
+        padding: 4px 18px;
+        border-radius: 1px;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+    }
 
     .to_left,
     .to_right,
@@ -631,6 +645,7 @@
                     <div class="arrow"></div>
                     <h3 class="popover-title"></h3>
                     <div class="popover-content"></div>
+                    <div class="btns"></div>
                  </div>`,
                 title: '',
                 content: '',
@@ -638,6 +653,7 @@
                 placement: 'top',//top, left, right, bottom
                 offset: '0 0',
                 collision: 'fit',//TODO RIGHT BOTTOM
+                buttons: []
             };
             this.default = extend(this.default, config);
             this._injectStyles();
@@ -661,7 +677,7 @@
             div.innerHTML = this.default.template;
             let title = div.querySelector('.popover-title');
             let inner = div.querySelector('.popover-content');
-
+            let btns = div.querySelector('.btns');
             if (!this.default.content) {
                 throw new Error('Tooltip has no content');
             }
@@ -671,9 +687,20 @@
             else {
                 title.style.display = 'none';
             }
+            if (this.default.buttons && this.default.buttons.length) {
+                this.addButtons(btns);
+            }
 
             inner.innerHTML = this.default.content;
             this.popover = div.children[0];
+
+        }
+
+        addButtons(parent) {
+            this.default.buttons.forEach(function(item) {
+                let btn = new Elm('div.popBtn', {text: item.label}, parent);
+                btn.onclick = item.click;
+            });
 
         }
 
@@ -919,6 +946,7 @@
                 padding: 0,
                 autoplay: false,
                 autoplayDelay: 1000,
+                buttons: []
 
             };
             //override default with user options
@@ -950,7 +978,8 @@
                 content: settings.content,
                 placement: settings.placement,//top, left, right, bottom
                 collision: '',
-                offset: this._resolveOffsets(settings)
+                offset: this._resolveOffsets(settings),
+                buttons: settings.buttons
             });
             this.focus.focusOn(settings.element);
             this.focus.complete = ()=> {

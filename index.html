@@ -71,30 +71,35 @@
             tour.next();
         }
     })
-            .show({
-                element: '.ball',
-                title: 'hey I have a title again.',
-                placement: 'right',
-                content: '<p>This is a ball</p>',
-                padding: 10,
-                focusClick: function () {
-                    tour.next();
-                }
-            })
-            .show({
-                element: '.two',
-                placement: 'top',
-                content: '<p>This is a box1</p>',
-                focusClick: function () {
-                    alert();
-                    tour.next();
-                }
-            })
-            .show({
-                element: '.three',
-                placement: 'left',
-                content: '<p>This is a box2</p>'
-            });
+    .show({
+        element: '.ball',
+        title: 'hey I have a title again.',
+        placement: 'right',
+        content: '<p>This is a ball</p>',
+        padding: 10,
+        focusClick: function () {
+            tour.next();
+        },
+        buttons: [
+            {label: 'next', click: function() { tour.next() }}
+        ]
+
+
+    })
+    .show({
+        element: '.two',
+        placement: 'top',
+        content: '<p>This is a box1</p>',
+        focusClick: function () {
+            alert();
+            tour.next();
+        }
+    })
+    .show({
+        element: '.three',
+        placement: 'left',
+        content: '<p>This is a box2</p>'
+    });
 
     //
     //    var tour = new Showtime({
