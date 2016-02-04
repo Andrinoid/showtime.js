@@ -33,7 +33,7 @@
     }
 
     .three {
-        margin-top: 490px;
+        margin-top: 890px;
         float: right;
         margin-right: 40px;
         width: 60px;
@@ -41,6 +41,7 @@
         background: lightblue;
         box-shadow: 1px 0 0 2px #000;
     }
+
 </style>
 <div class="ball"></div>
 
@@ -53,19 +54,20 @@
 <script src="dist/showtime.js"></script>
 <script>
 
-//    var tooltip = new Tooltip('.ball', {
-//        title: 'foobar',
-//        content: '<p>sdfsdfsdf</p>',
-//        placement: 'right',//top, left, right, bottom
-//    });
-//
-//    tooltip.show();
+    //    var tooltip = new Tooltip('.ball', {
+    //        title: 'foobar',
+    //        content: '<p>sdfsdfsdf</p>',
+    //        placement: 'right',//top, left, right, bottom
+    //    });
+    //
+    //    tooltip.show();
 
 
     var tour = new Showtime({
         debug: true,
         autoplay: false,
-        focusClick: function() {
+        padding: 10,
+        focusClick: function () {
             tour.next();
         }
     })
@@ -75,7 +77,7 @@
                 placement: 'right',
                 content: '<p>This is a ball</p>',
                 padding: 10,
-                focusClick: function() {
+                focusClick: function () {
                     tour.next();
                 }
             })
@@ -83,7 +85,7 @@
                 element: '.two',
                 placement: 'top',
                 content: '<p>This is a box1</p>',
-                focusClick: function() {
+                focusClick: function () {
                     alert();
                     tour.next();
                 }
@@ -93,6 +95,42 @@
                 placement: 'left',
                 content: '<p>This is a box2</p>'
             });
+
+    //
+    //    var tour = new Showtime({
+    //        focusClick: function() {
+    //            tour.next();
+    //        }
+    //    })
+    //            .show({
+    //                element: 'gridbox1',
+    //                title: 'hey I have a title again.',
+    //                placement: 'right',
+    //                content: '<p>This is a ball</p>',
+    //                padding: 10,
+    //                focusClick: function() {
+    //                    tour.next();
+    //                }
+    //            })
+    //            .show({
+    //                element: '.gridbox3',
+    //                placement: 'top',
+    //                content: '<p>This is a box1</p>',
+    //                focusClick: function() {
+    //                    alert();
+    //                    tour.next();
+    //                }
+    //            })
+    //            .show({
+    //                element: '.gridbox4',
+    //                placement: 'left',
+    //                content: '<p>This is a box2</p>'
+    //            })
+    //            .show({
+    //                element: '.wrap',
+    //                placement: 'left',
+    //                content: '<p>This is a box2</p>'
+    //            });
 
 
 </script>
