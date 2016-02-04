@@ -638,7 +638,7 @@
             let offset = this.getOffset();
 
             if (placement === 'top') {
-                top = elDim.top - popDim.height + offset.y;
+                top = elDim.top - popDim.height + offset.y + window.scrollY;
                 left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
                 //fit to top
                 if (this.default.collision === 'fit' && top < 0) {
@@ -655,7 +655,7 @@
             }
 
             if (placement === 'left') {
-                top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y;
+                top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
                 left = elDim.left - popDim.width + offset.x;
                 //fit to left
                 if (this.default.collision === 'fit' && left < 0) {
@@ -671,14 +671,14 @@
                 }
             }
             if (placement === 'right') {
-                top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y;
+                top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
                 left = elDim.left + elDim.width + offset.x;
                 if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
                     left = bodyDim.width - popDim.width;
                 }
             }
             if (placement === 'bottom') {
-                top = elDim.top + elDim.height + offset.y;
+                top = elDim.top + elDim.height + offset.y + window.scrollY;
                 left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
                 //fit to left
                 if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
@@ -698,7 +698,6 @@
             this.popover.style.left = left + 'px';
         }
     }
-    window.Tooltip = Tooltip;//////////////////////////////////////////////Má ekki
 
     /**
      * ------------------------------------------------------------------------
@@ -759,7 +758,7 @@
                 width: styles.width,
                 height: styles.height,
                 left: styles.left,
-                top: styles.top
+                top: styles.top + window.scrollY
             });
             this.animator.step = (el)=> {
                 this.setCoverPos(el);
@@ -1427,58 +1426,6 @@
         }
     };
 
-    window.mainfocus = new Focus();
-    components.showtime = {
-        name: 'showtime',
-        settings: {
-            element: null,
-            padding: 10,
-            clickThrough: true,//TODO
-            title: '',
-            placement: 'right',
-            focus: null,
-            content: ''
-        },
-
-        resolveOffsets: function () {
-            if (this.settings.placement === 'right') {
-                return this.settings.padding + ' 0';
-            }
-            if (this.settings.placement === 'left') {
-                return -this.settings.padding + ' 0';
-            }
-            if (this.settings.placement === 'top') {
-                return '0 ' + -this.settings.padding;
-            }
-            if (this.settings.placement === 'bottom') {
-                return '0 ' + this.settings.padding;
-            }
-        },
-
-        job: function () {
-            //remove last tooltip
-            try {
-                this.parent.tooltip.remove();
-            } catch (err) {
-                //tooltip does not excist
-            }
-            let tooltip = this.parent.tooltip = new Tooltip(this.settings.element, {
-                content: this.settings.content,
-                title: this.settings.title,
-                placement: this.settings.placement,
-                offset: this.resolveOffsets()
-            });
-
-
-            mainfocus.focusOn(this.settings.element);
-            mainfocus.complete = function () {
-                tooltip.show();
-            };
-            this.parent.componentDone();
-
-        }
-    };
-
 
     /**
      * ------------------------------------------------------------------------
@@ -1486,16 +1433,22 @@
      * This class ties it all together
      * ------------------------------------------------------------------------
      */
-
+    //TODO keep focus on scroll and resize
 
     class showtime {
 
-        constructor() {
+        constructor(options) {
             this.chain = [];
             this.chainIndex = 0;
             this.defaults = {
-                padding: 0
+                debug: false,
+                padding: 0,
+                autoplay: false,
+                autoplayDelay: 1000,
+
             };
+            //override default with user options
+            this.defaults = extend(this.defaults, options);
             this.focus = new Focus({padding: this.defaults.padding});
         }
 
@@ -1506,6 +1459,8 @@
              * create tooltip
              * focus on element
              */
+
+            //override defaults with given for this focus
             let defaults = clone(this.defaults);
             let settings = extend(defaults, this.chain[this.chainIndex]);
             this.focus.default.padding = settings.padding;
@@ -1525,9 +1480,24 @@
             this.focus.focusOn(settings.element);
             this.focus.complete = ()=> {
                 this.tooltip.show();
+                this.chainIndex++;
+                if (this.defaults.autoplay) {
+                    this._callAgain()
+                }
             };
+            if (typeof settings.focusClick === "undefined") {
+                this.focus.focusBox.middle.style.pointerEvents = 'none'
+            }
+            else {
+                this.focus.focusBox.middle.style.pointerEvents = 'auto';
+                this.focus.focusBox.middle.onclick = settings.focusClick;
+            }
+        }
 
-            this.chainIndex++;
+        _callAgain() {
+            setTimeout(()=> {
+                this.play();
+            }, this.defaults.autoplayDelay);
         }
 
         _resolveOffsets(settings) {
@@ -1557,7 +1527,7 @@
         }
 
         play() {
-            if(this._isNext())
+            if (this._isNext())
                 this._callchain();
         }
 
@@ -1565,8 +1535,14 @@
             this.play();
         }
 
+        reset() {
+            this.chainIndex = 0;
+        }
+
         previous() {//control not tested
-            this.chainIndex < 1 ? this.chainindex = 0 : this.chainindex--;
+            this.chainIndex--;
+            this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
+
             this._callchain();
         }
 

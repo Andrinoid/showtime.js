@@ -492,7 +492,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var offset = this.getOffset();
 
                 if (placement === 'top') {
-                    top = elDim.top - popDim.height + offset.y;
+                    top = elDim.top - popDim.height + offset.y + window.scrollY;
                     left = elDim.left + elDim.width / 2 - popDim.width / 2 + offset.x;
                     //fit to top
                     if (this.default.collision === 'fit' && top < 0) {
@@ -509,7 +509,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
 
                 if (placement === 'left') {
-                    top = elDim.top + elDim.height / 2 - popDim.height / 2 + offset.y;
+                    top = elDim.top + elDim.height / 2 - popDim.height / 2 + offset.y + window.scrollY;
                     left = elDim.left - popDim.width + offset.x;
                     //fit to left
                     if (this.default.collision === 'fit' && left < 0) {
@@ -525,14 +525,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     }
                 }
                 if (placement === 'right') {
-                    top = elDim.top + elDim.height / 2 - popDim.height / 2 + offset.y;
+                    top = elDim.top + elDim.height / 2 - popDim.height / 2 + offset.y + window.scrollY;
                     left = elDim.left + elDim.width + offset.x;
                     if (this.default.collision === 'fit' && left + popDim.width > bodyDim.width) {
                         left = bodyDim.width - popDim.width;
                     }
                 }
                 if (placement === 'bottom') {
-                    top = elDim.top + elDim.height + offset.y;
+                    top = elDim.top + elDim.height + offset.y + window.scrollY;
                     left = elDim.left + elDim.width / 2 - popDim.width / 2 + offset.x;
                     //fit to left
                     if (this.default.collision === 'fit' && left + popDim.width > bodyDim.width) {
@@ -555,8 +555,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         return Tooltip;
     }();
-
-    window.Tooltip = Tooltip; //////////////////////////////////////////////Má ekki
 
     /**
      * ------------------------------------------------------------------------
@@ -622,7 +620,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     width: styles.width,
                     height: styles.height,
                     left: styles.left,
-                    top: styles.top
+                    top: styles.top + window.scrollY
                 });
                 this.animator.step = function (el) {
                     _this4.setCoverPos(el);
@@ -1278,72 +1276,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
     };
 
-    window.mainfocus = new Focus();
-    components.showtime = {
-        name: 'showtime',
-        settings: {
-            element: null,
-            padding: 10,
-            clickThrough: true, //TODO
-            title: '',
-            placement: 'right',
-            focus: null,
-            content: ''
-        },
-
-        resolveOffsets: function resolveOffsets() {
-            if (this.settings.placement === 'right') {
-                return this.settings.padding + ' 0';
-            }
-            if (this.settings.placement === 'left') {
-                return -this.settings.padding + ' 0';
-            }
-            if (this.settings.placement === 'top') {
-                return '0 ' + -this.settings.padding;
-            }
-            if (this.settings.placement === 'bottom') {
-                return '0 ' + this.settings.padding;
-            }
-        },
-
-        job: function job() {
-            //remove last tooltip
-            try {
-                this.parent.tooltip.remove();
-            } catch (err) {
-                //tooltip does not excist
-            }
-            var tooltip = this.parent.tooltip = new Tooltip(this.settings.element, {
-                content: this.settings.content,
-                title: this.settings.title,
-                placement: this.settings.placement,
-                offset: this.resolveOffsets()
-            });
-
-            mainfocus.focusOn(this.settings.element);
-            mainfocus.complete = function () {
-                tooltip.show();
-            };
-            this.parent.componentDone();
-        }
-    };
-
     /**
      * ------------------------------------------------------------------------
      * Tour / Showtime
      * This class ties it all together
      * ------------------------------------------------------------------------
      */
+    //TODO keep focus on scroll and resize
 
     var showtime = function () {
-        function showtime() {
+        function showtime(options) {
             _classCallCheck(this, showtime);
 
             this.chain = [];
             this.chainIndex = 0;
             this.defaults = {
-                padding: 0
+                debug: false,
+                padding: 0,
+                autoplay: false,
+                autoplayDelay: 1000
+
             };
+            //override default with user options
+            this.defaults = extend(this.defaults, options);
             this.focus = new Focus({ padding: this.defaults.padding });
         }
 
@@ -1358,6 +1313,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * create tooltip
                  * focus on element
                  */
+
+                //override defaults with given for this focus
                 var defaults = clone(this.defaults);
                 var settings = extend(defaults, this.chain[this.chainIndex]);
                 this.focus.default.padding = settings.padding;
@@ -1377,9 +1334,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.focus.focusOn(settings.element);
                 this.focus.complete = function () {
                     _this5.tooltip.show();
+                    _this5.chainIndex++;
+                    if (_this5.defaults.autoplay) {
+                        _this5._callAgain();
+                    }
                 };
+                if (typeof settings.focusClick === "undefined") {
+                    this.focus.focusBox.middle.style.pointerEvents = 'none';
+                } else {
+                    this.focus.focusBox.middle.style.pointerEvents = 'auto';
+                    this.focus.focusBox.middle.onclick = settings.focusClick;
+                }
+            }
+        }, {
+            key: '_callAgain',
+            value: function _callAgain() {
+                var _this6 = this;
 
-                this.chainIndex++;
+                setTimeout(function () {
+                    _this6.play();
+                }, this.defaults.autoplayDelay);
             }
         }, {
             key: '_resolveOffsets',
@@ -1420,10 +1394,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.play();
             }
         }, {
+            key: 'reset',
+            value: function reset() {
+                this.chainIndex = 0;
+            }
+        }, {
             key: 'previous',
             value: function previous() {
                 //control not tested
-                this.chainIndex < 1 ? this.chainindex = 0 : this.chainindex--;
+                this.chainIndex--;
+                this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
+
                 this._callchain();
             }
         }, {
