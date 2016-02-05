@@ -601,6 +601,7 @@
           border-radius: 1px;
           font-size: 13px;
           cursor: pointer;
+          margin-left: 8px;
       }
       .to_left,
       .to_right,
@@ -1081,7 +1082,7 @@
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
-            this.focus = new Focus({padding: this.defaults.padding});
+            this.focus = window.focus =  new Focus({padding: this.defaults.padding});
         }
 
         _callchain() {
@@ -1171,6 +1172,10 @@
 
         reset() {
             this.chainIndex = 0;
+        }
+
+        quit() {
+
         }
 
         previous() {//control not tested

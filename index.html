@@ -72,7 +72,21 @@
         padding: 10,
         focusClick: function () {
             tour.next();
-        }
+        },
+        buttons: [
+            {
+                label: 'quit',
+                click: function () {
+                    tour.quit()
+                }
+            },
+            {
+                label: 'next',
+                click: function () {
+                    tour.next()
+                }
+            }
+        ]
     })
             .show({
                 element: '.ball',
@@ -85,9 +99,16 @@
                 },
                 buttons: [
                     {
-                        label: 'next', click: function () {
-                        tour.next()
-                    }
+                        label: 'quit',
+                        click: function () {
+                            tour.quit()
+                        }
+                    },
+                    {
+                        label: 'next',
+                        click: function () {
+                            tour.next()
+                        }
                     }
                 ]
 
