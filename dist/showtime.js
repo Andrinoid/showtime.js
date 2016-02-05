@@ -66,6 +66,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * ------------------------------------------------------------------------
      */
 
+    var capitalize = function capitalize(s) {
+        return s[0].toUpperCase() + s.slice(1);
+    };
+
     var throttle = function throttle(fn, threshhold, scope) {
         threshhold || (threshhold = 250);
         var last, deferTimer;
@@ -463,7 +467,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * ------------------------------------------------------------------------
      */
 
-    var STYLES = '\n    <style>\n    .popover {\n        position: absolute;\n        box-sizing: border-box;\n        min-width: 250px;\n        top: 0;\n        left: 0;\n        z-index: 1060;\n        display: none;\n        max-width: 276px;\n        padding: 1px;\n        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n        font-style: normal;\n        font-weight: normal;\n        letter-spacing: normal;\n        line-break: auto;\n        line-height: 1.42857143;\n        text-align: left;\n        text-align: start;\n        text-decoration: none;\n        text-shadow: none;\n        text-transform: none;\n        white-space: normal;\n        word-break: normal;\n        word-spacing: normal;\n        word-wrap: normal;\n        font-size: 14px;\n        background-color: #fff;\n        background-clip: padding-box;\n        border: 1px solid #ccc;\n        border: 1px solid rgba(0, 0, 0, 0.2);\n        border-radius: 2px;\n        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n    }\n\n    .popover.top {\n        margin-top: -10px;\n    }\n\n    .popover.right {\n        margin-left: 10px;\n    }\n\n    .popover.bottom {\n        margin-top: 10px;\n    }\n\n    .popover.left {\n        margin-left: -10px;\n    }\n\n    .popover-title {\n        margin: 0;\n        padding: 8px 14px;\n        font-size: 14px;\n        background-color: #f7f7f7;\n        border-bottom: 1px solid #ebebeb;\n        border-radius: 1px 1px 0 0;\n        box-sizing: border-box;\n\n    }\n\n    .popover-content {\n        padding: 9px 14px;\n        box-sizing: border-box;\n\n    }\n\n    .popover > .arrow,\n    .popover > .arrow:after {\n        position: absolute;\n        display: block;\n        width: 0;\n        height: 0;\n        border-color: transparent;\n        border-style: solid;\n    }\n\n    .popover > .arrow {\n        border-width: 11px;\n    }\n\n    .popover > .arrow:after {\n        border-width: 10px;\n        content: "";\n    }\n\n    .popover.top > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-bottom-width: 0;\n        border-top-color: #999999;\n        border-top-color: rgba(0, 0, 0, 0.25);\n        bottom: -11px;\n    }\n\n    .popover.top > .arrow:after {\n        content: " ";\n        bottom: 1px;\n        margin-left: -10px;\n        border-bottom-width: 0;\n        border-top-color: #fff;\n    }\n\n    .popover.right > .arrow {\n        top: 50%;\n        left: -11px;\n        margin-top: -11px;\n        border-left-width: 0;\n        border-right-color: #999999;\n        border-right-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.right > .arrow:after {\n        content: " ";\n        left: 1px;\n        bottom: -10px;\n        border-left-width: 0;\n        border-right-color: #fff;\n    }\n\n    .popover.bottom > .arrow {\n        left: 50%;\n        margin-left: -11px;\n        border-top-width: 0;\n        border-bottom-color: #999999;\n        border-bottom-color: rgba(0, 0, 0, 0.25);\n        top: -11px;\n    }\n\n    .popover.bottom > .arrow:after {\n        content: " ";\n        top: 1px;\n        margin-left: -10px;\n        border-top-width: 0;\n        border-bottom-color: #fff;\n    }\n\n    .popover.left > .arrow {\n        top: 50%;\n        right: -11px;\n        margin-top: -11px;\n        border-right-width: 0;\n        border-left-color: #999999;\n        border-left-color: rgba(0, 0, 0, 0.25);\n    }\n\n    .popover.left > .arrow:after {\n        content: " ";\n        right: 1px;\n        border-right-width: 0;\n        border-left-color: #fff;\n        bottom: -10px;\n    }\n    .popover .btns {\n        padding: 9px 14px;\n        text-align: right;\n    }\n    .popover .popBtn {\n        color: #333;\n        border: solid 1px #333;\n        display: inline-block;\n        padding: 4px 18px;\n        border-radius: 1px;\n        font-size: 13px;\n        font-weight: bold;\n        cursor: pointer;\n    }\n\n    .to_left,\n    .to_right,\n    .to_top,\n    .to_bottom {\n        position: absolute;\n        background: black;\n        opacity: .5;\n        filter: alpha(opacity=50);\n        z-index: 1000;\n    }\n\n    .ghost-focus {\n        background: transparent;\n    }\n    </style>';
+    var STYLES = '\n    <style>\n      .popover {\n          position: absolute;\n          box-sizing: border-box;\n          min-width: 250px;\n          top: 0;\n          left: 0;\n          z-index: 1060;\n          display: none;\n          max-width: 276px;\n          padding: 1px;\n          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n          font-style: normal;\n          font-weight: normal;\n          letter-spacing: normal;\n          line-break: auto;\n          line-height: 1.42857143;\n          text-align: left;\n          text-align: start;\n          text-decoration: none;\n          text-shadow: none;\n          text-transform: none;\n          white-space: normal;\n          word-break: normal;\n          word-spacing: normal;\n          word-wrap: normal;\n          font-size: 14px;\n          background-color: #fff;\n          background-clip: padding-box;\n          border: 1px solid #ccc;\n          border: 1px solid rgba(0, 0, 0, 0.2);\n          border-radius: 2px;\n          -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n      }\n      .popover.top {\n          margin-top: -10px;\n      }\n      .popover.right {\n          margin-left: 10px;\n      }\n      .popover.bottom {\n          margin-top: 10px;\n      }\n      .popover.left {\n          margin-left: -10px;\n      }\n      .popover-title {\n          margin: 0;\n          padding: 8px 14px;\n          font-size: 14px;\n          background-color: #f7f7f7;\n          border-bottom: 1px solid #ebebeb;\n          border-radius: 1px 1px 0 0;\n          box-sizing: border-box;\n      }\n      .popover-content {\n          padding: 9px 14px;\n          box-sizing: border-box;\n      }\n      .popover > .arrow,\n      .popover > .arrow:after {\n          position: absolute;\n          display: block;\n          width: 0;\n          height: 0;\n          border-color: transparent;\n          border-style: solid;\n      }\n      .popover > .arrow {\n          border-width: 11px;\n      }\n      .popover > .arrow:after {\n          border-width: 10px;\n          content: "";\n      }\n      .popover.top > .arrow {\n          left: 50%;\n          margin-left: -11px;\n          border-bottom-width: 0;\n          border-top-color: #999999;\n          border-top-color: rgba(0, 0, 0, 0.25);\n          bottom: -11px;\n      }\n      .popover.top > .arrow:after {\n          content: " ";\n          bottom: 1px;\n          margin-left: -10px;\n          border-bottom-width: 0;\n          border-top-color: #fff;\n      }\n      .popover.right > .arrow {\n          top: 50%;\n          left: -11px;\n          margin-top: -11px;\n          border-left-width: 0;\n          border-right-color: #999999;\n          border-right-color: rgba(0, 0, 0, 0.25);\n      }\n      .popover.right > .arrow:after {\n          content: " ";\n          left: 1px;\n          bottom: -10px;\n          border-left-width: 0;\n          border-right-color: #fff;\n      }\n      .popover.bottom > .arrow {\n          left: 50%;\n          margin-left: -11px;\n          border-top-width: 0;\n          border-bottom-color: #999999;\n          border-bottom-color: rgba(0, 0, 0, 0.25);\n          top: -11px;\n      }\n      .popover.bottom > .arrow:after {\n          content: " ";\n          top: 1px;\n          margin-left: -10px;\n          border-top-width: 0;\n          border-bottom-color: #fff;\n      }\n      .popover.left > .arrow {\n          top: 50%;\n          right: -11px;\n          margin-top: -11px;\n          border-right-width: 0;\n          border-left-color: #999999;\n          border-left-color: rgba(0, 0, 0, 0.25);\n      }\n      .popover.left > .arrow:after {\n          content: " ";\n          right: 1px;\n          border-right-width: 0;\n          border-left-color: #fff;\n          bottom: -10px;\n      }\n      .popover .btns {\n          padding: 9px 14px;\n          text-align: right;\n      }\n      .popover .popBtn {\n          color: #333;\n          font-weight: bold;\n          border: solid 1px #333;\n          display: inline-block;\n          padding: 4px 18px;\n          border-radius: 1px;\n          font-size: 13px;\n          cursor: pointer;\n      }\n      .to_left,\n      .to_right,\n      .to_top,\n      .to_bottom {\n          position: absolute;\n          background: black;\n          opacity: .5;\n          filter: alpha(opacity=50);\n          z-index: 1000;\n      }\n      .ghost-focus {\n          background: transparent;\n      }\n\n      /*** Animations ***/\n      @-webkit-keyframes fadeInDown {\n          from {\n              opacity: 0;\n              -webkit-transform: translate3d(0, -10px, 0);\n              transform: translate3d(0, -10px, 0);\n          }\n          to {\n              opacity: 1;\n              -webkit-transform: none;\n              transform: none;\n          }\n      }\n      @keyframes fadeInDown {\n          from {\n              opacity: 0;\n              -webkit-transform: translate3d(0, -10px, 0);\n              transform: translate3d(0, -10px, 0);\n          }\n          to {\n              opacity: 1;\n              -webkit-transform: none;\n              transform: none;\n          }\n      }\n\n       @-webkit-keyframes fadeInTop {\n          from {\n              opacity: 0;\n              -webkit-transform: translate3d(0, 10px, 0);\n              transform: translate3d(0, 10px, 0);\n          }\n          to {\n              opacity: 1;\n              -webkit-transform: none;\n              transform: none;\n          }\n      }\n      @keyframes fadeInTop {\n          from {\n              opacity: 0;\n              -webkit-transform: translate3d(0, 10px, 0);\n              transform: translate3d(0, 10px, 0);\n          }\n          to {\n              opacity: 1;\n              -webkit-transform: none;\n              transform: none;\n          }\n      }\n\n\n        @-webkit-keyframes fadeInLeft {\n          from {\n            opacity: 0;\n            -webkit-transform: translate3d(-10px, 0, 0);\n            transform: translate3d(-10px, 0, 0);\n          }\n\n          to {\n            opacity: 1;\n            -webkit-transform: none;\n            transform: none;\n          }\n        }\n\n        @keyframes fadeInLeft {\n          from {\n            opacity: 0;\n            -webkit-transform: translate3d(-10px, 0, 0);\n            transform: translate3d(-10px, 0, 0);\n          }\n\n          to {\n            opacity: 1;\n            -webkit-transform: none;\n            transform: none;\n          }\n        }\n\n        @-webkit-keyframes fadeInRight {\n          from {\n            opacity: 0;\n            -webkit-transform: translate3d(10px, 0, 0);\n            transform: translate3d(10px, 0, 0);\n          }\n\n          to {\n            opacity: 1;\n            -webkit-transform: none;\n            transform: none;\n          }\n        }\n\n        @keyframes fadeInRight {\n          from {\n            opacity: 0;\n            -webkit-transform: translate3d(10px, 0, 0);\n            transform: translate3d(10px, 0, 0);\n          }\n\n          to {\n            opacity: 1;\n            -webkit-transform: none;\n            transform: none;\n          }\n        }\n\n      .fadeInDown, .fadeInLeft, .fadeInRight, .fadeInTop {\n          -webkit-animation-fill-mode: both;\n          -webkit-animation-duration: .5s;\n          animation-duration: .5s;\n          animation-fill-mode: both;\n      }\n      .fadeInDown {\n          -webkit-animation-name: fadeInDown;\n          animation-name: fadeInDown;\n      }\n\n      .fadeInLeft {\n          -webkit-animation-name: fadeInLeft;\n          animation-name: fadeInLeft;\n      }\n      .fadeInRight {\n          -webkit-animation-name: fadeInRight;\n          animation-name: fadeInRight;\n      }\n      .fadeInTop {\n          -webkit-animation-name: fadeInTop;\n          animation-name: fadeInTop;\n      }\n    </style>';
 
     var Tooltip = function () {
         function Tooltip(element, config) {
@@ -510,6 +514,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var title = div.querySelector('.popover-title');
                 var inner = div.querySelector('.popover-content');
                 var btns = div.querySelector('.btns');
+
                 if (!this.default.content) {
                     throw new Error('Tooltip has no content');
                 }
@@ -536,7 +541,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setDirection',
             value: function setDirection() {
+                var _this3 = this;
+
+                var opposites = {
+                    'top': 'Down',
+                    'left': 'Left',
+                    'bottom': 'Top',
+                    'right': 'Right'
+                };
+                var animationClass = function animationClass() {
+                    return 'fadeIn' + opposites[_this3.default.placement];
+                };
                 setClass(this.popover, this.default.placement);
+                setClass(this.popover, animationClass());
             }
         }, {
             key: 'create',
@@ -656,7 +673,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var Focus = function () {
         function Focus(config) {
-            var _this3 = this;
+            var _this4 = this;
 
             _classCallCheck(this, Focus);
 
@@ -671,7 +688,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 duration: 60000
             });
             this.animator.complete = function () {
-                _this3.complete();
+                _this4.complete();
             };
         }
 
@@ -698,20 +715,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'focusOn',
             value: function focusOn(elm) {
-                var _this4 = this;
+                var _this5 = this;
 
                 var focusElm = normalizeElement(elm);
                 var styles = focusElm.getBoundingClientRect();
 
                 var animate = function animate() {
-                    _this4.animator.start({
+                    _this5.animator.start({
                         width: styles.width,
                         height: styles.height,
                         left: styles.left,
                         top: styles.top + window.scrollY
                     });
-                    _this4.animator.step = function (el) {
-                        _this4.setCoverPos(el);
+                    _this5.animator.step = function (el) {
+                        _this5.setCoverPos(el);
                     };
                 };
 
@@ -735,7 +752,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setCoverPos',
             value: function setCoverPos(el) {
-                var _this5 = this;
+                var _this6 = this;
 
                 var body = document.body;
                 var html = document.documentElement;
@@ -747,7 +764,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     left: 0,
                     right: 0,
                     height: function () {
-                        return dimentions.top > 0 ? dimentions.top - _this5.default.padding + 'px' : 0;
+                        return dimentions.top > 0 ? dimentions.top - _this6.default.padding + 'px' : 0;
                     }() //if element overflow top height is 0
                 });
                 setStyles(this.focusBox.bottom, {
@@ -767,7 +784,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     left: 0,
                     width: function () {
-                        return dimentions.left > 0 ? dimentions.left - _this5.default.padding + 'px' : 0;
+                        return dimentions.left > 0 ? dimentions.left - _this6.default.padding + 'px' : 0;
                     }()
                 });
             }
@@ -806,7 +823,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         _createClass(showtime, [{
             key: '_callchain',
             value: function _callchain() {
-                var _this6 = this;
+                var _this7 = this;
 
                 /*
                  * We clone the default settings and merge it with the current chain settings.
@@ -836,10 +853,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 this.focus.focusOn(settings.element);
                 this.focus.complete = function () {
-                    _this6.tooltip.show();
-                    _this6.chainIndex++;
-                    if (_this6.defaults.autoplay) {
-                        _this6._callAgain();
+                    _this7.tooltip.show();
+                    _this7.chainIndex++;
+                    if (_this7.defaults.autoplay) {
+                        _this7._callAgain();
                     }
                 };
                 if (typeof settings.focusClick === "undefined") {
@@ -852,10 +869,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callAgain',
             value: function _callAgain() {
-                var _this7 = this;
+                var _this8 = this;
 
                 setTimeout(function () {
-                    _this7.play();
+                    _this8.play();
                 }, this.defaults.autoplayDelay);
             }
         }, {

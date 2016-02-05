@@ -62,6 +62,10 @@
      * ------------------------------------------------------------------------
      */
 
+    var capitalize = function (s) {
+        return s[0].toUpperCase() + s.slice(1);
+    };
+
     var throttle = function (fn, threshhold, scope) {
         threshhold || (threshhold = 250);
         var last,
@@ -449,190 +453,302 @@
 
     var STYLES = `
     <style>
-    .popover {
-        position: absolute;
-        box-sizing: border-box;
-        min-width: 250px;
-        top: 0;
-        left: 0;
-        z-index: 1060;
-        display: none;
-        max-width: 276px;
-        padding: 1px;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-style: normal;
-        font-weight: normal;
-        letter-spacing: normal;
-        line-break: auto;
-        line-height: 1.42857143;
-        text-align: left;
-        text-align: start;
-        text-decoration: none;
-        text-shadow: none;
-        text-transform: none;
-        white-space: normal;
-        word-break: normal;
-        word-spacing: normal;
-        word-wrap: normal;
-        font-size: 14px;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ccc;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        border-radius: 2px;
-        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    }
+      .popover {
+          position: absolute;
+          box-sizing: border-box;
+          min-width: 250px;
+          top: 0;
+          left: 0;
+          z-index: 1060;
+          display: none;
+          max-width: 276px;
+          padding: 1px;
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          font-style: normal;
+          font-weight: normal;
+          letter-spacing: normal;
+          line-break: auto;
+          line-height: 1.42857143;
+          text-align: left;
+          text-align: start;
+          text-decoration: none;
+          text-shadow: none;
+          text-transform: none;
+          white-space: normal;
+          word-break: normal;
+          word-spacing: normal;
+          word-wrap: normal;
+          font-size: 14px;
+          background-color: #fff;
+          background-clip: padding-box;
+          border: 1px solid #ccc;
+          border: 1px solid rgba(0, 0, 0, 0.2);
+          border-radius: 2px;
+          -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+      .popover.top {
+          margin-top: -10px;
+      }
+      .popover.right {
+          margin-left: 10px;
+      }
+      .popover.bottom {
+          margin-top: 10px;
+      }
+      .popover.left {
+          margin-left: -10px;
+      }
+      .popover-title {
+          margin: 0;
+          padding: 8px 14px;
+          font-size: 14px;
+          background-color: #f7f7f7;
+          border-bottom: 1px solid #ebebeb;
+          border-radius: 1px 1px 0 0;
+          box-sizing: border-box;
+      }
+      .popover-content {
+          padding: 9px 14px;
+          box-sizing: border-box;
+      }
+      .popover > .arrow,
+      .popover > .arrow:after {
+          position: absolute;
+          display: block;
+          width: 0;
+          height: 0;
+          border-color: transparent;
+          border-style: solid;
+      }
+      .popover > .arrow {
+          border-width: 11px;
+      }
+      .popover > .arrow:after {
+          border-width: 10px;
+          content: "";
+      }
+      .popover.top > .arrow {
+          left: 50%;
+          margin-left: -11px;
+          border-bottom-width: 0;
+          border-top-color: #999999;
+          border-top-color: rgba(0, 0, 0, 0.25);
+          bottom: -11px;
+      }
+      .popover.top > .arrow:after {
+          content: " ";
+          bottom: 1px;
+          margin-left: -10px;
+          border-bottom-width: 0;
+          border-top-color: #fff;
+      }
+      .popover.right > .arrow {
+          top: 50%;
+          left: -11px;
+          margin-top: -11px;
+          border-left-width: 0;
+          border-right-color: #999999;
+          border-right-color: rgba(0, 0, 0, 0.25);
+      }
+      .popover.right > .arrow:after {
+          content: " ";
+          left: 1px;
+          bottom: -10px;
+          border-left-width: 0;
+          border-right-color: #fff;
+      }
+      .popover.bottom > .arrow {
+          left: 50%;
+          margin-left: -11px;
+          border-top-width: 0;
+          border-bottom-color: #999999;
+          border-bottom-color: rgba(0, 0, 0, 0.25);
+          top: -11px;
+      }
+      .popover.bottom > .arrow:after {
+          content: " ";
+          top: 1px;
+          margin-left: -10px;
+          border-top-width: 0;
+          border-bottom-color: #fff;
+      }
+      .popover.left > .arrow {
+          top: 50%;
+          right: -11px;
+          margin-top: -11px;
+          border-right-width: 0;
+          border-left-color: #999999;
+          border-left-color: rgba(0, 0, 0, 0.25);
+      }
+      .popover.left > .arrow:after {
+          content: " ";
+          right: 1px;
+          border-right-width: 0;
+          border-left-color: #fff;
+          bottom: -10px;
+      }
+      .popover .btns {
+          padding: 9px 14px;
+          text-align: right;
+      }
+      .popover .popBtn {
+          color: #333;
+          font-weight: bold;
+          border: solid 1px #333;
+          display: inline-block;
+          padding: 4px 18px;
+          border-radius: 1px;
+          font-size: 13px;
+          cursor: pointer;
+      }
+      .to_left,
+      .to_right,
+      .to_top,
+      .to_bottom {
+          position: absolute;
+          background: black;
+          opacity: .5;
+          filter: alpha(opacity=50);
+          z-index: 1000;
+      }
+      .ghost-focus {
+          background: transparent;
+      }
 
-    .popover.top {
-        margin-top: -10px;
-    }
+      /*** Animations ***/
+      @-webkit-keyframes fadeInDown {
+          from {
+              opacity: 0;
+              -webkit-transform: translate3d(0, -10px, 0);
+              transform: translate3d(0, -10px, 0);
+          }
+          to {
+              opacity: 1;
+              -webkit-transform: none;
+              transform: none;
+          }
+      }
+      @keyframes fadeInDown {
+          from {
+              opacity: 0;
+              -webkit-transform: translate3d(0, -10px, 0);
+              transform: translate3d(0, -10px, 0);
+          }
+          to {
+              opacity: 1;
+              -webkit-transform: none;
+              transform: none;
+          }
+      }
 
-    .popover.right {
-        margin-left: 10px;
-    }
+       @-webkit-keyframes fadeInTop {
+          from {
+              opacity: 0;
+              -webkit-transform: translate3d(0, 10px, 0);
+              transform: translate3d(0, 10px, 0);
+          }
+          to {
+              opacity: 1;
+              -webkit-transform: none;
+              transform: none;
+          }
+      }
+      @keyframes fadeInTop {
+          from {
+              opacity: 0;
+              -webkit-transform: translate3d(0, 10px, 0);
+              transform: translate3d(0, 10px, 0);
+          }
+          to {
+              opacity: 1;
+              -webkit-transform: none;
+              transform: none;
+          }
+      }
 
-    .popover.bottom {
-        margin-top: 10px;
-    }
 
-    .popover.left {
-        margin-left: -10px;
-    }
+        @-webkit-keyframes fadeInLeft {
+          from {
+            opacity: 0;
+            -webkit-transform: translate3d(-10px, 0, 0);
+            transform: translate3d(-10px, 0, 0);
+          }
 
-    .popover-title {
-        margin: 0;
-        padding: 8px 14px;
-        font-size: 14px;
-        background-color: #f7f7f7;
-        border-bottom: 1px solid #ebebeb;
-        border-radius: 1px 1px 0 0;
-        box-sizing: border-box;
+          to {
+            opacity: 1;
+            -webkit-transform: none;
+            transform: none;
+          }
+        }
 
-    }
+        @keyframes fadeInLeft {
+          from {
+            opacity: 0;
+            -webkit-transform: translate3d(-10px, 0, 0);
+            transform: translate3d(-10px, 0, 0);
+          }
 
-    .popover-content {
-        padding: 9px 14px;
-        box-sizing: border-box;
+          to {
+            opacity: 1;
+            -webkit-transform: none;
+            transform: none;
+          }
+        }
 
-    }
+        @-webkit-keyframes fadeInRight {
+          from {
+            opacity: 0;
+            -webkit-transform: translate3d(10px, 0, 0);
+            transform: translate3d(10px, 0, 0);
+          }
 
-    .popover > .arrow,
-    .popover > .arrow:after {
-        position: absolute;
-        display: block;
-        width: 0;
-        height: 0;
-        border-color: transparent;
-        border-style: solid;
-    }
+          to {
+            opacity: 1;
+            -webkit-transform: none;
+            transform: none;
+          }
+        }
 
-    .popover > .arrow {
-        border-width: 11px;
-    }
+        @keyframes fadeInRight {
+          from {
+            opacity: 0;
+            -webkit-transform: translate3d(10px, 0, 0);
+            transform: translate3d(10px, 0, 0);
+          }
 
-    .popover > .arrow:after {
-        border-width: 10px;
-        content: "";
-    }
+          to {
+            opacity: 1;
+            -webkit-transform: none;
+            transform: none;
+          }
+        }
 
-    .popover.top > .arrow {
-        left: 50%;
-        margin-left: -11px;
-        border-bottom-width: 0;
-        border-top-color: #999999;
-        border-top-color: rgba(0, 0, 0, 0.25);
-        bottom: -11px;
-    }
+      .fadeInDown, .fadeInLeft, .fadeInRight, .fadeInTop {
+          -webkit-animation-fill-mode: both;
+          -webkit-animation-duration: .5s;
+          animation-duration: .5s;
+          animation-fill-mode: both;
+      }
+      .fadeInDown {
+          -webkit-animation-name: fadeInDown;
+          animation-name: fadeInDown;
+      }
 
-    .popover.top > .arrow:after {
-        content: " ";
-        bottom: 1px;
-        margin-left: -10px;
-        border-bottom-width: 0;
-        border-top-color: #fff;
-    }
-
-    .popover.right > .arrow {
-        top: 50%;
-        left: -11px;
-        margin-top: -11px;
-        border-left-width: 0;
-        border-right-color: #999999;
-        border-right-color: rgba(0, 0, 0, 0.25);
-    }
-
-    .popover.right > .arrow:after {
-        content: " ";
-        left: 1px;
-        bottom: -10px;
-        border-left-width: 0;
-        border-right-color: #fff;
-    }
-
-    .popover.bottom > .arrow {
-        left: 50%;
-        margin-left: -11px;
-        border-top-width: 0;
-        border-bottom-color: #999999;
-        border-bottom-color: rgba(0, 0, 0, 0.25);
-        top: -11px;
-    }
-
-    .popover.bottom > .arrow:after {
-        content: " ";
-        top: 1px;
-        margin-left: -10px;
-        border-top-width: 0;
-        border-bottom-color: #fff;
-    }
-
-    .popover.left > .arrow {
-        top: 50%;
-        right: -11px;
-        margin-top: -11px;
-        border-right-width: 0;
-        border-left-color: #999999;
-        border-left-color: rgba(0, 0, 0, 0.25);
-    }
-
-    .popover.left > .arrow:after {
-        content: " ";
-        right: 1px;
-        border-right-width: 0;
-        border-left-color: #fff;
-        bottom: -10px;
-    }
-    .popover .btns {
-        padding: 9px 14px;
-        text-align: right;
-    }
-    .popover .popBtn {
-        color: #333;
-        border: solid 1px #333;
-        display: inline-block;
-        padding: 4px 18px;
-        border-radius: 1px;
-        font-size: 13px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .to_left,
-    .to_right,
-    .to_top,
-    .to_bottom {
-        position: absolute;
-        background: black;
-        opacity: .5;
-        filter: alpha(opacity=50);
-        z-index: 1000;
-    }
-
-    .ghost-focus {
-        background: transparent;
-    }
+      .fadeInLeft {
+          -webkit-animation-name: fadeInLeft;
+          animation-name: fadeInLeft;
+      }
+      .fadeInRight {
+          -webkit-animation-name: fadeInRight;
+          animation-name: fadeInRight;
+      }
+      .fadeInTop {
+          -webkit-animation-name: fadeInTop;
+          animation-name: fadeInTop;
+      }
     </style>`;
+
     class Tooltip {
         constructor(element, config) {
             this.element = normalizeElement(element);
@@ -678,6 +794,8 @@
             let title = div.querySelector('.popover-title');
             let inner = div.querySelector('.popover-content');
             let btns = div.querySelector('.btns');
+
+
             if (!this.default.content) {
                 throw new Error('Tooltip has no content');
             }
@@ -697,7 +815,7 @@
         }
 
         addButtons(parent) {
-            this.default.buttons.forEach(function(item) {
+            this.default.buttons.forEach(function (item) {
                 let btn = new Elm('div.popBtn', {text: item.label}, parent);
                 btn.onclick = item.click;
             });
@@ -705,7 +823,15 @@
         }
 
         setDirection() {
+            let opposites = {
+                'top': 'Down',
+                'left': 'Left',
+                'bottom': 'Top',
+                'right': 'Right'
+            };
+            let animationClass = ()=> {return 'fadeIn' + opposites[this.default.placement]};
             setClass(this.popover, this.default.placement);
+            setClass(this.popover, animationClass());
         }
 
         create() {
@@ -903,7 +1029,9 @@
                 top: 0,
                 left: 0,
                 right: 0,
-                height: (()=> {return dimentions.top > 0 ?  dimentions.top - this.default.padding + 'px' : 0})() //if element overflow top height is 0
+                height: (()=> {
+                    return dimentions.top > 0 ? dimentions.top - this.default.padding + 'px' : 0
+                })() //if element overflow top height is 0
             });
             setStyles(this.focusBox.bottom, {
                 top: dimentions.top + dimentions.height + this.default.padding + 'px',
@@ -921,7 +1049,9 @@
                 top: dimentions.top - this.default.padding + 'px',
                 height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                 left: 0,
-                width: (()=> {return dimentions.left > 0 ? dimentions.left - this.default.padding + 'px' : 0})()
+                width: (()=> {
+                    return dimentions.left > 0 ? dimentions.left - this.default.padding + 'px' : 0
+                })()
             });
         }
 
