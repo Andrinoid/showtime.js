@@ -903,7 +903,7 @@
                 top: 0,
                 left: 0,
                 right: 0,
-                height: dimentions.top - this.default.padding + 'px'
+                height: (()=> {return dimentions.top > 0 ?  dimentions.top - this.default.padding + 'px' : 0})() //if element overflow top height is 0
             });
             setStyles(this.focusBox.bottom, {
                 top: dimentions.top + dimentions.height + this.default.padding + 'px',
@@ -921,7 +921,7 @@
                 top: dimentions.top - this.default.padding + 'px',
                 height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                 left: 0,
-                width: dimentions.left - this.default.padding + 'px'
+                width: (()=> {return dimentions.left > 0 ? dimentions.left - this.default.padding + 'px' : 0})()
             });
         }
 

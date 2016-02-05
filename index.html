@@ -11,6 +11,7 @@
         margin: 0;
         padding: 0;
         height: 3000px;
+        overflow: hidden;
     }
 
     .ball {
@@ -19,8 +20,8 @@
         height: 100px;
         border-radius: 50%;
         position: absolute;
-        left: 130px;
-        top: 20px;
+        right: -30px;
+        top: -20px;
     }
 
     .two {
@@ -54,13 +55,6 @@
 <script src="dist/showtime.js"></script>
 <script>
 
-    //    var tooltip = new Tooltip('.ball', {
-    //        title: 'foobar',
-    //        content: '<p>sdfsdfsdf</p>',
-    //        placement: 'right',//top, left, right, bottom
-    //    });
-    //
-    //    tooltip.show();
 
 
     var tour = new Showtime({

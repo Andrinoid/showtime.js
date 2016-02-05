@@ -735,6 +735,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setCoverPos',
             value: function setCoverPos(el) {
+                var _this5 = this;
+
                 var body = document.body;
                 var html = document.documentElement;
                 var pageHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
@@ -744,7 +746,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: dimentions.top - this.default.padding + 'px'
+                    height: function () {
+                        return dimentions.top > 0 ? dimentions.top - _this5.default.padding + 'px' : 0;
+                    }() //if element overflow top height is 0
                 });
                 setStyles(this.focusBox.bottom, {
                     top: dimentions.top + dimentions.height + this.default.padding + 'px',
@@ -762,7 +766,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     top: dimentions.top - this.default.padding + 'px',
                     height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     left: 0,
-                    width: dimentions.left - this.default.padding + 'px'
+                    width: function () {
+                        return dimentions.left > 0 ? dimentions.left - _this5.default.padding + 'px' : 0;
+                    }()
                 });
             }
         }]);
@@ -800,7 +806,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         _createClass(showtime, [{
             key: '_callchain',
             value: function _callchain() {
-                var _this5 = this;
+                var _this6 = this;
 
                 /*
                  * We clone the default settings and merge it with the current chain settings.
@@ -830,10 +836,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 this.focus.focusOn(settings.element);
                 this.focus.complete = function () {
-                    _this5.tooltip.show();
-                    _this5.chainIndex++;
-                    if (_this5.defaults.autoplay) {
-                        _this5._callAgain();
+                    _this6.tooltip.show();
+                    _this6.chainIndex++;
+                    if (_this6.defaults.autoplay) {
+                        _this6._callAgain();
                     }
                 };
                 if (typeof settings.focusClick === "undefined") {
@@ -846,10 +852,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callAgain',
             value: function _callAgain() {
-                var _this6 = this;
+                var _this7 = this;
 
                 setTimeout(function () {
-                    _this6.play();
+                    _this7.play();
                 }, this.defaults.autoplayDelay);
             }
         }, {
