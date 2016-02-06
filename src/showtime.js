@@ -270,8 +270,6 @@
     }
 
 
-
-
     /**
      * ------------------------------------------------------------------------
      * Element generator check out the standalone version for docs
@@ -1040,6 +1038,7 @@
             if ((styles.top + styles.height) > viewportHeight) {
                 let y = styles.top - (viewportHeight / 2);
                 scrollToY(y, 1500, 'easeInOutQuint', function () {
+                    styles = focusElm.getBoundingClientRect();
                     animate();
                 });
             }
@@ -1057,14 +1056,13 @@
         }
 
         remove() {
-            for(let key in this.focusBox) {
+            for (let key in this.focusBox) {
                 if (!this.focusBox.hasOwnProperty(key)) {
                     continue;
                 }
                 fadeOutRemove(this.focusBox[key]);
             }
         }
-
 
         setCoverPos(el) {
             let body = document.body;
@@ -1078,23 +1076,23 @@
                 left: 0,
                 right: 0,
                 height: (()=> {
-                    return dimentions.top > 0 ? dimentions.top - this.default.padding + 'px' : 0
+                    return dimentions.top > 0 ? dimentions.top - this.default.padding + window.scrollY + 'px' : 0
                 })() //if element overflow top height is 0
             });
             setStyles(this.focusBox.bottom, {
-                top: dimentions.top + dimentions.height + this.default.padding + 'px',
+                top: dimentions.top + dimentions.height + this.default.padding + window.scrollY + 'px',
                 height: pageHeight - (dimentions.top + dimentions.height + this.default.padding) + 'px', //pageHeight - top position
                 left: dimentions.left - this.default.padding + 'px',
                 width: dimentions.width + (this.default.padding * 2) + 'px'
             });
             setStyles(this.focusBox.right, {
-                top: dimentions.top - this.default.padding + 'px',
+                top: dimentions.top - this.default.padding + window.scrollY + 'px',
                 height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                 right: 0,
                 left: dimentions.left + dimentions.width + this.default.padding + 'px',
             });
             setStyles(this.focusBox.left, {
-                top: dimentions.top - this.default.padding + 'px',
+                top: dimentions.top - this.default.padding + window.scrollY + 'px',
                 height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                 left: 0,
                 width: (()=> {
@@ -1129,7 +1127,11 @@
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
-            this.focus = window.focus = new Focus({padding: this.defaults.padding});
+            this._createFocus();
+        }
+
+        _createFocus() {
+            this.focus = new Focus({padding: this.defaults.padding});
         }
 
         _callchain() {
@@ -1140,6 +1142,8 @@
              * focus on element
              */
 
+            //focus is reused until tour.quit() then it gets deleted and we have to create it again.
+            if (!this.focus) this._createFocus();
             //override defaults with given for this focus
             let defaults = clone(this.defaults);
             let settings = extend(defaults, this.chain[this.chainIndex]);
@@ -1202,7 +1206,6 @@
             return this.chainIndex < this.chain.length;
         }
 
-
         show(options) {
             this.chain.push(options);
             return this;
@@ -1223,22 +1226,21 @@
 
         quit() {
             this.focus.remove();
+            delete this.focus;
             this.tooltip.remove();
         }
 
         previous() {//control not tested
             this.chainIndex--;
             this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
-
             this._callchain();
         }
 
         start() {
-
+            this.chainIndex = 0;
+            this.play();
         }
-
     }
-
 
     return showtime;
 

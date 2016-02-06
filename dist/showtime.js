@@ -776,6 +776,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (styles.top + styles.height > viewportHeight) {
                     var y = styles.top - viewportHeight / 2;
                     scrollToY(y, 1500, 'easeInOutQuint', function () {
+                        styles = focusElm.getBoundingClientRect();
                         animate();
                     });
                 } else if (styles.top < window.scrollY) {
@@ -813,23 +814,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     left: 0,
                     right: 0,
                     height: function () {
-                        return dimentions.top > 0 ? dimentions.top - _this6.default.padding + 'px' : 0;
+                        return dimentions.top > 0 ? dimentions.top - _this6.default.padding + window.scrollY + 'px' : 0;
                     }() //if element overflow top height is 0
                 });
                 setStyles(this.focusBox.bottom, {
-                    top: dimentions.top + dimentions.height + this.default.padding + 'px',
+                    top: dimentions.top + dimentions.height + this.default.padding + window.scrollY + 'px',
                     height: pageHeight - (dimentions.top + dimentions.height + this.default.padding) + 'px', //pageHeight - top position
                     left: dimentions.left - this.default.padding + 'px',
                     width: dimentions.width + this.default.padding * 2 + 'px'
                 });
                 setStyles(this.focusBox.right, {
-                    top: dimentions.top - this.default.padding + 'px',
+                    top: dimentions.top - this.default.padding + window.scrollY + 'px',
                     height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     right: 0,
                     left: dimentions.left + dimentions.width + this.default.padding + 'px'
                 });
                 setStyles(this.focusBox.left, {
-                    top: dimentions.top - this.default.padding + 'px',
+                    top: dimentions.top - this.default.padding + window.scrollY + 'px',
                     height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     left: 0,
                     width: function () {
@@ -866,10 +867,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
-            this.focus = window.focus = new Focus({ padding: this.defaults.padding });
+            this._createFocus();
         }
 
         _createClass(showtime, [{
+            key: '_createFocus',
+            value: function _createFocus() {
+                this.focus = new Focus({ padding: this.defaults.padding });
+            }
+        }, {
             key: '_callchain',
             value: function _callchain() {
                 var _this7 = this;
@@ -881,6 +887,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * focus on element
                  */
 
+                //focus is reused until tour.quit() then it gets deleted and we have to create it again.
+                if (!this.focus) this._createFocus();
                 //override defaults with given for this focus
                 var defaults = clone(this.defaults);
                 var settings = extend(defaults, this.chain[this.chainIndex]);
@@ -971,6 +979,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: 'quit',
             value: function quit() {
                 this.focus.remove();
+                delete this.focus;
                 this.tooltip.remove();
             }
         }, {
@@ -979,12 +988,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 //control not tested
                 this.chainIndex--;
                 this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
-
                 this._callchain();
             }
         }, {
             key: 'start',
-            value: function start() {}
+            value: function start() {
+                this.chainIndex = 0;
+                this.play();
+            }
         }]);
 
         return showtime;
