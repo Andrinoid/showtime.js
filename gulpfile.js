@@ -1,14 +1,14 @@
-const gulp = require('gulp');
-const babel = require('gulp-babel');
-const watch = require('gulp-watch');
-const del = require('del');
+var gulp = require('gulp');
+var babel = require('gulp-babel');
+var watch = require('gulp-watch');
+var del = require('del');
 var browserSync = require('browser-sync').create();
 
 gulp.task('default', ['clean', 'build', 'watch']);
 
 gulp.task('build', ['babel']);
 
-gulp.task('babel', () => {
+gulp.task('babel', function() {
 	return gulp.src('src/*.js')
 		.pipe(babel({
 			presets: ['es2015']
@@ -22,7 +22,7 @@ gulp.task('clean', function () {
 
 });
 
-gulp.task('watch', ['browser-sync'], () => {
+gulp.task('watch', ['browser-sync'], function() {
     gulp.watch('src/*.js', ['build']);
 });
 
