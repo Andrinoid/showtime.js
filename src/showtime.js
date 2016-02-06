@@ -22,7 +22,11 @@
         window.Showtime = factory();
     }
 }(this, function () {
-
+    /**
+     * ------------------------------------------------------------------------
+     * Polyfills
+     * ------------------------------------------------------------------------
+     */
     //Polyfill for requestAnimationFrame and cancelAnimationFrame
     //Source: https://github.com/darius/requestAnimationFrame
     if (!Date.now)
@@ -54,6 +58,29 @@
             window.cancelAnimationFrame = clearTimeout;
         }
     }());
+
+    //http://stackoverflow.com/questions/8830839/javascript-dom-remove-element
+    (function () {
+        var typesToPatch = ['DocumentType', 'Element', 'CharacterData'],
+            remove = function () {
+                // The check here seems pointless, since we're not adding this
+                // method to the prototypes of any any elements that CAN be the
+                // root of the DOM. However, it's required by spec (see point 1 of
+                // https://dom.spec.whatwg.org/#dom-childnode-remove) and would
+                // theoretically make a difference if somebody .apply()ed this
+                // method to the DOM's root node, so let's roll with it.
+                if (this.parentNode != null) {
+                    this.parentNode.removeChild(this);
+                }
+            };
+
+        for (var i = 0; i < typesToPatch.length; i++) {
+            var type = typesToPatch[i];
+            if (window[type] && !window[type].prototype.remove) {
+                window[type].prototype.remove = remove;
+            }
+        }
+    })();
 
 
     /**
@@ -233,6 +260,17 @@
         tick();
     }
 
+    function fadeOutRemove(el) {
+        el.style.transition = 'ease opacity 0.5s';
+        el.style.webkitTransition = 'ease opacity 0.5s';
+        el.style.opacity = 0;
+        setTimeout(() => {
+            el.remove();
+        }, 500);
+    }
+
+
+
 
     /**
      * ------------------------------------------------------------------------
@@ -399,13 +437,12 @@
 
         }
 
+        //method to override
         complete() {
-
         }
 
         //method to override
         step() {
-
         }
 
         compute(from, to, delta) {
@@ -830,7 +867,9 @@
                 'bottom': 'Top',
                 'right': 'Right'
             };
-            let animationClass = ()=> {return 'fadeIn' + opposites[this.default.placement]};
+            let animationClass = ()=> {
+                return 'fadeIn' + opposites[this.default.placement]
+            };
             setClass(this.popover, this.default.placement);
             setClass(this.popover, animationClass());
         }
@@ -998,7 +1037,7 @@
 
             let viewportHeight = (window.innerHeight || document.documentElement.clientHeight);
             //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
-            if (styles.top > viewportHeight) {
+            if ((styles.top + styles.height) > viewportHeight) {
                 let y = styles.top - (viewportHeight / 2);
                 scrollToY(y, 1500, 'easeInOutQuint', function () {
                     animate();
@@ -1015,7 +1054,15 @@
                 animate();
             }
 
+        }
 
+        remove() {
+            for(let key in this.focusBox) {
+                if (!this.focusBox.hasOwnProperty(key)) {
+                    continue;
+                }
+                fadeOutRemove(this.focusBox[key]);
+            }
         }
 
 
@@ -1082,7 +1129,7 @@
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
-            this.focus = window.focus =  new Focus({padding: this.defaults.padding});
+            this.focus = window.focus = new Focus({padding: this.defaults.padding});
         }
 
         _callchain() {
@@ -1175,7 +1222,8 @@
         }
 
         quit() {
-
+            this.focus.remove();
+            this.tooltip.remove();
         }
 
         previous() {//control not tested

@@ -30,7 +30,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         window.Showtime = factory();
     }
 })(undefined, function () {
-
+    /**
+     * ------------------------------------------------------------------------
+     * Polyfills
+     * ------------------------------------------------------------------------
+     */
     //Polyfill for requestAnimationFrame and cancelAnimationFrame
     //Source: https://github.com/darius/requestAnimationFrame
     if (!Date.now) Date.now = function () {
@@ -57,6 +61,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }, nextTime - now);
             };
             window.cancelAnimationFrame = clearTimeout;
+        }
+    })();
+
+    //http://stackoverflow.com/questions/8830839/javascript-dom-remove-element
+    (function () {
+        var typesToPatch = ['DocumentType', 'Element', 'CharacterData'],
+            remove = function remove() {
+            // The check here seems pointless, since we're not adding this
+            // method to the prototypes of any any elements that CAN be the
+            // root of the DOM. However, it's required by spec (see point 1 of
+            // https://dom.spec.whatwg.org/#dom-childnode-remove) and would
+            // theoretically make a difference if somebody .apply()ed this
+            // method to the DOM's root node, so let's roll with it.
+            if (this.parentNode != null) {
+                this.parentNode.removeChild(this);
+            }
+        };
+
+        for (var i = 0; i < typesToPatch.length; i++) {
+            var type = typesToPatch[i];
+            if (window[type] && !window[type].prototype.remove) {
+                window[type].prototype.remove = remove;
+            }
         }
     })();
 
@@ -225,6 +252,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         // call it once to get started
         tick();
+    }
+
+    function fadeOutRemove(el) {
+        el.style.transition = 'ease opacity 0.5s';
+        el.style.webkitTransition = 'ease opacity 0.5s';
+        el.style.opacity = 0;
+        setTimeout(function () {
+            el.remove();
+        }, 500);
     }
 
     /**
@@ -407,6 +443,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 };
                 this.loopID = requestAnimationFrame(repeat);
             }
+
+            //method to override
+
         }, {
             key: 'complete',
             value: function complete() {}
@@ -734,7 +773,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
-                if (styles.top > viewportHeight) {
+                if (styles.top + styles.height > viewportHeight) {
                     var y = styles.top - viewportHeight / 2;
                     scrollToY(y, 1500, 'easeInOutQuint', function () {
                         animate();
@@ -747,6 +786,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     });
                 } else {
                     animate();
+                }
+            }
+        }, {
+            key: 'remove',
+            value: function remove() {
+                for (var key in this.focusBox) {
+                    if (!this.focusBox.hasOwnProperty(key)) {
+                        continue;
+                    }
+                    fadeOutRemove(this.focusBox[key]);
                 }
             }
         }, {
@@ -920,7 +969,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
         }, {
             key: 'quit',
-            value: function quit() {}
+            value: function quit() {
+                this.focus.remove();
+                this.tooltip.remove();
+            }
         }, {
             key: 'previous',
             value: function previous() {
