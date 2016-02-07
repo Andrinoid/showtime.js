@@ -942,7 +942,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 //tooltip does not excist
 
                 //We create new tooltip for every focus point. This is easier to manage than collecting them
-                this.tooltip = new Tooltip(settings.element, {
+                this.tooltip = new Tooltip(this.focus.focusBox.middle, {
                     title: settings.title,
                     content: settings.content,
                     placement: settings.placement, //top, left, right, bottom
@@ -950,7 +950,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     offset: this._resolveOffsets(settings),
                     buttons: settings.buttons
                 });
-                console.log(settings.dimentions);
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
                     _this8.tooltip.show();
