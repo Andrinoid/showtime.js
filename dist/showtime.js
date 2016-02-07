@@ -753,11 +753,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
         }, {
             key: 'focusOn',
-            value: function focusOn(elm) {
+            value: function focusOn(elm, customPos) {
                 var _this5 = this;
 
                 var focusElm = normalizeElement(elm);
                 var styles = focusElm.getBoundingClientRect();
+                console.log(styles);
+                if (typeof customPos !== 'undefined') {
+                    //ClientRect object only have getters, so we cant extend it and need to clone it
+                    var styleObj = {
+                        bottom: styles.bottom,
+                        height: styles.height,
+                        left: styles.left,
+                        right: styles.right,
+                        top: styles.top,
+                        width: styles.width
+                    };
+                    styles = extend(styleObj, customPos);
+                }
 
                 var animate = function animate() {
                     _this5.animator.start({
@@ -862,8 +875,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 padding: 0,
                 autoplay: false,
                 autoplayDelay: 1000,
-                buttons: []
-
+                buttons: [],
+                focusClick: null,
+                dimentions: null
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -917,7 +931,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     offset: this._resolveOffsets(settings),
                     buttons: settings.buttons
                 });
-                this.focus.focusOn(settings.element);
+                console.log(settings.dimentions);
+                this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
                     _this7.tooltip.show();
                     _this7.chainIndex++;

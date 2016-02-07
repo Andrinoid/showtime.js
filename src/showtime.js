@@ -1017,9 +1017,22 @@
 
         }
 
-        focusOn(elm) {
+        focusOn(elm, customPos) {
             let focusElm = normalizeElement(elm);
             let styles = focusElm.getBoundingClientRect();
+            console.log(styles);
+            if (typeof customPos !== 'undefined') {
+                //ClientRect object only have getters, so we cant extend it and need to clone it
+                let styleObj = {
+                    bottom: styles.bottom,
+                    height: styles.height,
+                    left: styles.left,
+                    right: styles.right,
+                    top: styles.top,
+                    width: styles.width
+                };
+                styles = extend(styleObj, customPos);
+            }
 
             let animate = ()=> {
                 this.animator.start({
@@ -1122,8 +1135,9 @@
                 padding: 0,
                 autoplay: false,
                 autoplayDelay: 1000,
-                buttons: []
-
+                buttons: [],
+                focusClick: null,
+                dimentions: null,
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -1145,7 +1159,7 @@
             let defaults = clone(this.defaults);
             let chainItem = this.chain[this.chainIndex];
             //if chainItem is a function we run it
-            if(typeof(chainItem) === 'function') {
+            if (typeof(chainItem) === 'function') {
                 chainItem();
                 this.chainIndex++;
                 return;
@@ -1172,7 +1186,8 @@
                 offset: this._resolveOffsets(settings),
                 buttons: settings.buttons
             });
-            this.focus.focusOn(settings.element);
+            console.log(settings.dimentions);
+            this.focus.focusOn(settings.element, settings.dimentions);
             this.focus.complete = ()=> {
                 this.tooltip.show();
                 this.chainIndex++;
