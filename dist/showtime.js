@@ -887,11 +887,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * focus on element
                  */
 
+                var defaults = clone(this.defaults);
+                var chainItem = this.chain[this.chainIndex];
+                //if chainItem is a function we run it
+                if (typeof chainItem === 'function') {
+                    chainItem();
+                    this.chainIndex++;
+                    return;
+                }
+
+                var settings = extend(defaults, chainItem);
+
                 //focus is reused until tour.quit() then it gets deleted and we have to create it again.
                 if (!this.focus) this._createFocus();
                 //override defaults with given for this focus
-                var defaults = clone(this.defaults);
-                var settings = extend(defaults, this.chain[this.chainIndex]);
                 this.focus.default.padding = settings.padding;
                 //remove last tooltip if any
                 try {
@@ -981,6 +990,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.focus.remove();
                 delete this.focus;
                 this.tooltip.remove();
+            }
+        }, {
+            key: 'call',
+            value: function call(fn) {
+                this.chain.push(fn);
+                return this;
             }
         }, {
             key: 'previous',

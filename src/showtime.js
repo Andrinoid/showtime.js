@@ -1142,11 +1142,20 @@
              * focus on element
              */
 
+            let defaults = clone(this.defaults);
+            let chainItem = this.chain[this.chainIndex];
+            //if chainItem is a function we run it
+            if(typeof(chainItem) === 'function') {
+                chainItem();
+                this.chainIndex++;
+                return;
+            }
+
+            let settings = extend(defaults, chainItem);
+
             //focus is reused until tour.quit() then it gets deleted and we have to create it again.
             if (!this.focus) this._createFocus();
             //override defaults with given for this focus
-            let defaults = clone(this.defaults);
-            let settings = extend(defaults, this.chain[this.chainIndex]);
             this.focus.default.padding = settings.padding;
             //remove last tooltip if any
             try {
@@ -1228,6 +1237,11 @@
             this.focus.remove();
             delete this.focus;
             this.tooltip.remove();
+        }
+
+        call(fn) {
+            this.chain.push(fn);
+            return this;
         }
 
         previous() {//control not tested
