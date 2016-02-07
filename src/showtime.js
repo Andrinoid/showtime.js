@@ -989,7 +989,7 @@
         constructor(config) {
             this.default = {
                 padding: 0,
-                closeOnClick: null
+                removeOnClick: false
             };
             this.default = extend(this.default, config);
             this.buildDom();
@@ -1009,6 +1009,7 @@
         }
 
         buildDom() {
+            let elmOptions = this.default.closeOnClick ? {click: ()=> { this.remove() }} : {};
             this.focusBox = {
                 middle: new Elm('div.ghost-focus', {
                     css: {
@@ -1017,11 +1018,10 @@
                         left: '50%',
                     }
                 }, document.body),
-                /////////////////////////make if statement for options trigger
-                right: new Elm('div.to_right', {click: ()=> { this.remove() }}, document.body),
-                top: new Elm('div.to_top',  {click: ()=> { this.remove() }}, document.body),
-                bottom: new Elm('div.to_bottom',  {click: ()=> { this.remove() }}, document.body),
-                left: new Elm('div.to_left',  {click: ()=> { this.remove() }}, document.body)
+                right: new Elm('div.to_right', elmOptions, document.body),
+                top: new Elm('div.to_top',  elmOptions, document.body),
+                bottom: new Elm('div.to_bottom',  elmOptions, document.body),
+                left: new Elm('div.to_left',  elmOptions, document.body)
             };
 
         }
@@ -1147,6 +1147,7 @@
                 buttons: [],
                 focusClick: null,
                 dimentions: null,
+                removeOnOuterClick: false,
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -1154,7 +1155,11 @@
         }
 
         _createFocus() {
-            this.focus = new Focus({padding: this.defaults.padding});
+            this.focus = new Focus({
+                padding: this.defaults.padding,
+                closeOnClick: this.defaults.removeOnOuterClick
+            });
+            //TODO Focus needs to fire event on remove so we can use it here to quit tour
         }
 
         _callchain() {

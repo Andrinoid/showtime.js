@@ -726,7 +726,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             this.default = {
                 padding: 0,
-                closeOnClick: null
+                removeOnClick: false
             };
             this.default = extend(this.default, config);
             this.buildDom();
@@ -748,6 +748,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function buildDom() {
                 var _this5 = this;
 
+                var elmOptions = this.default.closeOnClick ? { click: function click() {
+                        _this5.remove();
+                    } } : {};
                 this.focusBox = {
                     middle: new Elm('div.ghost-focus', {
                         css: {
@@ -756,19 +759,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             left: '50%'
                         }
                     }, document.body),
-                    /////////////////////////make if statement for options trigger
-                    right: new Elm('div.to_right', { click: function click() {
-                            _this5.remove();
-                        } }, document.body),
-                    top: new Elm('div.to_top', { click: function click() {
-                            _this5.remove();
-                        } }, document.body),
-                    bottom: new Elm('div.to_bottom', { click: function click() {
-                            _this5.remove();
-                        } }, document.body),
-                    left: new Elm('div.to_left', { click: function click() {
-                            _this5.remove();
-                        } }, document.body)
+                    right: new Elm('div.to_right', elmOptions, document.body),
+                    top: new Elm('div.to_top', elmOptions, document.body),
+                    bottom: new Elm('div.to_bottom', elmOptions, document.body),
+                    left: new Elm('div.to_left', elmOptions, document.body)
                 };
             }
         }, {
@@ -897,7 +891,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 autoplayDelay: 1000,
                 buttons: [],
                 focusClick: null,
-                dimentions: null
+                dimentions: null,
+                removeOnOuterClick: false
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -907,7 +902,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         _createClass(showtime, [{
             key: '_createFocus',
             value: function _createFocus() {
-                this.focus = new Focus({ padding: this.defaults.padding });
+                this.focus = new Focus({
+                    padding: this.defaults.padding,
+                    closeOnClick: this.defaults.removeOnOuterClick
+                });
+                //TODO Focus needs to fire event on remove so we can use it here to quit tour
             }
         }, {
             key: '_callchain',
