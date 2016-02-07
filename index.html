@@ -142,41 +142,90 @@
                     })
             ;
 
-    //
-    //    var tour = new Showtime({
-    //        focusClick: function() {
-    //            tour.next();
-    //        }
-    //    })
-    //            .show({
-    //                element: 'gridbox1',
-    //                title: 'hey I have a title again.',
-    //                placement: 'right',
-    //                content: '<p>This is a ball</p>',
-    //                padding: 10,
-    //                focusClick: function() {
-    //                    tour.next();
-    //                }
-    //            })
-    //            .show({
-    //                element: '.gridbox3',
-    //                placement: 'top',
-    //                content: '<p>This is a box1</p>',
-    //                focusClick: function() {
-    //                    alert();
-    //                    tour.next();
-    //                }
-    //            })
-    //            .show({
-    //                element: '.gridbox4',
-    //                placement: 'left',
-    //                content: '<p>This is a box2</p>'
-    //            })
-    //            .show({
-    //                element: '.wrap',
-    //                placement: 'left',
-    //                content: '<p>This is a box2</p>'
-    //            });
+//Custom script
+  var tour = new Showtime({
+        debug: true,
+        autoplay: false,
+        padding: 10,
+        focusClick: function () {
+            tour.next();
+        },
+        buttons: [
+            {
+                label: 'Hætta',
+                click: function () {
+                    tour.quit()
+                }
+            },
+            {
+                label: 'Næsta',
+                click: function () {
+                    tour.next()
+                }
+            }
+        ]
+    });
+
+
+    //testcase
+//	tour.show({
+//                element: '.tg-031e',
+//                title: 'Leitarsíur.',
+//                placement: 'right',
+//                content: '<p>Stilltu leitarsíurnar til þess að finna rétta bílinn fyrir þig</p>',
+//                padding: 5,
+//      			dimentions: {
+//                    width: 185,
+//    				height: 236
+//                },
+//            })
+//    		.show({
+//                element: '#tabs',
+//                title: 'Leitarniðurstaða.',
+//                placement: 'top',
+//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
+//                padding: 5,
+//            })
+//    		.show({
+//                element: '.price-filter',
+//                title: 'Raða eftir verðlistaverði',
+//                placement: 'top',
+//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
+//                padding: 5,
+//            })
+//    		.show({
+//                element: document.querySelector('#Table2 div'),
+//                title: 'Bíllinn',
+//                placement: 'right',
+//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
+//                padding: 10,
+//
+//                buttons: [
+//                    {
+//                        label: 'Hætta',
+//                        click: function () {
+//                            tour.quit()
+//                        }
+//                    },
+//                    {
+//                        label: 'Næsta',
+//                        click: function () {
+//                          	$('#Table2 > div').eq(0).trigger('click');
+//                            tour.next();
+//                        }
+//                    }
+//                ]
+//
+//
+//            })
+//    		.show({
+//                element: '.tg-s6z2',
+//                title: 'Bíllinn',
+//                placement: 'right',
+//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
+//                padding: 10,
+//
+//            });
 
 
 </script>

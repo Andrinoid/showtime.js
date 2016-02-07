@@ -657,6 +657,7 @@
       }
       .ghost-focus {
           background: transparent;
+          z-index: 1000;
       }
 
       /*** Animations ***/
