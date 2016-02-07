@@ -300,6 +300,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.options = options || {};
 
             for (var key in this.options) {
+                console.log(key);
                 if (!this.options.hasOwnProperty(key)) {
                     continue;
                 }
@@ -367,6 +368,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     }
                     this.element.style[prop] = obj[prop];
                 }
+            }
+        }, {
+            key: 'click',
+            value: function click(fn) {
+                this.element.addEventListener('click', function () {
+                    fn();
+                });
             }
         }, {
             key: 'inject',
@@ -717,7 +725,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _classCallCheck(this, Focus);
 
             this.default = {
-                padding: 0
+                padding: 0,
+                closeOnClick: null
             };
             this.default = extend(this.default, config);
             this.buildDom();
@@ -737,6 +746,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'buildDom',
             value: function buildDom() {
+                var _this5 = this;
+
                 this.focusBox = {
                     middle: new Elm('div.ghost-focus', {
                         css: {
@@ -745,16 +756,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             left: '50%'
                         }
                     }, document.body),
-                    right: new Elm('div.to_right', {}, document.body),
-                    top: new Elm('div.to_top', {}, document.body),
-                    bottom: new Elm('div.to_bottom', {}, document.body),
-                    left: new Elm('div.to_left', {}, document.body)
+                    /////////////////////////make if statement for options trigger
+                    right: new Elm('div.to_right', { click: function click() {
+                            _this5.remove();
+                        } }, document.body),
+                    top: new Elm('div.to_top', { click: function click() {
+                            _this5.remove();
+                        } }, document.body),
+                    bottom: new Elm('div.to_bottom', { click: function click() {
+                            _this5.remove();
+                        } }, document.body),
+                    left: new Elm('div.to_left', { click: function click() {
+                            _this5.remove();
+                        } }, document.body)
                 };
             }
         }, {
             key: 'focusOn',
             value: function focusOn(elm, customPos) {
-                var _this5 = this;
+                var _this6 = this;
 
                 var focusElm = normalizeElement(elm);
                 var styles = focusElm.getBoundingClientRect();
@@ -773,14 +793,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
 
                 var animate = function animate() {
-                    _this5.animator.start({
+                    _this6.animator.start({
                         width: styles.width,
                         height: styles.height,
                         left: styles.left,
                         top: styles.top + window.scrollY
                     });
-                    _this5.animator.step = function (el) {
-                        _this5.setCoverPos(el);
+                    _this6.animator.step = function (el) {
+                        _this6.setCoverPos(el);
                     };
                 };
 
@@ -815,7 +835,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setCoverPos',
             value: function setCoverPos(el) {
-                var _this6 = this;
+                var _this7 = this;
 
                 var body = document.body;
                 var html = document.documentElement;
@@ -827,7 +847,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     left: 0,
                     right: 0,
                     height: function () {
-                        return dimentions.top > 0 ? dimentions.top - _this6.default.padding + window.scrollY + 'px' : 0;
+                        return dimentions.top > 0 ? dimentions.top - _this7.default.padding + window.scrollY + 'px' : 0;
                     }() //if element overflow top height is 0
                 });
                 setStyles(this.focusBox.bottom, {
@@ -847,7 +867,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     left: 0,
                     width: function () {
-                        return dimentions.left > 0 ? dimentions.left - _this6.default.padding + 'px' : 0;
+                        return dimentions.left > 0 ? dimentions.left - _this7.default.padding + 'px' : 0;
                     }()
                 });
             }
@@ -892,7 +912,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callchain',
             value: function _callchain() {
-                var _this7 = this;
+                var _this8 = this;
 
                 /*
                  * We clone the default settings and merge it with the current chain settings.
@@ -934,10 +954,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 console.log(settings.dimentions);
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
-                    _this7.tooltip.show();
-                    _this7.chainIndex++;
-                    if (_this7.defaults.autoplay) {
-                        _this7._callAgain();
+                    _this8.tooltip.show();
+                    _this8.chainIndex++;
+                    if (_this8.defaults.autoplay) {
+                        _this8._callAgain();
                     }
                 };
                 if (typeof settings.focusClick === "undefined") {
@@ -950,10 +970,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callAgain',
             value: function _callAgain() {
-                var _this8 = this;
+                var _this9 = this;
 
                 setTimeout(function () {
-                    _this8.play();
+                    _this9.play();
                 }, this.defaults.autoplayDelay);
             }
         }, {

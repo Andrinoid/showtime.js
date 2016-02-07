@@ -304,6 +304,7 @@
             this.options = options || {};
 
             for (let key in this.options) {
+                console.log(key);
                 if (!this.options.hasOwnProperty(key)) {
                     continue;
                 }
@@ -365,6 +366,12 @@
                 }
                 this.element.style[prop] = obj[prop];
             }
+        }
+
+        click(fn) {
+            this.element.addEventListener('click', function() {
+                fn();
+            });
         }
 
         inject(to) {
@@ -981,7 +988,8 @@
 
         constructor(config) {
             this.default = {
-                padding: 0
+                padding: 0,
+                closeOnClick: null
             };
             this.default = extend(this.default, config);
             this.buildDom();
@@ -1009,10 +1017,11 @@
                         left: '50%',
                     }
                 }, document.body),
-                right: new Elm('div.to_right', {}, document.body),
-                top: new Elm('div.to_top', {}, document.body),
-                bottom: new Elm('div.to_bottom', {}, document.body),
-                left: new Elm('div.to_left', {}, document.body)
+                /////////////////////////make if statement for options trigger
+                right: new Elm('div.to_right', {click: ()=> { this.remove() }}, document.body),
+                top: new Elm('div.to_top',  {click: ()=> { this.remove() }}, document.body),
+                bottom: new Elm('div.to_bottom',  {click: ()=> { this.remove() }}, document.body),
+                left: new Elm('div.to_left',  {click: ()=> { this.remove() }}, document.body)
             };
 
         }
