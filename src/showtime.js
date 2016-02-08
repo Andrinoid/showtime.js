@@ -260,6 +260,100 @@
         tick();
     }
 
+    class Animator {
+
+        constructor(elm, options) {
+            //hello
+            this.options = {
+                speed: 2000,
+                easing: 'easeOutSine'
+            };
+            this.options = extend(this.options, options);
+            this.elm = normalizeElement(elm);
+
+            this.currentTime = 0;
+
+            this.time = 1;
+            this.easingEquations = {
+                easeOutSine: function (pos) {
+                    return Math.sin(pos * (Math.PI / 2));
+                },
+                easeInOutSine: function (pos) {
+                    return (-0.5 * (Math.cos(Math.PI * pos) - 1));
+                },
+                easeInOutQuint: function (pos) {
+                    if ((pos /= 0.5) < 1) {
+                        return 0.5 * Math.pow(pos, 5);
+                    }
+                    return 0.5 * (Math.pow((pos - 2), 5) + 2);
+                }
+            };
+        }
+
+        resolveTime(elm) {
+            let elm = this.elm || elm;
+            let computed = getComputedStyle(this.elm);
+            let valueMap =  ['left', 'right', 'top', 'bottom'];
+            let currentStyles = {};
+            valueMap.forEach((prop)=> {
+                currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
+            });
+            console.log(currentStyles);
+            //this.time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, .8));
+        }
+
+        tick() {
+            this.currentTime += 1 / 60;
+
+
+            var p = this.currentTime / this.time;
+            var t = this.easingEquations[this.options.easing](p);
+
+            if (p < 1) {
+                requestAnimationFrame(this.tick.bind(this));
+
+                //window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
+                this.applyStyles(t)
+
+            } else {
+                this.complete();
+                this.currentTime = 0;
+                return;
+                //window.scrollTo(0, scrollTargetY);
+            }
+        }
+
+        applyStyles(t) {
+            //this.fireEvent('tick', this.elm);
+            for (let prop in this.styles) {
+                if (!this.styles.hasOwnProperty(prop)) {
+                    continue;
+                }
+
+                let value = this.styles[prop];
+                let from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
+                console.log(from, value);
+                let nextValue = Math.round(this.compute(from, value, t));
+                this.elm.style[prop] = nextValue + 'px';
+            }
+
+        }
+
+        compute(from, to, delta) {
+            return (to - from) * delta + from;
+        }
+
+        complete() {}
+
+        start(styles) {
+            this.styles = styles;
+            this.tick();
+
+        }
+
+    }
+    window.Animator = Animator;
+
     function fadeOutRemove(el) {
         el.style.transition = 'ease opacity 0.5s';
         el.style.webkitTransition = 'ease opacity 0.5s';
@@ -390,7 +484,7 @@
      * TODO Duration is not working and animate-able styles are limeted.
      * ------------------------------------------------------------------------
      */
-    class Animator {
+    class Animator2 {
 
         constructor(elm, options) {
             //hello
@@ -469,20 +563,13 @@
 
         }
 
-        disappear() {
-            let left = this.styles.width / 2 + this.styles.left;
-            let top = this.styles.height / 2 + this.styles.top;
-            this.styles = {'width': 0, 'height': 0, 'left': left, 'top': top};
-            //this.animate();
-        }
-
         start(styles) {
             this.styles = styles;
             this.animate();
         }
     }
 
-
+    window.Animator2 = Animator2;
     /**
      * ------------------------------------------------------------------------
      * Tooltip

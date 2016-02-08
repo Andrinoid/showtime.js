@@ -254,6 +254,105 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         tick();
     }
 
+    var Animator = function () {
+        function Animator(elm, options) {
+            _classCallCheck(this, Animator);
+
+            //hello
+            this.options = {
+                speed: 2000,
+                easing: 'easeOutSine'
+            };
+            this.options = extend(this.options, options);
+            this.elm = normalizeElement(elm);
+
+            this.currentTime = 0;
+
+            this.time = 1;
+            this.easingEquations = {
+                easeOutSine: function easeOutSine(pos) {
+                    return Math.sin(pos * (Math.PI / 2));
+                },
+                easeInOutSine: function easeInOutSine(pos) {
+                    return -0.5 * (Math.cos(Math.PI * pos) - 1);
+                },
+                easeInOutQuint: function easeInOutQuint(pos) {
+                    if ((pos /= 0.5) < 1) {
+                        return 0.5 * Math.pow(pos, 5);
+                    }
+                    return 0.5 * (Math.pow(pos - 2, 5) + 2);
+                }
+            };
+        }
+
+        _createClass(Animator, [{
+            key: 'resolveTime',
+            value: function resolveTime() {
+                var computed = getComputedStyle(this.elm);
+                var valueMap = ['left', 'right', 'top', 'bottom'];
+                var currentStyles = {};
+                valueMap.forEach(function (prop) {
+                    currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
+                });
+                this.time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, .8));
+            }
+        }, {
+            key: 'tick',
+            value: function tick() {
+                this.currentTime += 1 / 60;
+
+                var p = this.currentTime / this.time;
+                var t = this.easingEquations[this.options.easing](p);
+
+                if (p < 1) {
+                    requestAnimationFrame(this.tick.bind(this));
+
+                    //window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
+                    this.applyStyles(t);
+                } else {
+                    this.complete();
+                    this.currentTime = 0;
+                    return;
+                    //window.scrollTo(0, scrollTargetY);
+                }
+            }
+        }, {
+            key: 'applyStyles',
+            value: function applyStyles(t) {
+                //this.fireEvent('tick', this.elm);
+                for (var prop in this.styles) {
+                    if (!this.styles.hasOwnProperty(prop)) {
+                        continue;
+                    }
+
+                    var value = this.styles[prop];
+                    var from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
+                    console.log(from, value);
+                    var nextValue = Math.round(this.compute(from, value, t));
+                    this.elm.style[prop] = nextValue + 'px';
+                }
+            }
+        }, {
+            key: 'compute',
+            value: function compute(from, to, delta) {
+                return (to - from) * delta + from;
+            }
+        }, {
+            key: 'complete',
+            value: function complete() {}
+        }, {
+            key: 'start',
+            value: function start(styles) {
+                this.styles = styles;
+                this.tick();
+            }
+        }]);
+
+        return Animator;
+    }();
+
+    window.Animator = Animator;
+
     function fadeOutRemove(el) {
         el.style.transition = 'ease opacity 0.5s';
         el.style.webkitTransition = 'ease opacity 0.5s';
@@ -396,9 +495,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * ------------------------------------------------------------------------
      */
 
-    var Animator = function () {
-        function Animator(elm, options) {
-            _classCallCheck(this, Animator);
+    var Animator2 = function () {
+        function Animator2(elm, options) {
+            _classCallCheck(this, Animator2);
 
             //hello
             this.options = {
@@ -428,7 +527,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             };
         }
 
-        _createClass(Animator, [{
+        _createClass(Animator2, [{
             key: 'animate',
             value: function animate() {
                 var _this2 = this;
@@ -486,14 +585,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
             }
         }, {
-            key: 'disappear',
-            value: function disappear() {
-                var left = this.styles.width / 2 + this.styles.left;
-                var top = this.styles.height / 2 + this.styles.top;
-                this.styles = { 'width': 0, 'height': 0, 'left': left, 'top': top };
-                //this.animate();
-            }
-        }, {
             key: 'start',
             value: function start(styles) {
                 this.styles = styles;
@@ -501,9 +592,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
         }]);
 
-        return Animator;
+        return Animator2;
     }();
 
+    window.Animator2 = Animator2;
     /**
      * ------------------------------------------------------------------------
      * Tooltip
