@@ -36,8 +36,8 @@ var tour = new Showtime()
     });
 </script>
 ```
-From this point you can chain as many show and call function you like to the showtime chain.
-Sometimes this you end up with a lot of repetitions. so to make your code pretty you can define global defaults for the chain like in the example below.
+From this point you can chain as many show and call functions you like to the showtime chain.
+Sometimes you end up with a lot of repetitions. so to make your code pretty you can define global defaults for the chain like in the example below.
 
 Example code
 ```javascript
