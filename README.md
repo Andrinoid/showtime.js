@@ -120,11 +120,11 @@ tour.end();
 ```
 
 ### Options
-padding
-buttons
-focusClick
-dimentions
-placement
-removeOnOuterClick
-autoplay //not really tested with call functions
-autoplayDelay
+-padding
+-buttons
+-focusClick
+-dimentions
+-placement
+-removeOnOuterClick
+-autoplay //not really tested with call functions
+-autoplayDelay
