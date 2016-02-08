@@ -254,105 +254,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         tick();
     }
 
-    var Animator = function () {
-        function Animator(elm, options) {
-            _classCallCheck(this, Animator);
-
-            //hello
-            this.options = {
-                speed: 2000,
-                easing: 'easeOutSine'
-            };
-            this.options = extend(this.options, options);
-            this.elm = normalizeElement(elm);
-
-            this.currentTime = 0;
-
-            this.time = 1;
-            this.easingEquations = {
-                easeOutSine: function easeOutSine(pos) {
-                    return Math.sin(pos * (Math.PI / 2));
-                },
-                easeInOutSine: function easeInOutSine(pos) {
-                    return -0.5 * (Math.cos(Math.PI * pos) - 1);
-                },
-                easeInOutQuint: function easeInOutQuint(pos) {
-                    if ((pos /= 0.5) < 1) {
-                        return 0.5 * Math.pow(pos, 5);
-                    }
-                    return 0.5 * (Math.pow(pos - 2, 5) + 2);
-                }
-            };
-        }
-
-        _createClass(Animator, [{
-            key: 'resolveTime',
-            value: function resolveTime() {
-                var computed = getComputedStyle(this.elm);
-                var valueMap = ['left', 'right', 'top', 'bottom'];
-                var currentStyles = {};
-                valueMap.forEach(function (prop) {
-                    currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
-                });
-                this.time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, .8));
-            }
-        }, {
-            key: 'tick',
-            value: function tick() {
-                this.currentTime += 1 / 60;
-
-                var p = this.currentTime / this.time;
-                var t = this.easingEquations[this.options.easing](p);
-
-                if (p < 1) {
-                    requestAnimationFrame(this.tick.bind(this));
-
-                    //window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
-                    this.applyStyles(t);
-                } else {
-                    this.complete();
-                    this.currentTime = 0;
-                    return;
-                    //window.scrollTo(0, scrollTargetY);
-                }
-            }
-        }, {
-            key: 'applyStyles',
-            value: function applyStyles(t) {
-                //this.fireEvent('tick', this.elm);
-                for (var prop in this.styles) {
-                    if (!this.styles.hasOwnProperty(prop)) {
-                        continue;
-                    }
-
-                    var value = this.styles[prop];
-                    var from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
-                    console.log(from, value);
-                    var nextValue = Math.round(this.compute(from, value, t));
-                    this.elm.style[prop] = nextValue + 'px';
-                }
-            }
-        }, {
-            key: 'compute',
-            value: function compute(from, to, delta) {
-                return (to - from) * delta + from;
-            }
-        }, {
-            key: 'complete',
-            value: function complete() {}
-        }, {
-            key: 'start',
-            value: function start(styles) {
-                this.styles = styles;
-                this.tick();
-            }
-        }]);
-
-        return Animator;
-    }();
-
-    window.Animator = Animator;
-
     function fadeOutRemove(el) {
         el.style.transition = 'ease opacity 0.5s';
         el.style.webkitTransition = 'ease opacity 0.5s';
@@ -399,7 +300,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.options = options || {};
 
             for (var key in this.options) {
-                console.log(key);
                 if (!this.options.hasOwnProperty(key)) {
                     continue;
                 }
@@ -491,111 +391,130 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * Animations
      * Animates element from current location to given style/location
      *
-     * TODO Duration is not working and animate-able styles are limeted.
+     * TODO animate-able styles are limeted.
      * ------------------------------------------------------------------------
      */
 
-    var Animator2 = function () {
-        function Animator2(elm, options) {
-            _classCallCheck(this, Animator2);
+    var Animator = function () {
+        function Animator(elm, options) {
+            _classCallCheck(this, Animator);
 
-            //hello
             this.options = {
-                effect: 'linear',
-                duration: 6000 };
-            //duration slow down animation but does not animate all the time
+                speed: 2000,
+                easing: 'easeOut',
+                slomo: false
+            };
             this.options = extend(this.options, options);
-
             this.elm = normalizeElement(elm);
 
-            this.effects = {
-                linear: function linear(t) {
-                    return t;
+            this.currentTime = 0;
+
+            this.time = 1;
+            this.easingEquations = {
+                easeOutSine: function easeOutSine(pos) {
+                    return Math.sin(pos * (Math.PI / 2));
+                },
+                easeInOutSine: function easeInOutSine(pos) {
+                    return -0.5 * (Math.cos(Math.PI * pos) - 1);
+                },
+                easeInOutQuint: function easeInOutQuint(pos) {
+                    if ((pos /= 0.5) < 1) {
+                        return 0.5 * Math.pow(pos, 5);
+                    }
+                    return 0.5 * (Math.pow(pos - 2, 5) + 2);
+                },
+                linear: function linear(progress) {
+                    return progress;
+                },
+                quadratic: function quadratic(progress) {
+                    return Math.pow(progress, 2);
+                },
+                swing: function swing(progress) {
+                    return 0.5 - Math.cos(progress * Math.PI) / 2;
+                },
+                circ: function circ(progress) {
+                    return 1 - Math.sin(Math.acos(progress));
                 },
                 easeOut: function easeOut(t) {
                     return t * (2 - t);
-                },
-                easeOutQuart: function easeOutQuart(t) {
-                    return 1 - --t * t * t * t;
-                },
-                easeInOutQuint: function easeInOutQuint(t) {
-                    return t < .5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
-                },
-                b4: function b4(t) {
-                    return t * t * t;
                 }
             };
         }
 
-        _createClass(Animator2, [{
-            key: 'animate',
-            value: function animate() {
-                var _this2 = this;
-
-                var start = new Date();
-                var repeat = function repeat() {
-                    var timePassed = new Date() - start;
-                    var progress = timePassed / _this2.options.duration * 100;
-                    if (progress > 1) {
-                        progress = 1;
-                    }
-                    var delta = _this2.effects[_this2.options.effect](progress);
-                    _this2.applyStyles(delta);
-                    if (progress === 1) {
-                        _this2.complete();
-                        return;
-                    }
-                    _this2.step();
-                    _this2.loopID = requestAnimationFrame(repeat);
-                };
-                this.loopID = requestAnimationFrame(repeat);
+        _createClass(Animator, [{
+            key: 'resolveTime',
+            value: function resolveTime() {
+                var computed = getComputedStyle(this.elm);
+                var valueMap = ['left', 'right', 'top', 'bottom'];
+                var currentStyles = {};
+                valueMap.forEach(function (prop) {
+                    currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
+                });
+                var distance = Math.abs(currentStyles.top - this.styles.top + (currentStyles.left - this.styles.left) / 2);
+                return Math.max(.1, Math.min(distance / this.options.speed, .8));
             }
-
-            //method to override
-
         }, {
-            key: 'complete',
-            value: function complete() {}
+            key: 'tick',
+            value: function tick() {
+                this.currentTime += 1 / 60;
 
-            //method to override
+                var p = this.currentTime / this.time;
+                var t = this.easingEquations[this.options.easing](p);
 
-        }, {
-            key: 'step',
-            value: function step() {}
-        }, {
-            key: 'compute',
-            value: function compute(from, to, delta) {
-                return (to - from) * delta + from;
+                if (p < 1) {
+                    this.step();
+                    requestAnimationFrame(this.tick.bind(this));
+
+                    //window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
+                    this.applyStyles(t);
+                } else {
+                    this.complete();
+                    this.currentTime = 0;
+                    return;
+                    //window.scrollTo(0, scrollTargetY);
+                }
             }
-
-            //Note that this function also retrives the current size and position of the focus element
-
         }, {
             key: 'applyStyles',
-            value: function applyStyles(delta) {
+            value: function applyStyles(t) {
                 //this.fireEvent('tick', this.elm);
                 for (var prop in this.styles) {
                     if (!this.styles.hasOwnProperty(prop)) {
                         continue;
                     }
-                    var value = this.styles[prop];
+                    var to = this.styles[prop];
                     var from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
-                    var nextValue = Math.round(this.compute(from, value, delta));
+                    var nextValue = Math.round(this.compute(from, to, t));
                     this.elm.style[prop] = nextValue + 'px';
                 }
             }
         }, {
+            key: 'compute',
+            value: function compute(from, to, delta) {
+                return (to - from) * delta + from;
+            }
+        }, {
+            key: 'complete',
+            value: function complete() {}
+        }, {
+            key: 'step',
+            value: function step() {}
+        }, {
             key: 'start',
             value: function start(styles) {
                 this.styles = styles;
-                this.animate();
+                this.time = this.resolveTime();
+                if (this.options.slomo) {
+                    this.time = 5;
+                }
+                this.time = 1;
+                this.tick();
             }
         }]);
 
-        return Animator2;
+        return Animator;
     }();
 
-    window.Animator2 = Animator2;
     /**
      * ------------------------------------------------------------------------
      * Tooltip
@@ -680,7 +599,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setDirection',
             value: function setDirection() {
-                var _this3 = this;
+                var _this2 = this;
 
                 var opposites = {
                     'top': 'Down',
@@ -689,7 +608,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     'right': 'Right'
                 };
                 var animationClass = function animationClass() {
-                    return 'fadeIn' + opposites[_this3.default.placement];
+                    return 'fadeIn' + opposites[_this2.default.placement];
                 };
                 setClass(this.popover, this.default.placement);
                 setClass(this.popover, animationClass());
@@ -812,7 +731,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var Focus = function () {
         function Focus(config) {
-            var _this4 = this;
+            var _this3 = this;
 
             _classCallCheck(this, Focus);
 
@@ -824,11 +743,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.buildDom();
 
             this.animator = new Animator(this.focusBox.middle, {
-                effect: 'easeOut',
-                duration: 60000
+                //effect: 'easeOut',
+                //duration: 60000
             });
             this.animator.complete = function () {
-                _this4.complete();
+                _this3.complete();
             };
         }
 
@@ -838,11 +757,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'buildDom',
             value: function buildDom() {
-                var _this5 = this;
+                var _this4 = this;
 
-                var elmOptions = this.default.closeOnClick ? { click: function click() {
-                        _this5.remove();
-                    } } : {};
+                var elmOptions = this.default.closeOnClick ? {
+                    click: function click() {
+                        _this4.remove();
+                    }
+                } : {};
                 this.focusBox = {
                     middle: new Elm('div.ghost-focus', {
                         css: {
@@ -860,11 +781,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'focusOn',
             value: function focusOn(elm, customPos) {
-                var _this6 = this;
+                var _this5 = this;
 
                 var focusElm = normalizeElement(elm);
                 var styles = focusElm.getBoundingClientRect();
-                console.log(styles);
                 if (typeof customPos !== 'undefined') {
                     //ClientRect object only have getters, so we cant extend it and need to clone it
                     var styleObj = {
@@ -879,14 +799,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
 
                 var animate = function animate() {
-                    _this6.animator.start({
+                    _this5.animator.start({
                         width: styles.width,
                         height: styles.height,
                         left: styles.left,
                         top: styles.top + window.scrollY
                     });
-                    _this6.animator.step = function (el) {
-                        _this6.setCoverPos(el);
+                    _this5.animator.step = function (el) {
+                        _this5.setCoverPos(el);
                     };
                 };
 
@@ -921,7 +841,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setCoverPos',
             value: function setCoverPos(el) {
-                var _this7 = this;
+                var _this6 = this;
 
                 var body = document.body;
                 var html = document.documentElement;
@@ -933,7 +853,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     left: 0,
                     right: 0,
                     height: function () {
-                        return dimentions.top > 0 ? dimentions.top - _this7.default.padding + window.scrollY + 'px' : 0;
+                        return dimentions.top > 0 ? dimentions.top - _this6.default.padding + window.scrollY + 'px' : 0;
                     }() //if element overflow top height is 0
                 });
                 setStyles(this.focusBox.bottom, {
@@ -953,7 +873,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     left: 0,
                     width: function () {
-                        return dimentions.left > 0 ? dimentions.left - _this7.default.padding + 'px' : 0;
+                        return dimentions.left > 0 ? dimentions.left - _this6.default.padding + 'px' : 0;
                     }()
                 });
             }
@@ -1003,7 +923,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callchain',
             value: function _callchain() {
-                var _this8 = this;
+                var _this7 = this;
 
                 /*
                  * We clone the default settings and merge it with the current chain settings.
@@ -1044,10 +964,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
-                    _this8.tooltip.show();
-                    _this8.chainIndex++;
-                    if (_this8.defaults.autoplay) {
-                        _this8._callAgain();
+                    _this7.tooltip.show();
+                    _this7.chainIndex++;
+                    if (_this7.defaults.autoplay) {
+                        _this7._callAgain();
                     }
                 };
                 if (typeof settings.focusClick === "undefined") {
@@ -1060,10 +980,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callAgain',
             value: function _callAgain() {
-                var _this9 = this;
+                var _this8 = this;
 
                 setTimeout(function () {
-                    _this9.play();
+                    _this8.play();
                 }, this.defaults.autoplayDelay);
             }
         }, {
