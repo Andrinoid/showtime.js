@@ -7,7 +7,7 @@ It comes with built in chain. so its really easy to mix your tours with custom f
 Download showtime.js and include it in your html.
 ```html
 <script src="showtime.js"></script>
-
+<button onclick="tour.start()" style="position: relative; z-index: 10000;">Take a tour</button>
 <div class="element">Lorem ipsum</div>
 <script>
 var tour = new Showtime()
@@ -18,13 +18,13 @@ var tour = new Showtime()
         placement: 'right',
         buttons: [
             {
-                label: 'quit',
+                label: 'Quit',
                 click: function () {
                     tour.quit()
                 }
             },
             {
-                label: 'next',
+                label: 'Next',
                 click: function () {
                     tour.next()
                 }
