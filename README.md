@@ -1,7 +1,7 @@
 # showtime.js
 
 Showtime is a lightweight framework for easily creating stunning tours around your web app.
-It comes with built in chain. so its really easy to mix your tours with custom functionality.
+It comes with a built in chain so its really easy to mix your tours with custom functionality.
 
 ### Usage
 Download showtime.js and include it in your html.
@@ -108,7 +108,23 @@ var tour = new Showtime({
 ```
 
 ### Controls
-...
+```javascript
+// start the tour
+tour.start();
+// Run the next function in the chain
+tour.next();
+// Run the previous function in the chain
+tour.previous();
+// End the tour
+tour.end();
+```
 
 ### Options
-...
+padding
+buttons
+focusClick
+dimentions
+placement
+removeOnOuterClick
+autoplay //not really tested with call functions
+autoplayDelay
