@@ -9,7 +9,7 @@
 <style>
     body {
         margin: 0;
-        padding: 0;
+        padding: 50px;
         height: 3000px;
     }
 
@@ -60,17 +60,44 @@
 <div class="four">lorem ipsum</div>
 <button onclick="tour.play()" style="position: relative; z-index: 10000;">next</button>
 <button onclick="tour.next()" style="position: relative; z-index: 10000;">play</button>
-<button onclick="tour.start()" style="position: relative; z-index: 10000;">start</button>
+<button onclick="tour.start()" style="position: relative; z-index: 10000;">Take a tour</button>
 
 <script src="dist/showtime.js"></script>
+
 <script>
 
 
     var tour = new Showtime({
-                debug: true,
-                autoplay: false,
+        autoplay: false,
+        padding: 10,
+        removeOnOuterClick: true,
+        focusClick: function () {
+            tour.next();
+        },
+        buttons: [
+            {
+                label: 'quit',
+                click: function () {
+                    tour.quit()
+                }
+            },
+            {
+                label: 'next',
+                click: function () {
+                    tour.next()
+                }
+            }
+        ]
+    })
+            .show({
+                element: '.ball',
+                title: 'hey I have a title again.',
+                placement: 'right',
+                content: '<p>This is a ball</p>',
                 padding: 10,
-                removeOnOuterClick: true,
+                dimentions: {
+                    height: 400
+                },
                 focusClick: function () {
                     tour.next();
                 },
@@ -89,146 +116,26 @@
                     }
                 ]
             })
-                    .show({
-                        element: '.ball',
-                        title: 'hey I have a title again.',
-                        placement: 'right',
-                        content: '<p>This is a ball</p>',
-                        padding: 10,
-                        dimentions: {
-                            height: 400
-                        },
-                        focusClick: function () {
-                            tour.next();
-                        },
-                        buttons: [
-                            {
-                                label: 'quit',
-                                click: function () {
-                                    tour.quit()
-                                }
-                            },
-                            {
-                                label: 'next',
-                                click: function () {
-                                    tour.next()
-                                }
-                            }
-                        ]
 
-
-                    })
-                    .call(function() {
-                        console.log('foobar');
-                    })
-                    .show({
-                        element: '.four',
-                        placement: 'top',
-                        content: '<p>This is a box2</p>'
-                    })
-                    .show({
-                        element: '.two',
-                        placement: 'bottom',
-                        content: '<p>This is a box1</p>',
-                        focusClick: function () {
-                            alert();
-                            tour.next();
-                        }
-                    })
-                    .show({
-                        element: '.three',
-                        placement: 'left',
-                        content: '<p>This is a box2</p>'
-                    })
-            ;
-
-//Custom script
-//  var tour = new Showtime({
-//        debug: true,
-//        autoplay: false,
-//        padding: 10,
-//        focusClick: function () {
-//            tour.next();
-//        },
-//        buttons: [
-//            {
-//                label: 'Hætta',
-//                click: function () {
-//                    tour.quit()
-//                }
-//            },
-//            {
-//                label: 'Næsta',
-//                click: function () {
-//                    tour.next()
-//                }
-//            }
-//        ]
-//  });
-//
-//      tour.show({
-//                element: '.tg-031e',
-//                title: 'Leitarsíur.',
-//                placement: 'right',
-//                content: '<p>Stilltu leitarsíurnar til þess að finna rétta bílinn fyrir þig</p>',
-//                padding: 5,
-//      			dimentions: {
-//                    width: 185,
-//    				height: 236
-//                },
-//            })
-//    		.show({
-//                element: '#tabs',
-//                title: 'Leitarniðurstaða.',
-//                placement: 'top',
-//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
-//                padding: 5,
-//            })
-//    		.show({
-//                element: '.price-filter',
-//                title: 'Raða eftir verðlistaverði',
-//                placement: 'top',
-//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
-//                padding: 5,
-//            })
-//    		.show({
-//                element: document.querySelector('#Table2 div'),
-//                title: 'Bíllinn',
-//                placement: 'right',
-//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
-//                padding: 10,
-//
-//                buttons: [
-//                    {
-//                        label: 'Hætta',
-//                        click: function () {
-//                            tour.quit()
-//                        }
-//                    },
-//                    {
-//                        label: 'Næsta',
-//                        click: function () {
-//                          	$('#Table2 > div').eq(0).trigger('click');
-//                            tour.next();
-//                        }
-//                    }
-//                ]
-//
-//
-//            })
-//    		.show({
-//                element: '.tg-s6z2',
-//                title: 'Bíllinn',
-//                placement: 'right',
-//                content: '<p>Leitarniðurstaða er sjálfkrafa röðuð eftir hæsta verði.</p>',
-//                padding: 10,
-//
-//            });
-
-
-
-    //testcase
-
+            .show({
+                element: '.four',
+                placement: 'top',
+                content: '<p>This is a box2</p>'
+            })
+            .show({
+                element: '.two',
+                placement: 'bottom',
+                content: '<p>This is a box1</p>',
+                focusClick: function () {
+                    alert();
+                    tour.next();
+                }
+            })
+            .show({
+                element: '.three',
+                placement: 'left',
+                content: '<p>This is a box2</p>'
+            });
 
 
 </script>

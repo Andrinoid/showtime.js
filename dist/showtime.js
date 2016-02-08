@@ -401,8 +401,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             this.options = {
                 speed: 2000,
-                easing: 'easeOut',
-                slomo: false
+                easing: 'quadratic',
+                slomo: false,
+                time: null
             };
             this.options = extend(this.options, options);
             this.elm = normalizeElement(elm);
@@ -464,14 +465,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (p < 1) {
                     this.step();
                     requestAnimationFrame(this.tick.bind(this));
-
-                    //window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
                     this.applyStyles(t);
                 } else {
                     this.complete();
                     this.currentTime = 0;
-                    return;
-                    //window.scrollTo(0, scrollTargetY);
                 }
             }
         }, {
@@ -507,7 +504,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (this.options.slomo) {
                     this.time = 5;
                 }
-                this.time = 1;
+                if (this.options.time) {
+                    this.time = this.options.time;
+                }
                 this.tick();
             }
         }]);
@@ -888,7 +887,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * This class ties it all together
      * ------------------------------------------------------------------------
      */
-    //TODO keep focus on scroll and resize
+    //TODO keep focus on scroll and resize add fit options for tooltip
 
     var showtime = function () {
         function showtime(options) {
@@ -897,8 +896,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.chain = [];
             this.chainIndex = 0;
             this.defaults = {
-                debug: false,
                 padding: 0,
+                placement: 'right',
                 autoplay: false,
                 autoplayDelay: 1000,
                 buttons: [],

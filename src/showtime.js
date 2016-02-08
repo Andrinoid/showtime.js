@@ -389,14 +389,15 @@
      * TODO animate-able styles are limeted.
      * ------------------------------------------------------------------------
      */
-        class Animator {
+    class Animator {
 
         constructor(elm, options) {
 
             this.options = {
                 speed: 2000,
-                easing: 'easeOut',
-                slomo: false
+                easing: 'quadratic',
+                slomo: false,
+                time: null,
             };
             this.options = extend(this.options, options);
             this.elm = normalizeElement(elm);
@@ -456,15 +457,10 @@
             if (p < 1) {
                 this.step();
                 requestAnimationFrame(this.tick.bind(this));
-
-                //window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
-                this.applyStyles(t)
-
+                this.applyStyles(t);
             } else {
                 this.complete();
                 this.currentTime = 0;
-                return;
-                //window.scrollTo(0, scrollTargetY);
             }
         }
 
@@ -486,17 +482,21 @@
             return (to - from) * delta + from;
         }
 
-        complete() {}
+        complete() {
+        }
 
-        step() {}
+        step() {
+        }
 
         start(styles) {
             this.styles = styles;
             this.time = this.resolveTime();
-            if(this.options.slomo) {
+            if (this.options.slomo) {
                 this.time = 5;
             }
-            this.time = 1;
+            if(this.options.time) {
+                this.time = this.options.time;
+            }
             this.tick();
 
         }
@@ -1157,7 +1157,7 @@
      * This class ties it all together
      * ------------------------------------------------------------------------
      */
-        //TODO keep focus on scroll and resize
+        //TODO keep focus on scroll and resize add fit options for tooltip
 
     class showtime {
 
@@ -1165,8 +1165,8 @@
             this.chain = [];
             this.chainIndex = 0;
             this.defaults = {
-                debug: false,
                 padding: 0,
+                placement: 'right',
                 autoplay: false,
                 autoplayDelay: 1000,
                 buttons: [],
