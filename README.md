@@ -36,14 +36,13 @@ var tour = new Showtime()
     });
 </script>
 ```
-
-
+From this point you can chain as many show and call function you like to the showtime chain.
+Sometimes this you end up with a lot of repetitions. so to make your code pretty you can define global defaults for the chain like in the example below.
 
 Example code
 ```javascript
-var tour = new Showtime({
-    debug: true,
-    autoplay: false,
+var tour = new Showtime({ 
+    //these options will become default for all .show functions chained on this instance
     padding: 10,
     removeOnOuterClick: true,
     focusClick: function () {
@@ -51,13 +50,13 @@ var tour = new Showtime({
     },
     buttons: [
         {
-            label: 'quit',
+            label: 'Quit',
             click: function () {
                 tour.quit()
             }
         },
         {
-            label: 'next',
+            label: 'Next',
             click: function () {
                 tour.next()
             }
@@ -65,15 +64,14 @@ var tour = new Showtime({
     ]
 })
 .show({
-    element: '.ball',
+    element: '.leftMenu',
     title: 'hey I have a title again.',
     placement: 'right',
     content: '<p>This is a ball</p>',
-    padding: 10,
     dimentions: {
-        height: 400
+        height: 400 // We can override the dementions of the focuspoint. top, left, height, width
     },
-    focusClick: function () {
+    focusClick: function () { // Hijack the event for the selected element to do whatever you want
         tour.next();
     },
     buttons: [
@@ -95,22 +93,19 @@ var tour = new Showtime({
     console.log('foobar');
 })
 .show({
-    element: '.four',
+    element: '.topMenu',
     placement: 'top',
-    content: '<p>This is a box2</p>'
+    content: '<p>Lorem ipsum</p>'
 })
 .show({
-    element: '.two',
+    element: '.filterButtons',
     placement: 'bottom',
-    content: '<p>This is a box1</p>',
+    content: '<p>Lorem ipsum</p>',
     focusClick: function () {
-        alert();
-        tour.next();
+        alert('that's all folks');
     }
-})
-.show({
-    element: '.three',
-    placement: 'left',
-    content: '<p>This is a box2</p>'
 });
 ```
+
+### Controls
+...
