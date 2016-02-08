@@ -4,9 +4,10 @@ Showtime is a lightweight framework for easily creating stunning tours around yo
 It comes with built in chain. so its really easy to mix your tours with custom functionality.
 
 ### Usage
-Download the library and include it in your html.
+Download showtime.js and include it in your html.
 ```html
 <script src="showtime.js"></script>
+
 <div class="element">Lorem ipsum</div>
 <script>
 var tour = new Showtime()
