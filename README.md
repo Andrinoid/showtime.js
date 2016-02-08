@@ -102,10 +102,13 @@ var tour = new Showtime({
     placement: 'bottom',
     content: '<p>Lorem ipsum</p>',
     focusClick: function () {
-        alert('that's all folks');
+        alert('that's all folks')
     }
 });
 ```
 
 ### Controls
+...
+
+### Options
 ...
