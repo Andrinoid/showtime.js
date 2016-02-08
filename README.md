@@ -116,7 +116,7 @@ tour.next();
 // Run the previous function in the chain
 tour.previous();
 // End the tour
-tour.end();
+tour.quit();
 ```
 
 ### Options
