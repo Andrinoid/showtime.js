@@ -508,9 +508,6 @@
      * ------------------------------------------------------------------------
      * Tooltip
      * Creates bootstrap-like tooltip with position relative to given element
-     *
-     * TODO Create nice animation for show hide
-     * TODO prevent overflow of viewport
      * ------------------------------------------------------------------------
      */
 
