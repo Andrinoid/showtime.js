@@ -9,16 +9,16 @@
 //Note Modules not tested
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
+        // AMD
         define(function () {
             root.Showtime = factory();
             return root.Showtime;
         });
     } else if (typeof exports === 'object') {
-        // Node. Does not work with strict CommonJS.
+        // CommonJS
         module.exports = factory();
     } else {
-        // Browser globals.
+        //Browser
         window.Showtime = factory();
     }
 }(this, function () {
