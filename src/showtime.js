@@ -535,14 +535,15 @@
         }
 
         buildTemplate() {
+            this.backdrop = new Elm('div.modal-backdrop', document.body);
             let header = `
                 <div class="modal-header">
                     <button type="button" class="close"><span>×</span></button>
                     <h4 class="modal-title" id="myModalLabel">${this.settings.title}</h4>
                 </div>`;
             let button = '<button type="button" class="close standalone"><span>×</span></button>';
+
             let main = `
-                <div class="modal-backdrop"></div>
                 <div class="chain_modal">
                     <div class="chain_dialog ${this.sizeClass}">
                         <div class="modal-content">
@@ -553,10 +554,27 @@
                         </div>
                     </div>
                 </div>`;
-
+            let div = document.createElement('div', {
+                html: (()=> {
+                    //////////////////////////////////////////construct and return templete here and inject to body
+                })()
+            });
 
 
         }
+
+        close() {
+            //self.default.title = '';
+            fadeOutRemove(this.backdrop);
+            $('.chain_dialog').addClass('fadeOutDownBig');
+            $('.modal-backdrop, .chain_modal').css({'pointer-events': 'none'});
+            setTimeout(function () {
+                $elements.remove();
+                $styles.remove();
+                self.settings.onClose();
+            }, 500);
+        }
+
 
     }
 
@@ -609,7 +627,7 @@
                  opacity: .5
              }
          }
-         .fadeInHalf {
+         .fadeInHalf { /*                           Gæti verið óþarfi   */
              -webkit-animation-name: fadeInHalf;
              animation-name: fadeInHalf
          }
