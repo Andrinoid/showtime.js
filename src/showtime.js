@@ -535,25 +535,31 @@
         }
 
         buildTemplate() {
-            let header = '<div class="modal-header">' +
-                '<button type="button" class="close"><span>×</span></button>' +
-                '<h4 class="modal-title" id="myModalLabel">' + this.settings.title + '</h4>' +
-                '</div>';
+            let header = `
+                <div class="modal-header">
+                    <button type="button" class="close"><span>×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">${this.settings.title}</h4>
+                </div>`;
             let button = '<button type="button" class="close standalone"><span>×</span></button>';
-            let main = '<div class="modal-backdrop"></div>' +
-                '<div class="chain_modal"><div class="chain_dialog ' + sizeClass + '">' +
-                '<div class="modal-content">' + header +
-                '<div class="modal-body">' +
-                '<div>' + this.settings.message + '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div></div>';
-            let styles = '<style>body {overflow:hidden}.modal-body,.modal-title{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;line-height:1.42857143;color:#333}.chain_modal,.modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0}.modal-backdrop{z-index:1040;background-color:#000;opacity:.5}@-webkit-keyframes fadeInHalf{0%{opacity:0}100%{opacity:.5}}@keyframes fadeInHalf{0%{opacity:0}100%{opacity:.5}}.fadeInHalf{-webkit-animation-name:fadeInHalf;animation-name:fadeInHalf}.fadeInDownBig,.fadeInHalf{-webkit-animation-fill-mode:both;-webkit-animation-duration:.5s}.fadeInDownBig,.fadeInHalf,.fadeOutHalf{animation-duration:.5s;animation-fill-mode:both}@-webkit-keyframes fadeInDownBig{0%{opacity:0;-webkit-transform:translate3d(0,-500px,0);transform:translate3d(0,-500px,0)}100%{opacity:1;-webkit-transform:none;transform:none}}@keyframes fadeInDownBig{0%{opacity:0;-webkit-transform:translate3d(0,-500px,0);transform:translate3d(0,-500px,0)}100%{opacity:1;-webkit-transform:none;transform:none}}.fadeInDownBig{-webkit-animation-name:fadeInDownBig;animation-name:fadeInDownBig}@-webkit-keyframes fadeOutHalf{0%{opacity:.5}100%{opacity:0}}@keyframes fadeOutHalf{0%{opacity:.5}100%{opacity:0}}.fadeOutHalf{-webkit-animation-name:fadeOutHalf;animation-name:fadeOutHalf}.fadeOutDownBig,.fadeOutHalf{-webkit-animation-fill-mode:both;-webkit-animation-duration:.5s}@-webkit-keyframes fadeOutDownBig{0%{opacity:1;-webkit-transform:none;transform:none}100%{opacity:0;-webkit-transform:translate3d(0,-500px,0);transform:translate3d(0,-500px,0)}}@keyframes fadeOutDownBig{0%{opacity:1;-webkit-transform:none;transform:none}100%{opacity:0;-webkit-transform:translate3d(0,-500px,0);transform:translate3d(0,-500px,0)}}.fadeOutDownBig{-webkit-animation-name:fadeOutDownBig;animation-name:fadeOutDownBig;-webkit-animation-duration:1s;animation-duration:1s;-webkit-animation-fill-mode:both;animation-fill-mode:both}.chain_modal{z-index:1050;overflow-y:scroll;-webkit-overflow-scrolling:touch;outline:0}.chain_dialog{position:relative;width:auto;margin:10px}.modal-header .close{margin-top:-2px;position:static}.close.standalone{position:absolute;right:3px;top:-3px;z-index:1}.modal-title{margin:0;font-size:18px;font-weight:500}button.close{-webkit-appearance:none;padding:0;cursor:pointer;background:0 0;border:0}.modal-content{position:relative;background-color:#fff;background-clip:padding-box;border:1px solid #999;border:1px solid rgba(0,0,0,.2);border-radius:2px;outline:0;box-shadow:0 3px 9px rgba(0,0,0,.5)}.modal-header{min-height:16.43px;padding:15px;border-bottom:1px solid #e5e5e5}.modal-body{position:relative;padding:15px;font-size:14px}.close{float:right;font-size:21px;font-weight:700;line-height:1;color:#000;text-shadow:0 1px 0 #fff;opacity:.2}@media (min-width:768px){.chain_dialog{width:600px;margin:30px auto}.modal-content{box-shadow:0 5px 15px rgba(0,0,0,.5)}.chain_modal-sm{width:300px}}@media (min-width:992px){.chain_modal-lg{width:900px}}</style>';
+            let main = `
+                <div class="modal-backdrop"></div>
+                <div class="chain_modal">
+                    <div class="chain_dialog ${this.sizeClass}">
+                        <div class="modal-content">
+                            ${header}
+                            <div class="modal-body">
+                                <div>${this.settings.message}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+
 
         }
 
     }
-    
+
 
     /**
      * ------------------------------------------------------------------------
@@ -563,304 +569,520 @@
      */
 
     var STYLES = `
-    <style>
-      .popover {
-          position: absolute;
-          box-sizing: border-box;
-          min-width: 250px;
-          top: 0;
-          left: 0;
-          z-index: 1060;
-          display: none;
-          max-width: 276px;
-          padding: 1px;
-          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-          font-style: normal;
-          font-weight: normal;
-          letter-spacing: normal;
-          line-break: auto;
-          line-height: 1.42857143;
-          text-align: left;
-          text-align: start;
-          text-decoration: none;
-          text-shadow: none;
-          text-transform: none;
-          white-space: normal;
-          word-break: normal;
-          word-spacing: normal;
-          word-wrap: normal;
-          font-size: 14px;
-          background-color: #fff;
-          background-clip: padding-box;
-          border: 1px solid #ccc;
-          border: 1px solid rgba(0, 0, 0, 0.2);
-          border-radius: 2px;
-          -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-      }
-      .popover.top {
-          margin-top: -10px;
-      }
-      .popover.right {
-          margin-left: 10px;
-      }
-      .popover.bottom {
-          margin-top: 10px;
-      }
-      .popover.left {
-          margin-left: -10px;
-      }
-      .popover-title {
-          margin: 0;
-          padding: 8px 14px;
-          font-size: 14px;
-          background-color: #f7f7f7;
-          border-bottom: 1px solid #ebebeb;
-          border-radius: 1px 1px 0 0;
-          box-sizing: border-box;
-      }
-      .popover-content {
-          padding: 9px 14px;
-          box-sizing: border-box;
-      }
-      .popover > .arrow,
-      .popover > .arrow:after {
-          position: absolute;
-          display: block;
-          width: 0;
-          height: 0;
-          border-color: transparent;
-          border-style: solid;
-      }
-      .popover > .arrow {
-          border-width: 11px;
-      }
-      .popover > .arrow:after {
-          border-width: 10px;
-          content: "";
-      }
-      .popover.top > .arrow {
-          left: 50%;
-          margin-left: -11px;
-          border-bottom-width: 0;
-          border-top-color: #999999;
-          border-top-color: rgba(0, 0, 0, 0.25);
-          bottom: -11px;
-      }
-      .popover.top > .arrow:after {
-          content: " ";
-          bottom: 1px;
-          margin-left: -10px;
-          border-bottom-width: 0;
-          border-top-color: #fff;
-      }
-      .popover.right > .arrow {
-          top: 50%;
-          left: -11px;
-          margin-top: -11px;
-          border-left-width: 0;
-          border-right-color: #999999;
-          border-right-color: rgba(0, 0, 0, 0.25);
-      }
-      .popover.right > .arrow:after {
-          content: " ";
-          left: 1px;
-          bottom: -10px;
-          border-left-width: 0;
-          border-right-color: #fff;
-      }
-      .popover.bottom > .arrow {
-          left: 50%;
-          margin-left: -11px;
-          border-top-width: 0;
-          border-bottom-color: #999999;
-          border-bottom-color: rgba(0, 0, 0, 0.25);
-          top: -11px;
-      }
-      .popover.bottom > .arrow:after {
-          content: " ";
-          top: 1px;
-          margin-left: -10px;
-          border-top-width: 0;
-          border-bottom-color: #fff;
-      }
-      .popover.left > .arrow {
-          top: 50%;
-          right: -11px;
-          margin-top: -11px;
-          border-right-width: 0;
-          border-left-color: #999999;
-          border-left-color: rgba(0, 0, 0, 0.25);
-      }
-      .popover.left > .arrow:after {
-          content: " ";
-          right: 1px;
-          border-right-width: 0;
-          border-left-color: #fff;
-          bottom: -10px;
-      }
-      .popover .btns {
-          padding: 9px 14px;
-          text-align: right;
-      }
-      .popover .popBtn {
-          color: #333;
-          font-weight: bold;
-          border: solid 1px #333;
-          display: inline-block;
-          padding: 4px 18px;
-          border-radius: 1px;
-          font-size: 13px;
-          cursor: pointer;
-          margin-left: 8px;
-      }
-      .to_left,
-      .to_right,
-      .to_top,
-      .to_bottom {
-          position: absolute;
-          background: black;
-          opacity: .5;
-          filter: alpha(opacity=50);
-          z-index: 1000;
-      }
-      .ghost-focus {
-          background: transparent;
-          z-index: 1000;
-      }
+        <style>
+        /* Modal styles */
+         body {
+             overflow: hidden
+         }
+         .modal-body,
+         .modal-title {
+             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+             line-height: 1.42857143;
+             color: #333
+         }
+         .chain_modal,
+         .modal-backdrop {
+             position: fixed;
+             top: 0;
+             right: 0;
+             bottom: 0;
+             left: 0
+         }
+         .modal-backdrop {
+             z-index: 1040;
+             background-color: #000;
+             opacity: .5
+         }
+         @-webkit-keyframes fadeInHalf {
+             0% {
+                 opacity: 0
+             }
+             100% {
+                 opacity: .5
+             }
+         }
+         @keyframes fadeInHalf {
+             0% {
+                 opacity: 0
+             }
+             100% {
+                 opacity: .5
+             }
+         }
+         .fadeInHalf {
+             -webkit-animation-name: fadeInHalf;
+             animation-name: fadeInHalf
+         }
+         .fadeInDownBig,
+         .fadeInHalf {
+             -webkit-animation-fill-mode: both;
+             -webkit-animation-duration: .5s
+         }
+         .fadeInDownBig,
+         .fadeInHalf,
+         .fadeOutHalf {
+             animation-duration: .5s;
+             animation-fill-mode: both
+         }
+         @-webkit-keyframes fadeInDownBig {
+             0% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -500px, 0);
+                 transform: translate3d(0, -500px, 0)
+             }
+             100% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+         }
+         @keyframes fadeInDownBig {
+             0% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -500px, 0);
+                 transform: translate3d(0, -500px, 0)
+             }
+             100% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+         }
+         .fadeInDownBig {
+             -webkit-animation-name: fadeInDownBig;
+             animation-name: fadeInDownBig
+         }
+         @-webkit-keyframes fadeOutHalf {
+             0% {
+                 opacity: .5
+             }
+             100% {
+                 opacity: 0
+             }
+         }
+         @keyframes fadeOutHalf {
+             0% {
+                 opacity: .5
+             }
+             100% {
+                 opacity: 0
+             }
+         }
+         .fadeOutHalf {
+             -webkit-animation-name: fadeOutHalf;
+             animation-name: fadeOutHalf
+         }
+         .fadeOutDownBig,
+         .fadeOutHalf {
+             -webkit-animation-fill-mode: both;
+             -webkit-animation-duration: .5s
+         }
+         @-webkit-keyframes fadeOutDownBig {
+             0% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+             100% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -500px, 0);
+                 transform: translate3d(0, -500px, 0)
+             }
+         }
+         @keyframes fadeOutDownBig {
+             0% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+             100% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -500px, 0);
+                 transform: translate3d(0, -500px, 0)
+             }
+         }
+         .fadeOutDownBig {
+             -webkit-animation-name: fadeOutDownBig;
+             animation-name: fadeOutDownBig;
+             -webkit-animation-duration: 1s;
+             animation-duration: 1s;
+             -webkit-animation-fill-mode: both;
+             animation-fill-mode: both
+         }
+         .chain_modal {
+             z-index: 1050;
+             overflow-y: scroll;
+             -webkit-overflow-scrolling: touch;
+             outline: 0
+         }
+         .chain_dialog {
+             position: relative;
+             width: auto;
+             margin: 10px
+         }
+         .modal-header .close {
+             margin-top: -2px;
+             position: static
+         }
+         .close.standalone {
+             position: absolute;
+             right: 3px;
+             top: -3px;
+             z-index: 1
+         }
+         .modal-title {
+             margin: 0;
+             font-size: 18px;
+             font-weight: 500
+         }
+         button.close {
+             -webkit-appearance: none;
+             padding: 0;
+             cursor: pointer;
+             background: 0 0;
+             border: 0
+         }
+         .modal-content {
+             position: relative;
+             background-color: #fff;
+             background-clip: padding-box;
+             border: 1px solid #999;
+             border: 1px solid rgba(0, 0, 0, .2);
+             border-radius: 2px;
+             outline: 0;
+             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)
+         }
+         .modal-header {
+             min-height: 16.43px;
+             padding: 15px;
+             border-bottom: 1px solid #e5e5e5
+         }
+         .modal-body {
+             position: relative;
+             padding: 15px;
+             font-size: 14px
+         }
+         .close {
+             float: right;
+             font-size: 21px;
+             font-weight: 700;
+             line-height: 1;
+             color: #000;
+             text-shadow: 0 1px 0 #fff;
+             opacity: .2
+         }
+         @media (min-width: 768px) {
+             .chain_dialog {
+                 width: 600px;
+                 margin: 30px auto
+             }
+             .modal-content {
+                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
+             }
+             .chain_modal-sm {
+                 width: 300px
+             }
+         }
+         @media (min-width: 992px) {
+             .chain_modal-lg {
+                 width: 900px
+             }
+         }
 
-      /*** Animations ***/
-      @-webkit-keyframes fadeInDown {
-          from {
-              opacity: 0;
-              -webkit-transform: translate3d(0, -10px, 0);
-              transform: translate3d(0, -10px, 0);
-          }
-          to {
-              opacity: 1;
-              -webkit-transform: none;
-              transform: none;
-          }
-      }
-      @keyframes fadeInDown {
-          from {
-              opacity: 0;
-              -webkit-transform: translate3d(0, -10px, 0);
-              transform: translate3d(0, -10px, 0);
-          }
-          to {
-              opacity: 1;
-              -webkit-transform: none;
-              transform: none;
-          }
-      }
 
-       @-webkit-keyframes fadeInTop {
-          from {
-              opacity: 0;
-              -webkit-transform: translate3d(0, 10px, 0);
-              transform: translate3d(0, 10px, 0);
-          }
-          to {
-              opacity: 1;
-              -webkit-transform: none;
-              transform: none;
-          }
-      }
-      @keyframes fadeInTop {
-          from {
-              opacity: 0;
-              -webkit-transform: translate3d(0, 10px, 0);
-              transform: translate3d(0, 10px, 0);
-          }
-          to {
-              opacity: 1;
-              -webkit-transform: none;
-              transform: none;
-          }
-      }
+         /*Tooltip styles*/
+         .popover {
+             position: absolute;
+             box-sizing: border-box;
+             min-width: 250px;
+             top: 0;
+             left: 0;
+             z-index: 1060;
+             display: none;
+             max-width: 276px;
+             padding: 1px;
+             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+             font-style: normal;
+             font-weight: normal;
+             letter-spacing: normal;
+             line-break: auto;
+             line-height: 1.42857143;
+             text-align: left;
+             text-align: start;
+             text-decoration: none;
+             text-shadow: none;
+             text-transform: none;
+             white-space: normal;
+             word-break: normal;
+             word-spacing: normal;
+             word-wrap: normal;
+             font-size: 14px;
+             background-color: #fff;
+             background-clip: padding-box;
+             border: 1px solid #ccc;
+             border: 1px solid rgba(0, 0, 0, 0.2);
+             border-radius: 2px;
+             -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+         }
+         .popover.top {
+             margin-top: -10px;
+         }
+         .popover.right {
+             margin-left: 10px;
+         }
+         .popover.bottom {
+             margin-top: 10px;
+         }
+         .popover.left {
+             margin-left: -10px;
+         }
+         .popover-title {
+             margin: 0;
+             padding: 8px 14px;
+             font-size: 14px;
+             background-color: #f7f7f7;
+             border-bottom: 1px solid #ebebeb;
+             border-radius: 1px 1px 0 0;
+             box-sizing: border-box;
+         }
+         .popover-content {
+             padding: 9px 14px;
+             box-sizing: border-box;
+         }
+         .popover > .arrow,
+         .popover > .arrow:after {
+             position: absolute;
+             display: block;
+             width: 0;
+             height: 0;
+             border-color: transparent;
+             border-style: solid;
+         }
+         .popover > .arrow {
+             border-width: 11px;
+         }
+         .popover > .arrow:after {
+             border-width: 10px;
+             content: "";
+         }
+         .popover.top > .arrow {
+             left: 50%;
+             margin-left: -11px;
+             border-bottom-width: 0;
+             border-top-color: #999999;
+             border-top-color: rgba(0, 0, 0, 0.25);
+             bottom: -11px;
+         }
+         .popover.top > .arrow:after {
+             content: " ";
+             bottom: 1px;
+             margin-left: -10px;
+             border-bottom-width: 0;
+             border-top-color: #fff;
+         }
+         .popover.right > .arrow {
+             top: 50%;
+             left: -11px;
+             margin-top: -11px;
+             border-left-width: 0;
+             border-right-color: #999999;
+             border-right-color: rgba(0, 0, 0, 0.25);
+         }
+         .popover.right > .arrow:after {
+             content: " ";
+             left: 1px;
+             bottom: -10px;
+             border-left-width: 0;
+             border-right-color: #fff;
+         }
+         .popover.bottom > .arrow {
+             left: 50%;
+             margin-left: -11px;
+             border-top-width: 0;
+             border-bottom-color: #999999;
+             border-bottom-color: rgba(0, 0, 0, 0.25);
+             top: -11px;
+         }
+         .popover.bottom > .arrow:after {
+             content: " ";
+             top: 1px;
+             margin-left: -10px;
+             border-top-width: 0;
+             border-bottom-color: #fff;
+         }
+         .popover.left > .arrow {
+             top: 50%;
+             right: -11px;
+             margin-top: -11px;
+             border-right-width: 0;
+             border-left-color: #999999;
+             border-left-color: rgba(0, 0, 0, 0.25);
+         }
+         .popover.left > .arrow:after {
+             content: " ";
+             right: 1px;
+             border-right-width: 0;
+             border-left-color: #fff;
+             bottom: -10px;
+         }
+         .popover .btns {
+             padding: 9px 14px;
+             text-align: right;
+         }
+         .popover .popBtn {
+             color: #333;
+             font-weight: bold;
+             border: solid 1px #333;
+             display: inline-block;
+             padding: 4px 18px;
+             border-radius: 1px;
+             font-size: 13px;
+             cursor: pointer;
+             margin-left: 8px;
+         }
 
 
-        @-webkit-keyframes fadeInLeft {
-          from {
-            opacity: 0;
-            -webkit-transform: translate3d(-10px, 0, 0);
-            transform: translate3d(-10px, 0, 0);
-          }
+         /* Focus styles */
+         .to_left,
+         .to_right,
+         .to_top,
+         .to_bottom {
+             position: absolute;
+             background: black;
+             opacity: .5;
+             filter: alpha(opacity=50);
+             z-index: 1000;
+         }
+         .ghost-focus {
+             background: transparent;
+             z-index: 1000;
+         }
 
-          to {
-            opacity: 1;
-            -webkit-transform: none;
-            transform: none;
-          }
-        }
 
-        @keyframes fadeInLeft {
-          from {
-            opacity: 0;
-            -webkit-transform: translate3d(-10px, 0, 0);
-            transform: translate3d(-10px, 0, 0);
-          }
-
-          to {
-            opacity: 1;
-            -webkit-transform: none;
-            transform: none;
-          }
-        }
-
-        @-webkit-keyframes fadeInRight {
-          from {
-            opacity: 0;
-            -webkit-transform: translate3d(10px, 0, 0);
-            transform: translate3d(10px, 0, 0);
-          }
-
-          to {
-            opacity: 1;
-            -webkit-transform: none;
-            transform: none;
-          }
-        }
-
-        @keyframes fadeInRight {
-          from {
-            opacity: 0;
-            -webkit-transform: translate3d(10px, 0, 0);
-            transform: translate3d(10px, 0, 0);
-          }
-
-          to {
-            opacity: 1;
-            -webkit-transform: none;
-            transform: none;
-          }
-        }
-
-      .fadeInDown, .fadeInLeft, .fadeInRight, .fadeInTop {
-          -webkit-animation-fill-mode: both;
-          -webkit-animation-duration: .5s;
-          animation-duration: .5s;
-          animation-fill-mode: both;
-      }
-      .fadeInDown {
-          -webkit-animation-name: fadeInDown;
-          animation-name: fadeInDown;
-      }
-
-      .fadeInLeft {
-          -webkit-animation-name: fadeInLeft;
-          animation-name: fadeInLeft;
-      }
-      .fadeInRight {
-          -webkit-animation-name: fadeInRight;
-          animation-name: fadeInRight;
-      }
-      .fadeInTop {
-          -webkit-animation-name: fadeInTop;
-          animation-name: fadeInTop;
-      }
-    </style>`;
+         /*** Animations ***/
+         @-webkit-keyframes fadeInDown {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInDown {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @-webkit-keyframes fadeInTop {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, 10px, 0);
+                 transform: translate3d(0, 10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInTop {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, 10px, 0);
+                 transform: translate3d(0, 10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @-webkit-keyframes fadeInLeft {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(-10px, 0, 0);
+                 transform: translate3d(-10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInLeft {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(-10px, 0, 0);
+                 transform: translate3d(-10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @-webkit-keyframes fadeInRight {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(10px, 0, 0);
+                 transform: translate3d(10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInRight {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(10px, 0, 0);
+                 transform: translate3d(10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         .fadeInDown,
+         .fadeInLeft,
+         .fadeInRight,
+         .fadeInTop {
+             -webkit-animation-fill-mode: both;
+             -webkit-animation-duration: .5s;
+             animation-duration: .5s;
+             animation-fill-mode: both;
+         }
+         .fadeInDown {
+             -webkit-animation-name: fadeInDown;
+             animation-name: fadeInDown;
+         }
+         .fadeInLeft {
+             -webkit-animation-name: fadeInLeft;
+             animation-name: fadeInLeft;
+         }
+         .fadeInRight {
+             -webkit-animation-name: fadeInRight;
+             animation-name: fadeInRight;
+         }
+         .fadeInTop {
+             -webkit-animation-name: fadeInTop;
+             animation-name: fadeInTop;
+         }
+        </style>`;
 
     class Tooltip {
         constructor(element, config) {
