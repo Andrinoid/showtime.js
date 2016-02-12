@@ -190,10 +190,19 @@
     };
 
     var setClass = function (el, className) {
+        //credit: http://youmightnotneedjquery.com/
         if (el.classList)
             el.classList.add(className);
         else
             el.className += ' ' + className;
+    };
+
+    var removeClass = function (el, className) {
+        //credit: http://youmightnotneedjquery.com/
+        if (el.classList)
+            el.classList.remove(className);
+        else
+            el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
     };
 
     var setStyles = function (el, styles) {
@@ -379,7 +388,7 @@
         }
 
     }
-
+    window.Elm = Elm;
 
     /**
      * ------------------------------------------------------------------------
@@ -503,100 +512,11 @@
 
     }
 
-    /**
-     * ------------------------------------------------------------------------
-     * Dialog
-     * Creates Dialog
-     * ------------------------------------------------------------------------
-     */
-
-    class Modal {
-
-        constructor(options) {
-            this.defaults = {
-                title: '',
-                message: '',
-                size: 'normal',//large small
-                onClose: function () {
-                },
-                onOpen: function () {
-                }
-            };
-            this.defaults = extend(this.defaults, options);
-
-            let sizeMap = {
-                'small': 'chain_modal-sm',
-                'normal': '',
-                'large': 'chain_modal-lg'
-            };
-            this.sizeClass = sizeMap[this.defaults.size];
-
-            this.buildTemplate();
-        }
-
-        buildTemplate() {
-            this.backdrop = new Elm('div.modal-backdrop', document.body);
-
-            let header = this.defaults.title ? `
-                <div class="modal-header">
-                    <button type="button" class="close"><span>×</span></button>
-                    <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
-                </div>` :
-                '<button type="button" class="close standalone"><span>×</span></button>';
-
-            let main = `
-                <div class="chain_modal">
-                    <div class="chain_dialog ${this.sizeClass}">
-                        <div class="modal-content">
-                            ${header}
-                            <div class="modal-body">
-                                <div>${this.defaults.message}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-
-            this.modal = new Elm('div', {
-                html: (()=> {
-                    return main;
-
-                })()
-            }, document.body);
-
-
-        }
-
-        close() {
-            //self.default.title = '';
-            fadeOutRemove(this.backdrop);
-            $('.chain_dialog').addClass('fadeOutDownBig');
-            $('.modal-backdrop, .chain_modal').css({'pointer-events': 'none'});
-            setTimeout(function () {
-                $elements.remove();
-                $styles.remove();
-                self.settings.onClose();
-            }, 500);
-        }
-
-    }
-
-    window.modal = Modal;
-    window.m = new modal({
-        message: 'foobar'
-    });
-
-
-    /**
-     * ------------------------------------------------------------------------
-     * Tooltip
-     * Creates bootstrap-like tooltip with position relative to given element
-     * ------------------------------------------------------------------------
-     */
-
+    //TODO style fallback is injected on every tour start
     var STYLES = `
         <style>
         /* Modal styles */
-         body {
+         body.modal-mode {
              overflow: hidden
          }
          .modal-body,
@@ -618,124 +538,9 @@
              background-color: #000;
              opacity: .5
          }
-         @-webkit-keyframes fadeInHalf {
-             0% {
-                 opacity: 0
-             }
-             100% {
-                 opacity: .5
-             }
-         }
-         @keyframes fadeInHalf {
-             0% {
-                 opacity: 0
-             }
-             100% {
-                 opacity: .5
-             }
-         }
-         .fadeInHalf { /*                           Gæti verið óþarfi   */
-             -webkit-animation-name: fadeInHalf;
-             animation-name: fadeInHalf
-         }
-         .fadeInDownBig,
-         .fadeInHalf {
-             -webkit-animation-fill-mode: both;
-             -webkit-animation-duration: .5s
-         }
-         .fadeInDownBig,
-         .fadeInHalf,
-         .fadeOutHalf {
-             animation-duration: .5s;
-             animation-fill-mode: both
-         }
-         @-webkit-keyframes fadeInDownBig {
-             0% {
-                 opacity: 0;
-                 -webkit-transform: translate3d(0, -500px, 0);
-                 transform: translate3d(0, -500px, 0)
-             }
-             100% {
-                 opacity: 1;
-                 -webkit-transform: none;
-                 transform: none
-             }
-         }
-         @keyframes fadeInDownBig {
-             0% {
-                 opacity: 0;
-                 -webkit-transform: translate3d(0, -500px, 0);
-                 transform: translate3d(0, -500px, 0)
-             }
-             100% {
-                 opacity: 1;
-                 -webkit-transform: none;
-                 transform: none
-             }
-         }
-         .fadeInDownBig {
-             -webkit-animation-name: fadeInDownBig;
-             animation-name: fadeInDownBig
-         }
-         @-webkit-keyframes fadeOutHalf {
-             0% {
-                 opacity: .5
-             }
-             100% {
-                 opacity: 0
-             }
-         }
-         @keyframes fadeOutHalf {
-             0% {
-                 opacity: .5
-             }
-             100% {
-                 opacity: 0
-             }
-         }
-         .fadeOutHalf {
-             -webkit-animation-name: fadeOutHalf;
-             animation-name: fadeOutHalf
-         }
-         .fadeOutDownBig,
-         .fadeOutHalf {
-             -webkit-animation-fill-mode: both;
-             -webkit-animation-duration: .5s
-         }
-         @-webkit-keyframes fadeOutDownBig {
-             0% {
-                 opacity: 1;
-                 -webkit-transform: none;
-                 transform: none
-             }
-             100% {
-                 opacity: 0;
-                 -webkit-transform: translate3d(0, -500px, 0);
-                 transform: translate3d(0, -500px, 0)
-             }
-         }
-         @keyframes fadeOutDownBig {
-             0% {
-                 opacity: 1;
-                 -webkit-transform: none;
-                 transform: none
-             }
-             100% {
-                 opacity: 0;
-                 -webkit-transform: translate3d(0, -500px, 0);
-                 transform: translate3d(0, -500px, 0)
-             }
-         }
-         .fadeOutDownBig {
-             -webkit-animation-name: fadeOutDownBig;
-             animation-name: fadeOutDownBig;
-             -webkit-animation-duration: 1s;
-             animation-duration: 1s;
-             -webkit-animation-fill-mode: both;
-             animation-fill-mode: both
-         }
+
          .chain_modal {
-             z-index: 1050;
+             z-index: 10000;
              overflow-y: scroll;
              -webkit-overflow-scrolling: touch;
              outline: 0
@@ -1034,6 +839,30 @@
                  transform: none;
              }
          }
+         @-webkit-keyframes fadeOutTop {
+             0% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+             100% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0)
+             }
+         }
+         @keyframes fadeOutTop {
+             0% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+             100% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0)
+             }
+         }
          @-webkit-keyframes fadeInLeft {
              from {
                  opacity: 0;
@@ -1085,7 +914,8 @@
          .fadeInDown,
          .fadeInLeft,
          .fadeInRight,
-         .fadeInTop {
+         .fadeInTop,
+         .fadeOutTop{
              -webkit-animation-fill-mode: both;
              -webkit-animation-duration: .5s;
              animation-duration: .5s;
@@ -1107,7 +937,122 @@
              -webkit-animation-name: fadeInTop;
              animation-name: fadeInTop;
          }
+         .fadeOutTop {
+             -webkit-animation-name: fadeOutTop;
+             animation-name: fadeOutTop;
+         }
         </style>`;
+    /**
+     * ------------------------------------------------------------------------
+     * Modal
+     * Creates Modal
+     * ------------------------------------------------------------------------
+     */
+
+    class Modal {
+
+        constructor(options) {
+
+            this.defaults = {
+                title: '',
+                message: '',
+                withBackdrop: true,
+                size: 'normal',//large small
+                onClose: function () {
+                },
+                onOpen: function () {
+                }
+            };
+            this.defaults = extend(this.defaults, options);
+
+            this.closeOthers();
+            this.__proto__.instances.push(this);
+            this._injectStyles();
+            this.buildTemplate();
+        }
+
+        closeOthers() {
+            this.__proto__.instances.forEach(function(item) {
+                item.close();
+            });
+            this.__proto__.instances.length = 0;
+        }
+
+        buildTemplate() {
+            let sizeMap = {
+                'small': 'chain_modal-sm',
+                'normal': '',
+                'large': 'chain_modal-lg'
+            };
+            let sizeClass = sizeMap[this.defaults.size];
+
+            if (this.defaults.withBackdrop) {
+                this.backdrop = new Elm('div.modal-backdrop', document.body);
+            }
+
+            let header = this.defaults.title ?
+                `<div class="modal-header">
+                    <button type="button" class="close"><span>×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
+                </div>` : '<button type="button" class="close standalone"><span>×</span></button>';
+
+
+            let main = `
+                <div class="chain_modal fadeInDown">
+                    <div class="chain_dialog ${sizeClass}">
+                        <div class="modal-content">
+                            ${header}
+                            <div class="modal-body">
+                                <div>${this.defaults.message}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            this.modal = new Elm('div', {html: main}, document.body);
+
+            let btn = this.modal.querySelector('.close');
+            this.chainDialog = this.modal.querySelector('.chain_dialog');
+            btn.onclick = ()=> {
+                this.close()
+            };
+            setClass(document.body, 'modal-mode');
+
+        }
+
+        _injectStyles() {
+            //TODO consider removing styleFallback by splitting styles for each component
+            if (!document.querySelector('.styleFallback')) {
+                new Elm('div.styleFallback', {
+                    html: STYLES
+                }, document.body);
+            }
+        }
+
+        close() {
+            if (this.defaults.withBackdrop) {
+                fadeOutRemove(this.backdrop);
+            }
+
+            setClass(this.chainDialog, 'fadeOutTop');
+
+            setTimeout(()=> {
+                this.modal.remove();
+                this.defaults.onClose();
+                removeClass(document.body, 'modal-mode');
+            }, 500);
+        }
+
+    }
+    Modal.prototype.instances = [];
+
+
+    /**
+     * ------------------------------------------------------------------------
+     * Tooltip
+     * Creates bootstrap-like tooltip with position relative to given element
+     * ------------------------------------------------------------------------
+     */
 
     class Tooltip {
         constructor(element, config) {
@@ -1139,9 +1084,13 @@
         }
 
         _injectStyles() {
-            new Elm('div.styleFallback', {
-                html: STYLES
-            }, document.body);
+            //TODO consider removing styleFallback
+            if (!document.querySelector('.styleFallback')) {
+                new Elm('div.styleFallback', {
+                    html: STYLES
+                }, document.body);
+            }
+
         }
 
         getTipElement() {
@@ -1490,7 +1439,6 @@
              * focus on element
              */
 
-            let defaults = clone(this.defaults);
             let chainItem = this.chain[this.chainIndex];
             //if chainItem is a function we run it
             if (typeof(chainItem) === 'function') {
@@ -1498,19 +1446,21 @@
                 this.chainIndex++;
                 return;
             }
+            if(chainItem._type === 'modal') {
+                this._removeTooltip();
+                new Modal(chainItem);
+                this.chainIndex++;
+                return;
 
+            }
+            let defaults = clone(this.defaults);
             let settings = extend(defaults, chainItem);
 
             //focus is reused until tour.quit() then it gets deleted and we have to create it again.
             if (!this.focus) this._createFocus();
             //override defaults with given for this focus
             this.focus.default.padding = settings.padding;
-            //remove last tooltip if any
-            try {
-                this.tooltip.remove();
-            } catch (err) {
-                //tooltip does not excist
-            }
+            this._removeTooltip();
             //We create new tooltip for every focus point. This is easier to manage than collecting them
             this.tooltip = new Tooltip(this.focus.focusBox.middle, {
                 title: settings.title,
@@ -1534,6 +1484,15 @@
             else {
                 this.focus.focusBox.middle.style.pointerEvents = 'auto';
                 this.focus.focusBox.middle.onclick = settings.focusClick;
+            }
+        }
+
+        _removeTooltip() {
+             //remove last tooltip if any
+            try {
+                this.tooltip.remove();
+            } catch (err) {
+                //tooltip does not excist
             }
         }
 
@@ -1564,6 +1523,14 @@
         }
 
         show(options) {
+            options._type = 'show';
+            this.chain.push(options);
+            return this;
+        }
+
+        modal(options) {
+            options._type = 'modal';
+            options.withBackdrop = false;
             this.chain.push(options);
             return this;
         }

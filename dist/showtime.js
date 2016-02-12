@@ -188,7 +188,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     };
 
     var setClass = function setClass(el, className) {
+        //credit: http://youmightnotneedjquery.com/
         if (el.classList) el.classList.add(className);else el.className += ' ' + className;
+    };
+
+    var removeClass = function removeClass(el, className) {
+        //credit: http://youmightnotneedjquery.com/
+        if (el.classList) el.classList.remove(className);else el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
     };
 
     var setStyles = function setStyles(el, styles) {
@@ -386,6 +392,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return Elm;
     }();
 
+    window.Elm = Elm;
+
     /**
      * ------------------------------------------------------------------------
      * Animations
@@ -514,10 +522,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return Animator;
     }();
 
+    //TODO style fallback is injected on every tour start
+
+    var STYLES = '\n        <style>\n        /* Modal styles */\n         body.modal-mode {\n             overflow: hidden\n         }\n         .modal-body,\n         .modal-title {\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             line-height: 1.42857143;\n             color: #333\n         }\n         .chain_modal,\n         .modal-backdrop {\n             position: fixed;\n             top: 0;\n             right: 0;\n             bottom: 0;\n             left: 0\n         }\n         .modal-backdrop {\n             z-index: 1040;\n             background-color: #000;\n             opacity: .5\n         }\n\n         .chain_modal {\n             z-index: 10000;\n             overflow-y: scroll;\n             -webkit-overflow-scrolling: touch;\n             outline: 0\n         }\n         .chain_dialog {\n             position: relative;\n             width: auto;\n             margin: 10px\n         }\n         .modal-header .close {\n             margin-top: -2px;\n             position: static\n         }\n         .close.standalone {\n             position: absolute;\n             right: 15px;\n             top: 13px;\n             z-index: 1\n         }\n         .modal-title {\n             margin: 0;\n             font-size: 18px;\n             font-weight: 500\n         }\n         button.close {\n             -webkit-appearance: none;\n             padding: 0;\n             cursor: pointer;\n             background: 0 0;\n             border: 0\n         }\n         .modal-content {\n             position: relative;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #999;\n             border: 1px solid rgba(0, 0, 0, .2);\n             border-radius: 2px;\n             outline: 0;\n             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)\n         }\n         .modal-header {\n             min-height: 16.43px;\n             padding: 15px;\n             border-bottom: 1px solid #e5e5e5\n         }\n         .modal-body {\n             position: relative;\n             padding: 15px;\n             font-size: 14px\n         }\n         .close {\n             float: right;\n             font-size: 21px;\n             font-weight: 700;\n             line-height: 1;\n             color: #000;\n             text-shadow: 0 1px 0 #fff;\n             opacity: .2\n         }\n         @media (min-width: 768px) {\n             .chain_dialog {\n                 width: 600px;\n                 margin: 30px auto\n             }\n             .modal-content {\n                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)\n             }\n             .chain_modal-sm {\n                 width: 300px\n             }\n         }\n         @media (min-width: 992px) {\n             .chain_modal-lg {\n                 width: 900px\n             }\n         }\n\n\n         /*Tooltip styles*/\n         .popover {\n             position: absolute;\n             box-sizing: border-box;\n             min-width: 250px;\n             top: 0;\n             left: 0;\n             z-index: 1060;\n             display: none;\n             max-width: 276px;\n             padding: 1px;\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             font-style: normal;\n             font-weight: normal;\n             letter-spacing: normal;\n             line-break: auto;\n             line-height: 1.42857143;\n             text-align: left;\n             text-align: start;\n             text-decoration: none;\n             text-shadow: none;\n             text-transform: none;\n             white-space: normal;\n             word-break: normal;\n             word-spacing: normal;\n             word-wrap: normal;\n             font-size: 14px;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #ccc;\n             border: 1px solid rgba(0, 0, 0, 0.2);\n             border-radius: 2px;\n             -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n         }\n         .popover.top {\n             margin-top: -10px;\n         }\n         .popover.right {\n             margin-left: 10px;\n         }\n         .popover.bottom {\n             margin-top: 10px;\n         }\n         .popover.left {\n             margin-left: -10px;\n         }\n         .popover-title {\n             margin: 0;\n             padding: 8px 14px;\n             font-size: 14px;\n             background-color: #f7f7f7;\n             border-bottom: 1px solid #ebebeb;\n             border-radius: 1px 1px 0 0;\n             box-sizing: border-box;\n         }\n         .popover-content {\n             padding: 9px 14px;\n             box-sizing: border-box;\n         }\n         .popover > .arrow,\n         .popover > .arrow:after {\n             position: absolute;\n             display: block;\n             width: 0;\n             height: 0;\n             border-color: transparent;\n             border-style: solid;\n         }\n         .popover > .arrow {\n             border-width: 11px;\n         }\n         .popover > .arrow:after {\n             border-width: 10px;\n             content: "";\n         }\n         .popover.top > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-bottom-width: 0;\n             border-top-color: #999999;\n             border-top-color: rgba(0, 0, 0, 0.25);\n             bottom: -11px;\n         }\n         .popover.top > .arrow:after {\n             content: " ";\n             bottom: 1px;\n             margin-left: -10px;\n             border-bottom-width: 0;\n             border-top-color: #fff;\n         }\n         .popover.right > .arrow {\n             top: 50%;\n             left: -11px;\n             margin-top: -11px;\n             border-left-width: 0;\n             border-right-color: #999999;\n             border-right-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.right > .arrow:after {\n             content: " ";\n             left: 1px;\n             bottom: -10px;\n             border-left-width: 0;\n             border-right-color: #fff;\n         }\n         .popover.bottom > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-top-width: 0;\n             border-bottom-color: #999999;\n             border-bottom-color: rgba(0, 0, 0, 0.25);\n             top: -11px;\n         }\n         .popover.bottom > .arrow:after {\n             content: " ";\n             top: 1px;\n             margin-left: -10px;\n             border-top-width: 0;\n             border-bottom-color: #fff;\n         }\n         .popover.left > .arrow {\n             top: 50%;\n             right: -11px;\n             margin-top: -11px;\n             border-right-width: 0;\n             border-left-color: #999999;\n             border-left-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.left > .arrow:after {\n             content: " ";\n             right: 1px;\n             border-right-width: 0;\n             border-left-color: #fff;\n             bottom: -10px;\n         }\n         .popover .btns {\n             padding: 9px 14px;\n             text-align: right;\n         }\n         .popover .popBtn {\n             color: #333;\n             font-weight: bold;\n             border: solid 1px #333;\n             display: inline-block;\n             padding: 4px 18px;\n             border-radius: 1px;\n             font-size: 13px;\n             cursor: pointer;\n             margin-left: 8px;\n         }\n\n\n         /* Focus styles */\n         .to_left,\n         .to_right,\n         .to_top,\n         .to_bottom {\n             position: absolute;\n             background: black;\n             opacity: .5;\n             filter: alpha(opacity=50);\n             z-index: 1000;\n         }\n         .ghost-focus {\n             background: transparent;\n             z-index: 1000;\n         }\n\n\n         /*** Animations ***/\n         @-webkit-keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @-webkit-keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         .fadeInDown,\n         .fadeInLeft,\n         .fadeInRight,\n         .fadeInTop,\n         .fadeOutTop{\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s;\n             animation-duration: .5s;\n             animation-fill-mode: both;\n         }\n         .fadeInDown {\n             -webkit-animation-name: fadeInDown;\n             animation-name: fadeInDown;\n         }\n         .fadeInLeft {\n             -webkit-animation-name: fadeInLeft;\n             animation-name: fadeInLeft;\n         }\n         .fadeInRight {\n             -webkit-animation-name: fadeInRight;\n             animation-name: fadeInRight;\n         }\n         .fadeInTop {\n             -webkit-animation-name: fadeInTop;\n             animation-name: fadeInTop;\n         }\n         .fadeOutTop {\n             -webkit-animation-name: fadeOutTop;\n             animation-name: fadeOutTop;\n         }\n        </style>';
     /**
      * ------------------------------------------------------------------------
-     * Dialog
-     * Creates Dialog
+     * Modal
+     * Creates Modal
      * ------------------------------------------------------------------------
      */
 
@@ -528,48 +539,81 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.defaults = {
                 title: '',
                 message: '',
+                withBackdrop: true,
                 size: 'normal', //large small
                 onClose: function onClose() {},
                 onOpen: function onOpen() {}
             };
             this.defaults = extend(this.defaults, options);
 
-            var sizeMap = {
-                'small': 'chain_modal-sm',
-                'normal': '',
-                'large': 'chain_modal-lg'
-            };
-            this.sizeClass = sizeMap[this.defaults.size];
-
+            this.closeOthers();
+            this.__proto__.instances.push(this);
+            this._injectStyles();
             this.buildTemplate();
         }
 
         _createClass(Modal, [{
+            key: 'closeOthers',
+            value: function closeOthers() {
+                this.__proto__.instances.forEach(function (item) {
+                    item.close();
+                });
+                this.__proto__.instances.length = 0;
+            }
+        }, {
             key: 'buildTemplate',
             value: function buildTemplate() {
-                this.backdrop = new Elm('div.modal-backdrop', document.body);
+                var _this2 = this;
 
-                var header = this.defaults.title ? '\n                <div class="modal-header">\n                    <button type="button" class="close"><span>×</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>' : '<button type="button" class="close standalone"><span>×</span></button>';
+                var sizeMap = {
+                    'small': 'chain_modal-sm',
+                    'normal': '',
+                    'large': 'chain_modal-lg'
+                };
+                var sizeClass = sizeMap[this.defaults.size];
 
-                var main = '\n                <div class="chain_modal">\n                    <div class="chain_dialog ' + this.sizeClass + '">\n                        <div class="modal-content">\n                            ' + header + '\n                            <div class="modal-body">\n                                <div>' + this.defaults.message + '</div>\n                            </div>\n                        </div>\n                    </div>\n                </div>';
+                if (this.defaults.withBackdrop) {
+                    this.backdrop = new Elm('div.modal-backdrop', document.body);
+                }
 
-                this.modal = new Elm('div', {
-                    html: function () {
-                        return main;
-                    }()
-                }, document.body);
+                var header = this.defaults.title ? '<div class="modal-header">\n                    <button type="button" class="close"><span>×</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>' : '<button type="button" class="close standalone"><span>×</span></button>';
+
+                var main = '\n                <div class="chain_modal fadeInDown">\n                    <div class="chain_dialog ' + sizeClass + '">\n                        <div class="modal-content">\n                            ' + header + '\n                            <div class="modal-body">\n                                <div>' + this.defaults.message + '</div>\n                            </div>\n                        </div>\n                    </div>\n                </div>';
+
+                this.modal = new Elm('div', { html: main }, document.body);
+
+                var btn = this.modal.querySelector('.close');
+                this.chainDialog = this.modal.querySelector('.chain_dialog');
+                btn.onclick = function () {
+                    _this2.close();
+                };
+                setClass(document.body, 'modal-mode');
+            }
+        }, {
+            key: '_injectStyles',
+            value: function _injectStyles() {
+                //TODO consider removing styleFallback by splitting styles for each component
+                if (!document.querySelector('.styleFallback')) {
+                    new Elm('div.styleFallback', {
+                        html: STYLES
+                    }, document.body);
+                }
             }
         }, {
             key: 'close',
             value: function close() {
-                //self.default.title = '';
-                fadeOutRemove(this.backdrop);
-                $('.chain_dialog').addClass('fadeOutDownBig');
-                $('.modal-backdrop, .chain_modal').css({ 'pointer-events': 'none' });
+                var _this3 = this;
+
+                if (this.defaults.withBackdrop) {
+                    fadeOutRemove(this.backdrop);
+                }
+
+                setClass(this.chainDialog, 'fadeOutTop');
+
                 setTimeout(function () {
-                    $elements.remove();
-                    $styles.remove();
-                    self.settings.onClose();
+                    _this3.modal.remove();
+                    _this3.defaults.onClose();
+                    removeClass(document.body, 'modal-mode');
                 }, 500);
             }
         }]);
@@ -577,10 +621,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return Modal;
     }();
 
-    window.modal = Modal;
-    window.m = new modal({
-        message: 'foobar'
-    });
+    Modal.prototype.instances = [];
 
     /**
      * ------------------------------------------------------------------------
@@ -588,8 +629,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * Creates bootstrap-like tooltip with position relative to given element
      * ------------------------------------------------------------------------
      */
-
-    var STYLES = '\n        <style>\n        /* Modal styles */\n         body {\n             overflow: hidden\n         }\n         .modal-body,\n         .modal-title {\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             line-height: 1.42857143;\n             color: #333\n         }\n         .chain_modal,\n         .modal-backdrop {\n             position: fixed;\n             top: 0;\n             right: 0;\n             bottom: 0;\n             left: 0\n         }\n         .modal-backdrop {\n             z-index: 1040;\n             background-color: #000;\n             opacity: .5\n         }\n         @-webkit-keyframes fadeInHalf {\n             0% {\n                 opacity: 0\n             }\n             100% {\n                 opacity: .5\n             }\n         }\n         @keyframes fadeInHalf {\n             0% {\n                 opacity: 0\n             }\n             100% {\n                 opacity: .5\n             }\n         }\n         .fadeInHalf { /*                           Gæti verið óþarfi   */\n             -webkit-animation-name: fadeInHalf;\n             animation-name: fadeInHalf\n         }\n         .fadeInDownBig,\n         .fadeInHalf {\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s\n         }\n         .fadeInDownBig,\n         .fadeInHalf,\n         .fadeOutHalf {\n             animation-duration: .5s;\n             animation-fill-mode: both\n         }\n         @-webkit-keyframes fadeInDownBig {\n             0% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -500px, 0);\n                 transform: translate3d(0, -500px, 0)\n             }\n             100% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n         }\n         @keyframes fadeInDownBig {\n             0% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -500px, 0);\n                 transform: translate3d(0, -500px, 0)\n             }\n             100% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n         }\n         .fadeInDownBig {\n             -webkit-animation-name: fadeInDownBig;\n             animation-name: fadeInDownBig\n         }\n         @-webkit-keyframes fadeOutHalf {\n             0% {\n                 opacity: .5\n             }\n             100% {\n                 opacity: 0\n             }\n         }\n         @keyframes fadeOutHalf {\n             0% {\n                 opacity: .5\n             }\n             100% {\n                 opacity: 0\n             }\n         }\n         .fadeOutHalf {\n             -webkit-animation-name: fadeOutHalf;\n             animation-name: fadeOutHalf\n         }\n         .fadeOutDownBig,\n         .fadeOutHalf {\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s\n         }\n         @-webkit-keyframes fadeOutDownBig {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -500px, 0);\n                 transform: translate3d(0, -500px, 0)\n             }\n         }\n         @keyframes fadeOutDownBig {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -500px, 0);\n                 transform: translate3d(0, -500px, 0)\n             }\n         }\n         .fadeOutDownBig {\n             -webkit-animation-name: fadeOutDownBig;\n             animation-name: fadeOutDownBig;\n             -webkit-animation-duration: 1s;\n             animation-duration: 1s;\n             -webkit-animation-fill-mode: both;\n             animation-fill-mode: both\n         }\n         .chain_modal {\n             z-index: 1050;\n             overflow-y: scroll;\n             -webkit-overflow-scrolling: touch;\n             outline: 0\n         }\n         .chain_dialog {\n             position: relative;\n             width: auto;\n             margin: 10px\n         }\n         .modal-header .close {\n             margin-top: -2px;\n             position: static\n         }\n         .close.standalone {\n             position: absolute;\n             right: 15px;\n             top: 13px;\n             z-index: 1\n         }\n         .modal-title {\n             margin: 0;\n             font-size: 18px;\n             font-weight: 500\n         }\n         button.close {\n             -webkit-appearance: none;\n             padding: 0;\n             cursor: pointer;\n             background: 0 0;\n             border: 0\n         }\n         .modal-content {\n             position: relative;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #999;\n             border: 1px solid rgba(0, 0, 0, .2);\n             border-radius: 2px;\n             outline: 0;\n             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)\n         }\n         .modal-header {\n             min-height: 16.43px;\n             padding: 15px;\n             border-bottom: 1px solid #e5e5e5\n         }\n         .modal-body {\n             position: relative;\n             padding: 15px;\n             font-size: 14px\n         }\n         .close {\n             float: right;\n             font-size: 21px;\n             font-weight: 700;\n             line-height: 1;\n             color: #000;\n             text-shadow: 0 1px 0 #fff;\n             opacity: .2\n         }\n         @media (min-width: 768px) {\n             .chain_dialog {\n                 width: 600px;\n                 margin: 30px auto\n             }\n             .modal-content {\n                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)\n             }\n             .chain_modal-sm {\n                 width: 300px\n             }\n         }\n         @media (min-width: 992px) {\n             .chain_modal-lg {\n                 width: 900px\n             }\n         }\n\n\n         /*Tooltip styles*/\n         .popover {\n             position: absolute;\n             box-sizing: border-box;\n             min-width: 250px;\n             top: 0;\n             left: 0;\n             z-index: 1060;\n             display: none;\n             max-width: 276px;\n             padding: 1px;\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             font-style: normal;\n             font-weight: normal;\n             letter-spacing: normal;\n             line-break: auto;\n             line-height: 1.42857143;\n             text-align: left;\n             text-align: start;\n             text-decoration: none;\n             text-shadow: none;\n             text-transform: none;\n             white-space: normal;\n             word-break: normal;\n             word-spacing: normal;\n             word-wrap: normal;\n             font-size: 14px;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #ccc;\n             border: 1px solid rgba(0, 0, 0, 0.2);\n             border-radius: 2px;\n             -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n         }\n         .popover.top {\n             margin-top: -10px;\n         }\n         .popover.right {\n             margin-left: 10px;\n         }\n         .popover.bottom {\n             margin-top: 10px;\n         }\n         .popover.left {\n             margin-left: -10px;\n         }\n         .popover-title {\n             margin: 0;\n             padding: 8px 14px;\n             font-size: 14px;\n             background-color: #f7f7f7;\n             border-bottom: 1px solid #ebebeb;\n             border-radius: 1px 1px 0 0;\n             box-sizing: border-box;\n         }\n         .popover-content {\n             padding: 9px 14px;\n             box-sizing: border-box;\n         }\n         .popover > .arrow,\n         .popover > .arrow:after {\n             position: absolute;\n             display: block;\n             width: 0;\n             height: 0;\n             border-color: transparent;\n             border-style: solid;\n         }\n         .popover > .arrow {\n             border-width: 11px;\n         }\n         .popover > .arrow:after {\n             border-width: 10px;\n             content: "";\n         }\n         .popover.top > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-bottom-width: 0;\n             border-top-color: #999999;\n             border-top-color: rgba(0, 0, 0, 0.25);\n             bottom: -11px;\n         }\n         .popover.top > .arrow:after {\n             content: " ";\n             bottom: 1px;\n             margin-left: -10px;\n             border-bottom-width: 0;\n             border-top-color: #fff;\n         }\n         .popover.right > .arrow {\n             top: 50%;\n             left: -11px;\n             margin-top: -11px;\n             border-left-width: 0;\n             border-right-color: #999999;\n             border-right-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.right > .arrow:after {\n             content: " ";\n             left: 1px;\n             bottom: -10px;\n             border-left-width: 0;\n             border-right-color: #fff;\n         }\n         .popover.bottom > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-top-width: 0;\n             border-bottom-color: #999999;\n             border-bottom-color: rgba(0, 0, 0, 0.25);\n             top: -11px;\n         }\n         .popover.bottom > .arrow:after {\n             content: " ";\n             top: 1px;\n             margin-left: -10px;\n             border-top-width: 0;\n             border-bottom-color: #fff;\n         }\n         .popover.left > .arrow {\n             top: 50%;\n             right: -11px;\n             margin-top: -11px;\n             border-right-width: 0;\n             border-left-color: #999999;\n             border-left-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.left > .arrow:after {\n             content: " ";\n             right: 1px;\n             border-right-width: 0;\n             border-left-color: #fff;\n             bottom: -10px;\n         }\n         .popover .btns {\n             padding: 9px 14px;\n             text-align: right;\n         }\n         .popover .popBtn {\n             color: #333;\n             font-weight: bold;\n             border: solid 1px #333;\n             display: inline-block;\n             padding: 4px 18px;\n             border-radius: 1px;\n             font-size: 13px;\n             cursor: pointer;\n             margin-left: 8px;\n         }\n\n\n         /* Focus styles */\n         .to_left,\n         .to_right,\n         .to_top,\n         .to_bottom {\n             position: absolute;\n             background: black;\n             opacity: .5;\n             filter: alpha(opacity=50);\n             z-index: 1000;\n         }\n         .ghost-focus {\n             background: transparent;\n             z-index: 1000;\n         }\n\n\n         /*** Animations ***/\n         @-webkit-keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         .fadeInDown,\n         .fadeInLeft,\n         .fadeInRight,\n         .fadeInTop {\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s;\n             animation-duration: .5s;\n             animation-fill-mode: both;\n         }\n         .fadeInDown {\n             -webkit-animation-name: fadeInDown;\n             animation-name: fadeInDown;\n         }\n         .fadeInLeft {\n             -webkit-animation-name: fadeInLeft;\n             animation-name: fadeInLeft;\n         }\n         .fadeInRight {\n             -webkit-animation-name: fadeInRight;\n             animation-name: fadeInRight;\n         }\n         .fadeInTop {\n             -webkit-animation-name: fadeInTop;\n             animation-name: fadeInTop;\n         }\n        </style>';
 
     var Tooltip = function () {
         function Tooltip(element, config) {
@@ -619,9 +658,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         _createClass(Tooltip, [{
             key: '_injectStyles',
             value: function _injectStyles() {
-                new Elm('div.styleFallback', {
-                    html: STYLES
-                }, document.body);
+                //TODO consider removing styleFallback
+                if (!document.querySelector('.styleFallback')) {
+                    new Elm('div.styleFallback', {
+                        html: STYLES
+                    }, document.body);
+                }
             }
         }, {
             key: 'getTipElement',
@@ -663,7 +705,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setDirection',
             value: function setDirection() {
-                var _this2 = this;
+                var _this4 = this;
 
                 var opposites = {
                     'top': 'Down',
@@ -672,7 +714,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     'right': 'Right'
                 };
                 var animationClass = function animationClass() {
-                    return 'fadeIn' + opposites[_this2.default.placement];
+                    return 'fadeIn' + opposites[_this4.default.placement];
                 };
                 setClass(this.popover, this.default.placement);
                 setClass(this.popover, animationClass());
@@ -795,7 +837,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var Focus = function () {
         function Focus(config) {
-            var _this3 = this;
+            var _this5 = this;
 
             _classCallCheck(this, Focus);
 
@@ -811,7 +853,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 //duration: 60000
             });
             this.animator.complete = function () {
-                _this3.complete();
+                _this5.complete();
             };
         }
 
@@ -821,11 +863,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'buildDom',
             value: function buildDom() {
-                var _this4 = this;
+                var _this6 = this;
 
                 var elmOptions = this.default.closeOnClick ? {
                     click: function click() {
-                        _this4.remove();
+                        _this6.remove();
                     }
                 } : {};
                 this.focusBox = {
@@ -845,7 +887,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'focusOn',
             value: function focusOn(elm, customPos) {
-                var _this5 = this;
+                var _this7 = this;
 
                 var focusElm = normalizeElement(elm);
                 var styles = focusElm.getBoundingClientRect();
@@ -863,14 +905,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
 
                 var animate = function animate() {
-                    _this5.animator.start({
+                    _this7.animator.start({
                         width: styles.width,
                         height: styles.height,
                         left: styles.left,
                         top: styles.top + window.scrollY
                     });
-                    _this5.animator.step = function (el) {
-                        _this5.setCoverPos(el);
+                    _this7.animator.step = function (el) {
+                        _this7.setCoverPos(el);
                     };
                 };
 
@@ -905,7 +947,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'setCoverPos',
             value: function setCoverPos(el) {
-                var _this6 = this;
+                var _this8 = this;
 
                 var body = document.body;
                 var html = document.documentElement;
@@ -917,7 +959,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     left: 0,
                     right: 0,
                     height: function () {
-                        return dimentions.top > 0 ? dimentions.top - _this6.default.padding + window.scrollY + 'px' : 0;
+                        return dimentions.top > 0 ? dimentions.top - _this8.default.padding + window.scrollY + 'px' : 0;
                     }() //if element overflow top height is 0
                 });
                 setStyles(this.focusBox.bottom, {
@@ -937,7 +979,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     left: 0,
                     width: function () {
-                        return dimentions.left > 0 ? dimentions.left - _this6.default.padding + 'px' : 0;
+                        return dimentions.left > 0 ? dimentions.left - _this8.default.padding + 'px' : 0;
                     }()
                 });
             }
@@ -987,7 +1029,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callchain',
             value: function _callchain() {
-                var _this7 = this;
+                var _this9 = this;
 
                 /*
                  * We clone the default settings and merge it with the current chain settings.
@@ -996,7 +1038,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * focus on element
                  */
 
-                var defaults = clone(this.defaults);
                 var chainItem = this.chain[this.chainIndex];
                 //if chainItem is a function we run it
                 if (typeof chainItem === 'function') {
@@ -1004,19 +1045,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this.chainIndex++;
                     return;
                 }
-
+                if (chainItem._type === 'modal') {
+                    this._removeTooltip();
+                    new Modal(chainItem);
+                    this.chainIndex++;
+                    return;
+                }
+                var defaults = clone(this.defaults);
                 var settings = extend(defaults, chainItem);
 
                 //focus is reused until tour.quit() then it gets deleted and we have to create it again.
                 if (!this.focus) this._createFocus();
                 //override defaults with given for this focus
                 this.focus.default.padding = settings.padding;
-                //remove last tooltip if any
-                try {
-                    this.tooltip.remove();
-                } catch (err) {}
-                //tooltip does not excist
-
+                this._removeTooltip();
                 //We create new tooltip for every focus point. This is easier to manage than collecting them
                 this.tooltip = new Tooltip(this.focus.focusBox.middle, {
                     title: settings.title,
@@ -1028,10 +1070,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
-                    _this7.tooltip.show();
-                    _this7.chainIndex++;
-                    if (_this7.defaults.autoplay) {
-                        _this7._callAgain();
+                    _this9.tooltip.show();
+                    _this9.chainIndex++;
+                    if (_this9.defaults.autoplay) {
+                        _this9._callAgain();
                     }
                 };
                 if (typeof settings.focusClick === "undefined") {
@@ -1042,12 +1084,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
             }
         }, {
+            key: '_removeTooltip',
+            value: function _removeTooltip() {
+                //remove last tooltip if any
+                try {
+                    this.tooltip.remove();
+                } catch (err) {
+                    //tooltip does not excist
+                }
+            }
+        }, {
             key: '_callAgain',
             value: function _callAgain() {
-                var _this8 = this;
+                var _this10 = this;
 
                 setTimeout(function () {
-                    _this8.play();
+                    _this10.play();
                 }, this.defaults.autoplayDelay);
             }
         }, {
@@ -1075,6 +1127,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'show',
             value: function show(options) {
+                options._type = 'show';
+                this.chain.push(options);
+                return this;
+            }
+        }, {
+            key: 'modal',
+            value: function modal(options) {
+                options._type = 'modal';
+                options.withBackdrop = false;
                 this.chain.push(options);
                 return this;
             }
