@@ -854,6 +854,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             });
             this.animator.complete = function () {
                 _this5.complete();
+                if (_this5.isCoverAll) {
+                    _this5.default.padding = _this5.default.paddingCache;
+                    _this5.isCoverAll = false;
+                }
             };
         }
 
@@ -933,6 +937,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 } else {
                     animate();
                 }
+            }
+        }, {
+            key: 'coverAll',
+            value: function coverAll() {
+                this.isCoverAll = true;
+                this.default.paddingCache = this.default.padding;
+                this.default.padding = 0;
+                this.focusOn(document.body, {
+                    width: 0,
+                    height: 0,
+                    top: (window.innerHeight || document.documentElement.clientHeight) / 2,
+                    left: (window.innerWidth || document.documentElement.clientWidth) / 2
+                });
             }
         }, {
             key: 'remove',
@@ -1047,8 +1064,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
                 if (chainItem._type === 'modal') {
                     this._removeTooltip();
+                    this.focus.coverAll();
                     new Modal(chainItem);
-                    this.chainIndex++;
+                    //this.chainIndex++;
                     return;
                 }
                 var defaults = clone(this.defaults);
@@ -1134,8 +1152,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'modal',
             value: function modal(options) {
+                var _this11 = this;
+
                 options._type = 'modal';
                 options.withBackdrop = false;
+                options.onClose = function () {
+                    _this11.next();
+                };
                 this.chain.push(options);
                 return this;
             }

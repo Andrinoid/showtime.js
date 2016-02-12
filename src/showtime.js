@@ -1266,6 +1266,10 @@
             });
             this.animator.complete = ()=> {
                 this.complete();
+                if(this.isCoverAll) {
+                    this.default.padding = this.default.paddingCache;
+                    this.isCoverAll = false;
+                }
             };
 
         }
@@ -1344,6 +1348,18 @@
                 animate();
             }
 
+        }
+
+        coverAll() {
+            this.isCoverAll = true;
+            this.default.paddingCache = this.default.padding;
+            this.default.padding = 0;
+            this.focusOn(document.body, {
+                width: 0,
+                height: 0,
+                top: (window.innerHeight || document.documentElement.clientHeight) / 2,
+                left: (window.innerWidth || document.documentElement.clientWidth) / 2,
+            });
         }
 
         remove() {
@@ -1448,8 +1464,9 @@
             }
             if(chainItem._type === 'modal') {
                 this._removeTooltip();
+                this.focus.coverAll();
                 new Modal(chainItem);
-                this.chainIndex++;
+                //this.chainIndex++;
                 return;
 
             }
@@ -1531,6 +1548,7 @@
         modal(options) {
             options._type = 'modal';
             options.withBackdrop = false;
+            options.onClose = ()=> {this.next()};
             this.chain.push(options);
             return this;
         }
