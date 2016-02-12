@@ -1570,6 +1570,8 @@
             this.focus.remove();
             delete this.focus;
             this.tooltip.remove();
+            Modal.prototype.instances.length = 0;
+
         }
 
         call(fn) {
