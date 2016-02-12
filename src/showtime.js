@@ -529,19 +529,20 @@
                 'normal': '',
                 'large': 'chain_modal-lg'
             };
-            this.sizeClass = sizeMap[this.settings.size];
+            this.sizeClass = sizeMap[this.defaults.size];
 
             this.buildTemplate();
         }
 
         buildTemplate() {
             this.backdrop = new Elm('div.modal-backdrop', document.body);
-            let header = `
+
+            let header = this.defaults.title ? `
                 <div class="modal-header">
                     <button type="button" class="close"><span>×</span></button>
-                    <h4 class="modal-title" id="myModalLabel">${this.settings.title}</h4>
-                </div>`;
-            let button = '<button type="button" class="close standalone"><span>×</span></button>';
+                    <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
+                </div>` :
+                '<button type="button" class="close standalone"><span>×</span></button>';
 
             let main = `
                 <div class="chain_modal">
@@ -549,16 +550,18 @@
                         <div class="modal-content">
                             ${header}
                             <div class="modal-body">
-                                <div>${this.settings.message}</div>
+                                <div>${this.defaults.message}</div>
                             </div>
                         </div>
                     </div>
                 </div>`;
-            let div = document.createElement('div', {
+
+            this.modal = new Elm('div', {
                 html: (()=> {
-                    //////////////////////////////////////////construct and return templete here and inject to body
+                    return main;
+
                 })()
-            });
+            }, document.body);
 
 
         }
@@ -575,8 +578,12 @@
             }, 500);
         }
 
-
     }
+
+    window.modal = Modal;
+    window.m = new modal({
+        message: 'foobar'
+    });
 
 
     /**
@@ -744,8 +751,8 @@
          }
          .close.standalone {
              position: absolute;
-             right: 3px;
-             top: -3px;
+             right: 15px;
+             top: 13px;
              z-index: 1
          }
          .modal-title {
