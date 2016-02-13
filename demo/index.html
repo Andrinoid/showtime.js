@@ -30,19 +30,20 @@
         <header>
             <span class="avatar"><img src="images/avatar.jpg" alt=""/></span>
 
-            <h1>Showtime.js</h1>
+            <h1 class="mainHl">Showtime.js</h1>
 
             <p>Shine a light in the dark</p>
         </header>
 
-        <hr />
+        <hr/>
         <h2>Extra Stuff!</h2>
+
         <form method="post" action="#">
             <div class="field">
-                <input type="text" name="name" id="name" placeholder="Name" />
+                <input type="text" name="name" id="name" placeholder="Name"/>
             </div>
             <div class="field">
-                <input type="email" name="email" id="email" placeholder="Email" />
+                <input type="email" name="email" id="email" placeholder="Email"/>
             </div>
             <div class="field">
                 <div class="select-wrapper">
@@ -58,18 +59,18 @@
                 <textarea name="message" id="message" placeholder="Message" rows="4"></textarea>
             </div>
             <div class="field">
-                <input type="checkbox" id="human" name="human" /><label for="human">I'm a human</label>
+                <input type="checkbox" id="human" name="human"/><label for="human">I'm a human</label>
             </div>
             <div class="field">
                 <label>But are you a robot?</label>
-                <input type="radio" id="robot_yes" name="robot" /><label for="robot_yes">Yes</label>
-                <input type="radio" id="robot_no" name="robot" /><label for="robot_no">No</label>
+                <input type="radio" id="robot_yes" name="robot"/><label for="robot_yes">Yes</label>
+                <input type="radio" id="robot_no" name="robot"/><label for="robot_no">No</label>
             </div>
             <ul class="actions">
                 <li><a href="#" class="button">Get Started</a></li>
             </ul>
         </form>
-        <hr />
+        <hr/>
 
         <footer>
             <ul class="icons">
@@ -101,6 +102,54 @@
     }
 </script>
 <script src="../dist/showtime.js"></script>
+<script>
+    var tour = new Showtime({
+        removeOnOuterClick: true,
+        focusClick: function () {
+            tour.next();
+        },
+        buttons: [
+            {
+                label: 'quit',
+                click: function () {
+                    tour.quit()
+                }
+            },
+            {
+                label: 'next',
+                click: function () {
+                    tour.next()
+                }
+            }
+        ]
+    })
+            .show({
+                element: 'p',
+                title: 'hey I have a title again.',
+                placement: 'bottom',
+                content: '<p>This is a ball</p>',
+                dimentions: {
+                    //height: 400
+                },
+                buttons: [
+                    {
+                        label: 'quit',
+                        click: function () {
+                            tour.quit()
+                        }
+                    },
+                    {
+                        label: 'next',
+                        click: function () {
+                            tour.next()
+                        }
+                    }
+                ]
+            })
+            .modal({
+                title: 'sdfsdf'
+            });
 
+</script>
 </body>
 </html>
