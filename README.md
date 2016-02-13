@@ -108,7 +108,7 @@ var tour = new Showtime({
 ```
 ### Showtime functions
 tour.show([options])  
-tour.call([function])
+tour.call([function])  
 tour.modal([options])  
 
 ### Controls
