@@ -106,6 +106,10 @@ var tour = new Showtime({
     },
 });
 ```
+### Showtime functions
+tour.show([options])  
+tour.call([function])
+tour.modal([options])  
 
 ### Controls
 ```javascript
@@ -119,7 +123,7 @@ tour.previous();
 tour.quit();
 ```
 
-### Options
+### Show Options
 - padding
 - buttons
 - focusClick
@@ -128,3 +132,11 @@ tour.quit();
 - removeOnOuterClick
 - autoplay //not really tested with call functions
 - autoplayDelay
+
+### Modal Options
+- title
+- message
+- withBackdrop
+- size //normal large small
+- onClose
+- onOpen
