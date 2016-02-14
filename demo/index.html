@@ -124,13 +124,34 @@
         ]
     })
             .show({
-                element: 'p',
+                element: '.mainHl',
                 title: 'hey I have a title again.',
                 placement: 'bottom',
                 content: '<p>This is a ball</p>',
                 dimentions: {
                     //height: 400
                 },
+                buttons: [
+                    {
+                        label: 'quit',
+                        click: function () {
+                            tour.quit()
+                        }
+                    },
+                    {
+                        label: 'next',
+                        click: function () {
+                            tour.next()
+                        }
+                    }
+                ]
+            })
+            .show({
+                element: '.avatar img',
+                title: 'hey I have a title again.',
+                placement: 'bottom',
+                content: '<p>This is a ball</p>',
+                padding: 10,
                 buttons: [
                     {
                         label: 'quit',

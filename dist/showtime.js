@@ -409,7 +409,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             this.options = {
                 speed: 2000,
-                easing: 'quadratic',
+                easing: 'easeOut',
                 slomo: false,
                 time: null
             };
@@ -907,7 +907,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     };
                     styles = extend(styleObj, customPos);
                 }
-
                 var animate = function animate() {
                     _this7.animator.start({
                         width: styles.width,

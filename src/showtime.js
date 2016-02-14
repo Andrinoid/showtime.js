@@ -404,7 +404,7 @@
 
             this.options = {
                 speed: 2000,
-                easing: 'quadratic',
+                easing: 'easeOut',
                 slomo: false,
                 time: null,
             };
@@ -1315,7 +1315,6 @@
                 };
                 styles = extend(styleObj, customPos);
             }
-
             let animate = ()=> {
                 this.animator.start({
                     width: styles.width,
