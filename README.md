@@ -124,11 +124,12 @@ tour.quit();
 ```
 
 ### Show Options
-- padding
-- buttons
-- focusClick
-- dimentions
-- placement
+- element //type, class, id, element object, jquery object
+- padding //integer, value in px
+- buttons //array of objects with label and click
+- focusClick //function
+- dimentions //object width, height, top, left
+- placement //top, left, right, bottom
 - removeOnOuterClick
 - autoplay //not really tested with call functions
 - autoplayDelay
