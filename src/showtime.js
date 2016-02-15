@@ -620,7 +620,7 @@
          }
 
 
-         /*Tooltip styles*/
+         /*popover styles*/
          .popover {
              position: absolute;
              box-sizing: border-box;
@@ -1049,12 +1049,12 @@
 
     /**
      * ------------------------------------------------------------------------
-     * Tooltip
-     * Creates bootstrap-like tooltip with position relative to given element
+     * Popover
+     * Creates bootstrap-like popover with position relative to given element
      * ------------------------------------------------------------------------
      */
 
-    class Tooltip {
+    class Popover {
         constructor(element, config) {
             this.element = normalizeElement(element);
             this.popover = null;
@@ -1062,7 +1062,7 @@
             this.default = {
                 animation: true,
                 template: `
-                 <div class="popover" role="tooltip">
+                 <div class="popover">
                     <div class="arrow"></div>
                     <h3 class="popover-title"></h3>
                     <div class="popover-content"></div>
@@ -1106,7 +1106,7 @@
 
 
             if (!this.default.content) {
-                throw new Error('Tooltip has no content');
+                throw new Error('Popover has no content');
             }
             if (this.default.title) {
                 title.innerText = this.default.title;
@@ -1416,7 +1416,7 @@
      * This class ties it all together
      * ------------------------------------------------------------------------
      */
-        //TODO keep focus on scroll and resize add fit options for tooltip
+        //TODO keep focus on scroll and resize add fit options for Popover
 
     class showtime {
 
@@ -1450,7 +1450,7 @@
             /*
              * We clone the default settings and merge it with the current chain settings.
              * Update the focus padding
-             * create tooltip
+             * create popover
              * focus on element
              */
 
@@ -1462,7 +1462,7 @@
                 return;
             }
             if(chainItem._type === 'modal') {
-                this._removeTooltip();
+                this._removePopover();
                 this.focus.coverAll();
                 new Modal(chainItem);
                 //this.chainIndex++;
@@ -1476,9 +1476,9 @@
             if (!this.focus) this._createFocus();
             //override defaults with given for this focus
             this.focus.default.padding = settings.padding;
-            this._removeTooltip();
-            //We create new tooltip for every focus point. This is easier to manage than collecting them
-            this.tooltip = new Tooltip(this.focus.focusBox.middle, {
+            this._removePopover();
+            //We create new popover for every focus point. This is easier to manage than collecting them
+            this.popover = new Popover(this.focus.focusBox.middle, {
                 title: settings.title,
                 content: settings.content,
                 placement: settings.placement,//top, left, right, bottom
@@ -1488,13 +1488,13 @@
             });
             this.focus.focusOn(settings.element, settings.dimentions);
             this.focus.complete = ()=> {
-                this.tooltip.show();
+                this.popover.show();
                 this.chainIndex++;
                 if (this.defaults.autoplay) {
                     this._callAgain()
                 }
             };
-            if (typeof settings.focusClick === "undefined") {
+            if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
                 this.focus.focusBox.middle.style.pointerEvents = 'none'
             }
             else {
@@ -1503,12 +1503,12 @@
             }
         }
 
-        _removeTooltip() {
-             //remove last tooltip if any
+        _removePopover() {
+             //remove last popover if any
             try {
-                this.tooltip.remove();
+                this.popover.remove();
             } catch (err) {
-                //tooltip does not excist
+                //popover does not excist
             }
         }
 
@@ -1568,7 +1568,7 @@
         quit() {
             this.focus.remove();
             delete this.focus;
-            this.tooltip.remove();
+            this.popover.remove();
             Modal.prototype.instances.length = 0;
 
         }
