@@ -552,7 +552,8 @@
          }
          .modal-header .close {
              margin-top: -2px;
-             position: static
+             position: static;
+             height: 30px;
          }
          .close.standalone {
              position: absolute;
