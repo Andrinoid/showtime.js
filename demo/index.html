@@ -19,6 +19,11 @@
     <noscript>
         <link rel="stylesheet" href="assets/css/noscript.css"/>
     </noscript>
+    <style>
+        b {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body class="is-loading">
 
@@ -67,7 +72,7 @@
                 <input type="radio" id="robot_no" name="robot"/><label for="robot_no">No</label>
             </div>
             <ul class="actions">
-                <li><a href="#" class="button">Get Started</a></li>
+                <li><a href="#" class="button" id="someButton" onclick="tour.next();">Get Started</a></li>
             </ul>
         </form>
         <hr/>
@@ -105,9 +110,9 @@
 <script>
     var tour = new Showtime({
         removeOnOuterClick: true,
-        focusClick: function () {
-            tour.next();
-        },
+//        focusClick: function () {
+//            tour.next();
+//        },
         buttons: [
             {
                 label: 'quit',
@@ -125,29 +130,54 @@
     })
             .show({
                 element: '.mainHl',
-                title: 'hey I have a title again.',
                 placement: 'bottom',
-                content: '<p>This is a ball</p>',
-                dimentions: {
-                    //height: 400
-                },
-                buttons: [
-                    {
-                        label: 'quit',
-                        click: function () {
-                            tour.quit()
-                        }
-                    },
-                    {
-                        label: 'next',
-                        click: function () {
-                            tour.next()
-                        }
-                    }
-                ]
+                title: 'Small and independent',
+                content: 'This tour is a demostration of showtime. ' +
+                'you might be interested in viewing the source code',
             })
             .show({
-                element: '.avatar img',
+                element: 'p',
+                title: 'What does it do?',
+                placement: 'top',
+                padding: 10,
+                content: '<p>It <b>animates</b> a focuspoint at any given element ' +
+                'and shows a popover pointing at it. </p>',
+            })
+            .show({
+                element: '#someButton',
+                placement: 'right',
+                title: 'Scroll animation included',
+                content: 'Did you notice? If the element isn\'t in the viewport Showtime will take care of the scrolling for you',
+                focusClick: false,
+                padding: 10,
+            })
+            .show({
+                element: '#someButton',
+                placement: 'top',
+                title: 'Ohh while we are here',
+                content: 'This button works. try it!',
+                focusClick: false,
+                padding: 10,
+            })
+
+            .show({
+                element: '#someButton',
+                placement: 'left',
+                title: 'Sometimes that\'s not what we want',
+                content: 'So we can hijack the event and do whatever we want with it. Try it again.',
+                padding: 10,
+                focusClick: function () {
+                    alert('you probably don\'t want to show alert popup in your projects');
+                },
+
+            })
+            .modal({
+                title: 'Yeahh.',
+                message: 'We have a modals too.'
+
+            })
+            .show({
+                element: document.querySelector('.field'),
                 title: 'hey I have a title again.',
                 placement: 'bottom',
                 content: '<p>This is a ball</p>',
@@ -166,10 +196,11 @@
                         }
                     }
                 ]
-            })
-            .modal({
-                title: 'sdfsdf'
             });
+
+    setTimeout(function () {
+        tour.start();
+    }, 2000);
 
 </script>
 </body>
