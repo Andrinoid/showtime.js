@@ -1040,6 +1040,7 @@
             setTimeout(()=> {
                 this.modal.remove();
                 this.defaults.onClose();
+                console.log('onClose in class');
                 removeClass(document.body, 'modal-mode');
             }, 500);
         }
@@ -1378,6 +1379,8 @@
                 html.clientHeight, html.scrollHeight, html.offsetHeight);
             let dimentions = this.focusBox.middle.getBoundingClientRect();
 
+
+
             setStyles(this.focusBox.top, {
                 top: 0,
                 left: 0,
@@ -1394,13 +1397,13 @@
             });
             setStyles(this.focusBox.right, {
                 top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
+                height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                 right: 0,
                 left: dimentions.left + dimentions.width + this.default.padding + 'px',
             });
             setStyles(this.focusBox.left, {
                 top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
+                height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                 left: 0,
                 width: (()=> {
                     return dimentions.left > 0 ? dimentions.left - this.default.padding + 'px' : 0
@@ -1463,10 +1466,11 @@
                 return;
             }
             if(chainItem._type === 'modal') {
+                new Modal(chainItem);
                 this._removePopover();
                 this.focus.coverAll();
-                new Modal(chainItem);
-                //this.chainIndex++;
+                this.chainIndex++;
+
                 return;
 
             }
@@ -1547,7 +1551,7 @@
 
         modal(options) {
             options._type = 'modal';
-            options.withBackdrop = false;
+            options.withBackdrop = true;
             options.onClose = ()=> {this.next()};
             this.chain.push(options);
             return this;
@@ -1559,7 +1563,8 @@
         }
 
         next() {
-            this.play();
+            if (this._isNext())
+                this._callchain();
         }
 
         reset() {

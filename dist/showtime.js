@@ -613,6 +613,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 setTimeout(function () {
                     _this3.modal.remove();
                     _this3.defaults.onClose();
+                    console.log('onClose in class');
                     removeClass(document.body, 'modal-mode');
                 }, 500);
             }
@@ -986,13 +987,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 setStyles(this.focusBox.right, {
                     top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                    height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
+                    height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     right: 0,
                     left: dimentions.left + dimentions.width + this.default.padding + 'px'
                 });
                 setStyles(this.focusBox.left, {
                     top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                    height: pageHeight + (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
+                    height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
                     left: 0,
                     width: function () {
                         return dimentions.left > 0 ? dimentions.left - _this8.default.padding + 'px' : 0;
@@ -1062,10 +1063,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     return;
                 }
                 if (chainItem._type === 'modal') {
+                    new Modal(chainItem);
                     this._removePopover();
                     this.focus.coverAll();
-                    new Modal(chainItem);
-                    //this.chainIndex++;
+                    this.chainIndex++;
+
                     return;
                 }
                 var defaults = clone(this.defaults);
@@ -1154,7 +1156,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var _this11 = this;
 
                 options._type = 'modal';
-                options.withBackdrop = false;
+                options.withBackdrop = true;
                 options.onClose = function () {
                     _this11.next();
                 };
@@ -1169,7 +1171,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'next',
             value: function next() {
-                this.play();
+                if (this._isNext()) this._callchain();
             }
         }, {
             key: 'reset',
