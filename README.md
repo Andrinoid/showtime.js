@@ -5,6 +5,7 @@
 Showtime is a lightweight framework for easily creating stunning tours around your web app.
 It comes with a built in chain so its really easy to mix your tours with custom functionality.
 
+**Demo:** http://apps.tweecode.com/custom/showtime/
 ### Usage
 Download showtime.js and include it in your html.
 ```html
