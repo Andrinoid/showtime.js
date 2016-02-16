@@ -70,7 +70,7 @@
     var tour = new Showtime({
         autoplay: false,
         padding: 10,
-        removeOnOuterClick: true,
+        removeOnOuterClick: false,
         focusClick: function () {
             tour.next();
         },
@@ -117,9 +117,9 @@
                 ]
             })
             .modal({
-                title: 'sdfsdf'
+                title: 'sdfsdf',
+                message: 'bsdfsdfsdf'
             })
-
             .show({
                 element: '.four',
                 placement: 'top',
@@ -130,7 +130,7 @@
                 placement: 'bottom',
                 content: '<p>This is a box1</p>',
                 focusClick: function () {
-                    alert();
+                    alert('');
                     tour.next();
                 }
             })
