@@ -586,6 +586,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.chainDialog = this.modal.querySelector('.chain_dialog');
                 btn.onclick = function () {
                     _this2.close();
+                    _this2.defaults.onClose();
+                    console.log('closing modal');
                 };
                 setClass(document.body, 'modal-mode');
             }
@@ -607,12 +609,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (this.defaults.withBackdrop) {
                     fadeOutRemove(this.backdrop);
                 }
-
                 setClass(this.chainDialog, 'fadeOutTop');
-
                 setTimeout(function () {
                     _this3.modal.remove();
-                    _this3.defaults.onClose();
                     removeClass(document.body, 'modal-mode');
                 }, 500);
             }
@@ -1053,10 +1052,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * create popover
                  * focus on element
                  */
-
                 var chainItem = this.chain[this.chainIndex];
+                console.log(this.chainIndex);
+                console.log(chainItem._type);
+                console.log('_____');
                 //if chainItem is a function we run it
                 if (typeof chainItem === 'function') {
+                    console.log('it a function');
                     chainItem();
                     this.chainIndex++;
                     return;
@@ -1065,7 +1067,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this._removePopover();
                     this.focus.coverAll();
                     new Modal(chainItem);
-                    //this.chainIndex++;
+                    this.chainIndex++;
                     return;
                 }
                 var defaults = clone(this.defaults);
@@ -1088,11 +1090,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
                     _this9.popover.show();
-                    _this9.chainIndex++;
+
+                    console.log('its the default plus plus');
                     if (_this9.defaults.autoplay) {
                         _this9._callAgain();
                     }
                 };
+                this.chainIndex++;
                 if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
                     this.focus.focusBox.middle.style.pointerEvents = 'none';
                 } else {
@@ -1169,7 +1173,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'next',
             value: function next() {
-                this.play();
+                if (this._isNext()) this._callchain();
             }
         }, {
             key: 'reset',

@@ -973,7 +973,7 @@
         }
 
         closeOthers() {
-            this.__proto__.instances.forEach(function(item) {
+            this.__proto__.instances.forEach(function (item) {
                 item.close();
             });
             this.__proto__.instances.length = 0;
@@ -1015,7 +1015,9 @@
             let btn = this.modal.querySelector('.close');
             this.chainDialog = this.modal.querySelector('.chain_dialog');
             btn.onclick = ()=> {
-                this.close()
+                this.close();
+                this.defaults.onClose();
+                console.log('closing modal');
             };
             setClass(document.body, 'modal-mode');
 
@@ -1034,12 +1036,9 @@
             if (this.defaults.withBackdrop) {
                 fadeOutRemove(this.backdrop);
             }
-
             setClass(this.chainDialog, 'fadeOutTop');
-
             setTimeout(()=> {
                 this.modal.remove();
-                this.defaults.onClose();
                 removeClass(document.body, 'modal-mode');
             }, 500);
         }
@@ -1267,7 +1266,7 @@
             });
             this.animator.complete = ()=> {
                 this.complete();
-                if(this.isCoverAll) {
+                if (this.isCoverAll) {
                     this.default.padding = this.default.paddingCache;
                     this.isCoverAll = false;
                 }
@@ -1454,19 +1453,22 @@
              * create popover
              * focus on element
              */
-
             let chainItem = this.chain[this.chainIndex];
+            console.log(this.chainIndex);
+            console.log(chainItem._type);
+            console.log('_____');
             //if chainItem is a function we run it
             if (typeof(chainItem) === 'function') {
+                console.log('it a function');
                 chainItem();
                 this.chainIndex++;
                 return;
             }
-            if(chainItem._type === 'modal') {
+            if (chainItem._type === 'modal') {
                 this._removePopover();
                 this.focus.coverAll();
                 new Modal(chainItem);
-                //this.chainIndex++;
+                this.chainIndex++;
                 return;
 
             }
@@ -1490,11 +1492,13 @@
             this.focus.focusOn(settings.element, settings.dimentions);
             this.focus.complete = ()=> {
                 this.popover.show();
-                this.chainIndex++;
+
+                console.log('its the default plus plus');
                 if (this.defaults.autoplay) {
                     this._callAgain()
                 }
             };
+            this.chainIndex++;
             if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
                 this.focus.focusBox.middle.style.pointerEvents = 'none'
             }
@@ -1505,7 +1509,7 @@
         }
 
         _removePopover() {
-             //remove last popover if any
+            //remove last popover if any
             try {
                 this.popover.remove();
             } catch (err) {
@@ -1548,7 +1552,9 @@
         modal(options) {
             options._type = 'modal';
             options.withBackdrop = false;
-            options.onClose = ()=> {this.next()};
+            options.onClose = ()=> {
+                this.next();
+            };
             this.chain.push(options);
             return this;
         }
@@ -1559,7 +1565,8 @@
         }
 
         next() {
-            this.play();
+            if (this._isNext())
+                this._callchain();
         }
 
         reset() {

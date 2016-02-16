@@ -109,7 +109,7 @@
 <script src="../dist/showtime.js"></script>
 <script>
     var tour = new Showtime({
-        removeOnOuterClick: true,
+        removeOnOuterClick: false,
 //        focusClick: function () {
 //            tour.next();
 //        },
@@ -127,7 +127,11 @@
                 }
             }
         ]
-    })
+    })      .modal({
+                title: 'Yeahh.',
+                message: 'We have a modals too.'
+
+            })
             .show({
                 element: '.mainHl',
                 placement: 'bottom',
@@ -174,6 +178,16 @@
             .modal({
                 title: 'Yeahh.',
                 message: 'We have a modals too.'
+            })
+            .show({
+                element: '#someButton',
+                placement: 'left',
+                title: 'Sometimes that\'s not what we want',
+                content: 'So we can hijack the event and do whatever we want with it. Try it again.',
+                padding: 10,
+                focusClick: function () {
+                    alert('you probably don\'t want to show alert popup in your projects');
+                }
 
             })
             .show({
