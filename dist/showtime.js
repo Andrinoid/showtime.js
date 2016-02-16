@@ -586,6 +586,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.chainDialog = this.modal.querySelector('.chain_dialog');
                 btn.onclick = function () {
                     _this2.close();
+                    _this2.defaults.onClose();
+                    console.log('closing modal');
                 };
                 setClass(document.body, 'modal-mode');
             }
@@ -607,13 +609,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (this.defaults.withBackdrop) {
                     fadeOutRemove(this.backdrop);
                 }
-
                 setClass(this.chainDialog, 'fadeOutTop');
-
                 setTimeout(function () {
                     _this3.modal.remove();
-                    _this3.defaults.onClose();
-                    console.log('onClose in class');
                     removeClass(document.body, 'modal-mode');
                 }, 500);
             }
@@ -1054,20 +1052,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * create popover
                  * focus on element
                  */
-
                 var chainItem = this.chain[this.chainIndex];
-                //if chainItem is a function we run it
                 if (typeof chainItem === 'function') {
                     chainItem();
                     this.chainIndex++;
                     return;
                 }
+
                 if (chainItem._type === 'modal') {
-                    new Modal(chainItem);
                     this._removePopover();
                     this.focus.coverAll();
+                    new Modal(chainItem);
                     this.chainIndex++;
-
                     return;
                 }
                 var defaults = clone(this.defaults);
@@ -1090,11 +1086,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
                     _this9.popover.show();
-                    _this9.chainIndex++;
+
+                    console.log('its the default plus plus');
                     if (_this9.defaults.autoplay) {
                         _this9._callAgain();
                     }
                 };
+                this.chainIndex++;
                 if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
                     this.focus.focusBox.middle.style.pointerEvents = 'none';
                 } else {
@@ -1156,7 +1154,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var _this11 = this;
 
                 options._type = 'modal';
-                options.withBackdrop = true;
+
+                options.withBackdrop = false;
                 options.onClose = function () {
                     _this11.next();
                 };

@@ -1456,12 +1456,7 @@
              * focus on element
              */
             let chainItem = this.chain[this.chainIndex];
-            console.log(this.chainIndex);
-            console.log(chainItem._type);
-            console.log('_____');
-            //if chainItem is a function we run it
             if (typeof(chainItem) === 'function') {
-                console.log('it a function');
                 chainItem();
                 this.chainIndex++;
                 return;
