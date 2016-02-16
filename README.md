@@ -1,3 +1,5 @@
+#![Showtime logo](demo/images/logo.png)
+
 # showtime.js
 
 Showtime is a lightweight framework for easily creating stunning tours around your web app.
