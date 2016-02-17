@@ -582,6 +582,7 @@
              position: static;
              height: 30px;
          }
+
          .close.standalone {
              position: absolute;
              right: 15px;
@@ -610,10 +611,17 @@
              outline: 0;
              box-shadow: 0 3px 9px rgba(0, 0, 0, .5)
          }
+         .modal-theme-blue .modal-content {
+            background-color: #4a6173;
+         }
          .modal-header {
              min-height: 16.43px;
              padding: 15px;
-             border-bottom: 1px solid #e5e5e5
+             border-bottom: 1px solid #e5e5e5;
+             min-height: 50px
+         }
+         .modal-theme-blue .modal-header {
+            border-bottom: none;
          }
          .modal-body {
              position: relative;
@@ -984,6 +992,7 @@
             this.defaults = {
                 title: '',
                 message: '',
+                theme: 'classic',
                 withBackdrop: true,
                 size: 'normal',//large small
                 onClose: function () {
@@ -993,17 +1002,10 @@
             };
             this.defaults = extend(this.defaults, options);
 
-            this.closeOthers();
+            this.__proto__.closeAll();
             this.__proto__.instances.push(this);
             this._injectStyles();
             this.buildTemplate();
-        }
-
-        closeOthers() {
-            this.__proto__.instances.forEach(function (item) {
-                item.close();
-            });
-            this.__proto__.instances.length = 0;
         }
 
         buildTemplate() {
@@ -1037,13 +1039,13 @@
                     </div>
                 </div>`;
 
-            this.modal = new Elm('div', {html: main}, document.body);
+            this.modal = new Elm('div', {html: main, 'class': `modal-theme-${this.defaults.theme}`}, document.body);
 
             let btn = this.modal.querySelector('.close');
             this.chainDialog = this.modal.querySelector('.chain_dialog');
             btn.onclick = ()=> {
+                console.log('cæcio');
                 this.close();
-                this.defaults.onClose();
             };
             setClass(document.body, 'modal-mode');
 
@@ -1058,7 +1060,7 @@
             }
         }
 
-        close() {
+        _close(cb = ()=> {}) {
             if (this.defaults.withBackdrop) {
                 fadeOutRemove(this.backdrop);
             }
@@ -1066,11 +1068,23 @@
             setTimeout(()=> {
                 this.modal.remove();
                 removeClass(document.body, 'modal-mode');
+                cb();
             }, 500);
+        }
+
+        close() {
+            this._close(this.defaults.onClose);
         }
 
     }
     Modal.prototype.instances = [];
+    Modal.prototype.closeAll = function () {
+        this.instances.forEach(function (item) {
+            item._close();
+        });
+        this.instances.length = 0;
+    };
+    window.modal = Modal;
 
 
     /**
@@ -1586,7 +1600,6 @@
 
         modal(options) {
             options._type = 'modal';
-
             options.withBackdrop = false;
             options.onClose = ()=> {
                 this.next();
@@ -1596,6 +1609,8 @@
         }
 
         next() {
+            if(this.chainIndex)
+                Modal.prototype.closeAll();
             if (this._isNext())
                 this._callchain();
             else
