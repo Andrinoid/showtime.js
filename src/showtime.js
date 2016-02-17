@@ -582,12 +582,24 @@
              position: static;
              height: 30px;
          }
-
+         .modal-theme-blue .close {
+             text-shadow: none;
+             opacity: 1;
+             font-size: 31px;
+             font-weight: normal;
+         }
+         .modal-theme-blue .close span {
+             color: white;
+         }
+         .modal-theme-blue .close span:hover {
+             color: #fbc217;
+         }
          .close.standalone {
              position: absolute;
              right: 15px;
              top: 13px;
-             z-index: 1
+             z-index: 1;
+             height: 30px;
          }
          .modal-title {
              margin: 0;
