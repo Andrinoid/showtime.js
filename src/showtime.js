@@ -190,6 +190,19 @@
         }
     };
 
+    var isElementInViewport = function (el) {
+        var rect = el.getBoundingClientRect();
+
+        return rect.bottom > 0 &&
+            rect.right > 0 &&
+            rect.left < (window.innerWidth || document.documentElement.clientWidth) &&
+            rect.top < (window.innerHeight || document.documentElement.clientHeight);
+    };
+
+    var elementOffsetTop = function(el) {
+      return el.offsetTop + ( el.offsetParent ? elementOffsetTop(el.offsetParent) : 0 )
+    };
+
     var setClass = function (el, className) {
         //credit: http://youmightnotneedjquery.com/
         if (el.classList)
@@ -1150,7 +1163,7 @@
         }
 
         remove() {
-            this.popover.parentNode.removeChild(this.popover);
+            this.popover.remove();
         }
 
         show() {
@@ -1329,8 +1342,11 @@
 
             let viewportHeight = (window.innerHeight || document.documentElement.clientHeight);
             //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
-            if ((styles.top + styles.height) > viewportHeight) {
-                let y = styles.top - (viewportHeight / 2);
+            if (!isElementInViewport(focusElm)) {
+                console.log('element is not in the viewport');
+                //let y = styles.top - (viewportHeight / 2);
+                let y = elementOffsetTop(focusElm) - (viewportHeight / 2 );
+                console.log(elementOffsetTop(focusElm), viewportHeight);
                 scrollToY(y, 1500, 'easeInOutQuint', function () {
                     styles = focusElm.getBoundingClientRect();
                     animate();
@@ -1572,7 +1588,6 @@
             delete this.focus;
             this.popover.remove();
             Modal.prototype.instances.length = 0;
-
         }
 
         call(fn) {

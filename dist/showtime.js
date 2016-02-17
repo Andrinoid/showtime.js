@@ -188,6 +188,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
     };
 
+    var isElementInViewport = function isElementInViewport(el) {
+        var rect = el.getBoundingClientRect();
+
+        return rect.bottom > 0 && rect.right > 0 && rect.left < (window.innerWidth || document.documentElement.clientWidth) && rect.top < (window.innerHeight || document.documentElement.clientHeight);
+    };
+
+    var elementOffsetTop = function elementOffsetTop(el) {
+        return el.offsetTop + (el.offsetParent ? elementOffsetTop(el.offsetParent) : 0);
+    };
+
     var setClass = function setClass(el, className) {
         //credit: http://youmightnotneedjquery.com/
         if (el.classList) el.classList.add(className);else el.className += ' ' + className;
@@ -726,7 +736,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'remove',
             value: function remove() {
-                this.popover.parentNode.removeChild(this.popover);
+                this.popover.remove();
             }
         }, {
             key: 'show',
@@ -920,8 +930,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
-                if (styles.top + styles.height > viewportHeight) {
-                    var y = styles.top - viewportHeight / 2;
+                if (!isElementInViewport(focusElm)) {
+                    console.log('element is not in the viewport');
+                    //let y = styles.top - (viewportHeight / 2);
+                    var y = elementOffsetTop(focusElm) - viewportHeight / 2;
+                    console.log(elementOffsetTop(focusElm), viewportHeight);
                     scrollToY(y, 1500, 'easeInOutQuint', function () {
                         styles = focusElm.getBoundingClientRect();
                         animate();
