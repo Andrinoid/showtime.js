@@ -201,6 +201,17 @@
         );
     };
 
+    var getViewPortHeight = function () {
+        return (window.innerHeight || document.documentElement.clientHeight);
+    };
+
+    var getPageHeight = function () {
+        let body = document.body;
+        let html = document.documentElement;
+
+        return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+    };
+
     var elementOffsetTop = function (el) {
         return el.offsetTop + ( el.offsetParent ? elementOffsetTop(el.offsetParent) : 0 )
     };
@@ -1281,10 +1292,6 @@
             });
             this.animator.complete = ()=> {
                 this.complete();
-                if (this.isCoverAll) {
-                    this.default.padding = this.default.paddingCache;
-                    this.isCoverAll = false;
-                }
             };
 
         }
@@ -1312,7 +1319,6 @@
                 bottom: new Elm('div.to_bottom', elmOptions, document.body),
                 left: new Elm('div.to_left', elmOptions, document.body)
             };
-
         }
 
         focusOn(elm, customPos) {
@@ -1342,7 +1348,7 @@
                 }
             };
 
-            let viewportHeight = (window.innerHeight || document.documentElement.clientHeight);
+            let viewportHeight = getViewPortHeight();
             //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
             if (!isElementInViewport(focusElm)) {
                 console.log('element is not in the viewport');
@@ -1368,14 +1374,29 @@
         }
 
         coverAll() {
-            this.isCoverAll = true;
-            this.default.paddingCache = this.default.padding;
-            this.default.padding = 0;
-            this.focusOn(document.body, {
-                width: 0,
+            setStyles(this.focusBox.top, {
+                top: 0,
+                left: 0,
+                right: 0,
+                height: getPageHeight() + 'px'
+            });
+            setStyles(this.focusBox.bottom, {
+                top: 0,
                 height: 0,
-                top: (window.innerHeight || document.documentElement.clientHeight) / 2,
-                left: (window.innerWidth || document.documentElement.clientWidth) / 2,
+                left: 0,
+                width: 0
+            });
+            setStyles(this.focusBox.right, {
+                top: 0,
+                height: 0,
+                right: 0,
+                left: 0
+            });
+            setStyles(this.focusBox.left, {
+                top: 0,
+                height: 0,
+                left: 0,
+                width: 0
             });
         }
 

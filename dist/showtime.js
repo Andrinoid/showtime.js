@@ -194,6 +194,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
     };
 
+    var getViewPortHeight = function getViewPortHeight() {
+        return window.innerHeight || document.documentElement.clientHeight;
+    };
+
+    var getPageHeight = function getPageHeight() {
+        var body = document.body;
+        var html = document.documentElement;
+
+        return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+    };
+
     var elementOffsetTop = function elementOffsetTop(el) {
         return el.offsetTop + (el.offsetParent ? elementOffsetTop(el.offsetParent) : 0);
     };
@@ -863,10 +874,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             });
             this.animator.complete = function () {
                 _this5.complete();
-                if (_this5.isCoverAll) {
-                    _this5.default.padding = _this5.default.paddingCache;
-                    _this5.isCoverAll = false;
-                }
             };
         }
 
@@ -928,7 +935,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     };
                 };
 
-                var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                var viewportHeight = getViewPortHeight();
                 //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
                 if (!isElementInViewport(focusElm)) {
                     console.log('element is not in the viewport');
@@ -952,14 +959,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'coverAll',
             value: function coverAll() {
-                this.isCoverAll = true;
-                this.default.paddingCache = this.default.padding;
-                this.default.padding = 0;
-                this.focusOn(document.body, {
-                    width: 0,
+                setStyles(this.focusBox.top, {
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: getPageHeight() + 'px'
+                });
+                setStyles(this.focusBox.bottom, {
+                    top: 0,
                     height: 0,
-                    top: (window.innerHeight || document.documentElement.clientHeight) / 2,
-                    left: (window.innerWidth || document.documentElement.clientWidth) / 2
+                    left: 0,
+                    width: 0
+                });
+                setStyles(this.focusBox.right, {
+                    top: 0,
+                    height: 0,
+                    right: 0,
+                    left: 0
+                });
+                setStyles(this.focusBox.left, {
+                    top: 0,
+                    height: 0,
+                    left: 0,
+                    width: 0
                 });
             }
         }, {
