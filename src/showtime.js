@@ -2,6 +2,7 @@
  * --------------------------------------------------------------------------
  * ShowTime.js
  * Licensed under MIT
+ * Repository: https://github.com/Andrinoid/showtime.js
  * Author: Andri Birgisson
  * --------------------------------------------------------------------------
  */
@@ -1017,7 +1018,6 @@
             btn.onclick = ()=> {
                 this.close();
                 this.defaults.onClose();
-                console.log('closing modal');
             };
             setClass(document.body, 'modal-mode');
 
@@ -1337,7 +1337,7 @@
                 });
             }
             else if (styles.top < window.scrollY) {
-                let y = styles.top - (viewportHeight / 2);
+                let y = styles.top;
                 scrollToY(y, 1500, 'easeInOutQuint', function () {
                     styles = focusElm.getBoundingClientRect();
                     animate();
@@ -1376,7 +1376,6 @@
             var pageHeight = Math.max(body.scrollHeight, body.offsetHeight,
                 html.clientHeight, html.scrollHeight, html.offsetHeight);
             let dimentions = this.focusBox.middle.getBoundingClientRect();
-
 
 
             setStyles(this.focusBox.top, {
@@ -1491,7 +1490,6 @@
             this.focus.complete = ()=> {
                 this.popover.show();
 
-                console.log('its the default plus plus');
                 if (this.defaults.autoplay) {
                     this._callAgain()
                 }

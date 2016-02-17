@@ -10,6 +10,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * --------------------------------------------------------------------------
  * ShowTime.js
  * Licensed under MIT
+ * Repository: https://github.com/Andrinoid/showtime.js
  * Author: Andri Birgisson
  * --------------------------------------------------------------------------
  */
@@ -587,7 +588,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 btn.onclick = function () {
                     _this2.close();
                     _this2.defaults.onClose();
-                    console.log('closing modal');
                 };
                 setClass(document.body, 'modal-mode');
             }
@@ -927,7 +927,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         animate();
                     });
                 } else if (styles.top < window.scrollY) {
-                    var y = styles.top - viewportHeight / 2;
+                    var y = styles.top;
                     scrollToY(y, 1500, 'easeInOutQuint', function () {
                         styles = focusElm.getBoundingClientRect();
                         animate();
@@ -1087,7 +1087,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.focus.complete = function () {
                     _this9.popover.show();
 
-                    console.log('its the default plus plus');
                     if (_this9.defaults.autoplay) {
                         _this9._callAgain();
                     }
