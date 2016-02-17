@@ -144,3 +144,7 @@ tour.quit();
 - size //normal large small
 - onClose
 - onOpen
+- 
+### TODO
+- add keyboard shortcuts
+- custom template option for Modal
