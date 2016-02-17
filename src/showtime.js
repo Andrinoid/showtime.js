@@ -1517,7 +1517,7 @@
 
         _callAgain() {
             setTimeout(()=> {
-                this.play();
+                this.next();
             }, this.defaults.autoplayDelay);
         }
 
@@ -1558,14 +1558,11 @@
             return this;
         }
 
-        play() {
-            if (this._isNext())
-                this._callchain();
-        }
-
         next() {
             if (this._isNext())
                 this._callchain();
+            else
+                this.quit();
         }
 
         reset() {
@@ -1593,7 +1590,7 @@
 
         start() {
             this.chainIndex = 0;
-            this.play();
+            this.next();
         }
     }
 

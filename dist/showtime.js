@@ -1116,7 +1116,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var _this10 = this;
 
                 setTimeout(function () {
-                    _this10.play();
+                    _this10.next();
                 }, this.defaults.autoplayDelay);
             }
         }, {
@@ -1163,14 +1163,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return this;
             }
         }, {
-            key: 'play',
-            value: function play() {
-                if (this._isNext()) this._callchain();
-            }
-        }, {
             key: 'next',
             value: function next() {
-                if (this._isNext()) this._callchain();
+                if (this._isNext()) this._callchain();else this.quit();
             }
         }, {
             key: 'reset',
@@ -1203,7 +1198,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: 'start',
             value: function start() {
                 this.chainIndex = 0;
-                this.play();
+                this.next();
             }
         }]);
 
