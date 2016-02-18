@@ -572,6 +572,22 @@
              -webkit-overflow-scrolling: touch;
              outline: 0
          }
+         .modal-theme-blue input[type="text"] {/*Temporary*/
+                -moz-appearance: none;
+                -webkit-appearance: none;
+                -ms-appearance: none;
+                appearance: none;
+                border-radius: 4px;
+                border: solid 1px #c8cccf;
+                color: inherit;
+                display: block;
+                outline: 0;
+                padding: 0 1em;
+                text-decoration: none;
+                width: 100%;
+                height: 2.75em;
+                box-sizing: border-box;
+         }
          .chain_dialog {
              position: relative;
              width: auto;
