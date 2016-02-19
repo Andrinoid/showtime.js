@@ -153,3 +153,4 @@ tour.quit();
 - add keyboard shortcuts
 - custom template option for Modal
 - set / get cookie
+- create themes
