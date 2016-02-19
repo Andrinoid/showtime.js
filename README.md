@@ -92,6 +92,10 @@ var tour = new Showtime({
         }
     ]
 })
+.modal({
+    title: 'Modal title',
+    message: 'this can contain <strong>HTML</strong>'
+})
 .call(function () {
     console.log('foobar');
 })
@@ -144,7 +148,7 @@ tour.quit();
 - size //normal large small
 - onClose
 - onOpen
-- 
+
 ### TODO
 - add keyboard shortcuts
 - custom template option for Modal
