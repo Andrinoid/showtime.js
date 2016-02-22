@@ -719,6 +719,12 @@
              -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
              box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
          }
+         .popover-theme-blue.popover {
+            color: white;
+            background-color: #465a6a;
+            border: 1px solid rgb(70, 90, 106);
+            padding: 20px;
+         }
          .popover.top {
              margin-top: -10px;
          }
@@ -733,16 +739,25 @@
          }
          .popover-title {
              margin: 0;
-             padding: 8px 14px;
              font-size: 14px;
              background-color: #f7f7f7;
              border-bottom: 1px solid #ebebeb;
              border-radius: 1px 1px 0 0;
              box-sizing: border-box;
+             padding: 8px 0;
+         }
+         .popover-theme-blue .popover-title {
+            background-color: #465A6B;
+            border-top: 2px solid #ffcc01;
+            border-bottom: 2px solid #ffcc01;
+            color: white;
          }
          .popover-content {
              padding: 9px 14px;
              box-sizing: border-box;
+         }
+         .popover-theme-blue .popover-content {
+             padding: 9px 0px;
          }
          .popover > .arrow,
          .popover > .arrow:after {
@@ -768,12 +783,16 @@
              border-top-color: rgba(0, 0, 0, 0.25);
              bottom: -11px;
          }
+
          .popover.top > .arrow:after {
              content: " ";
              bottom: 1px;
              margin-left: -10px;
              border-bottom-width: 0;
              border-top-color: #fff;
+         }
+         .popover-theme-blue.popover.top > .arrow:after {
+             border-top-color: #465A6A;
          }
          .popover.right > .arrow {
              top: 50%;
@@ -790,6 +809,9 @@
              border-left-width: 0;
              border-right-color: #fff;
          }
+         .popover-theme-blue.popover.right > .arrow:after {
+             border-right-color: #465A6A;
+         }
          .popover.bottom > .arrow {
              left: 50%;
              margin-left: -11px;
@@ -804,6 +826,9 @@
              margin-left: -10px;
              border-top-width: 0;
              border-bottom-color: #fff;
+         }
+         .popover-theme-blue.popover.bottom > .arrow:after {
+             border-bottom-color: #465A6A;
          }
          .popover.left > .arrow {
              top: 50%;
@@ -820,20 +845,52 @@
              border-left-color: #fff;
              bottom: -10px;
          }
+         .popover-theme-blue.popover.left > .arrow:after {
+             border-left-color: #465A6A;
+         }
          .popover .btns {
              padding: 9px 14px;
              text-align: right;
          }
+         .popover-theme-blue .btns {
+             padding: 9px 0px;
+         }
+
+         //.popover .popBtn {
+         //    color: #333;
+         //    font-weight: bold;
+         //    border: solid 1px #333;
+         //    display: inline-block;
+         //    padding: 4px 18px;
+         //    border-radius: 1px;
+         //    font-size: 13px;
+         //    cursor: pointer;
+         //    margin-left: 8px;
+         //}
+
          .popover .popBtn {
-             color: #333;
-             font-weight: bold;
-             border: solid 1px #333;
              display: inline-block;
-             padding: 4px 18px;
-             border-radius: 1px;
-             font-size: 13px;
+             padding: 6px 12px;
+             margin-bottom: 0;
+             font-size: 14px;
+             font-weight: 400;
+             line-height: 1.42857143;
+             text-align: center;
+             white-space: nowrap;
+             vertical-align: middle;
+             -ms-touch-action: manipulation;
+             touch-action: manipulation;
              cursor: pointer;
-             margin-left: 8px;
+             -webkit-user-select: none;
+             -moz-user-select: none;
+             -ms-user-select: none;
+             user-select: none;
+             background-image: none;
+             border: 1px solid transparent;
+             border-radius: 1px;
+             color: #333;
+             background-color: #fff;
+             border-color: #ccc;
          }
 
 
