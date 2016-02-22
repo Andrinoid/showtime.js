@@ -1142,7 +1142,8 @@
                 placement: 'top',//top, left, right, bottom
                 offset: '0 0',
                 collision: 'fit',//TODO RIGHT BOTTOM
-                buttons: []
+                buttons: [],
+                theme: 'classic'
             };
             this.default = extend(this.default, config);
             this._injectStyles();
@@ -1168,6 +1169,7 @@
         setElementContents(selector) {
             let div = document.createElement('div');
             div.innerHTML = this.default.template;
+
             let title = div.querySelector('.popover-title');
             let inner = div.querySelector('.popover-content');
             let btns = div.querySelector('.btns');
@@ -1188,6 +1190,7 @@
 
             inner.innerHTML = this.default.content;
             this.popover = div.children[0];
+            setClass(this.popover, `popover-theme-${this.default.theme}`);
 
         }
 
@@ -1536,6 +1539,9 @@
              * focus on element
              */
             let chainItem = this.chain[this.chainIndex];
+            let defaults = clone(this.defaults);
+            let settings = extend(defaults, chainItem);
+
             if (typeof(chainItem) === 'function') {
                 chainItem();
                 this.chainIndex++;
@@ -1545,13 +1551,11 @@
             if (chainItem._type === 'modal') {
                 this._removePopover();
                 this.focus.coverAll();
-                new Modal(chainItem);
+                new Modal(settings);
                 this.chainIndex++;
                 return;
 
             }
-            let defaults = clone(this.defaults);
-            let settings = extend(defaults, chainItem);
 
             //focus is reused until tour.quit() then it gets deleted and we have to create it again.
             if (!this.focus) this._createFocus();
@@ -1565,7 +1569,8 @@
                 placement: settings.placement,//top, left, right, bottom
                 collision: '',
                 offset: this._resolveOffsets(settings),
-                buttons: settings.buttons
+                buttons: settings.buttons,
+                theme: 'blue'
             });
             this.focus.focusOn(settings.element, settings.dimentions);
             this.focus.complete = ()=> {

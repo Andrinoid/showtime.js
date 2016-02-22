@@ -674,7 +674,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 placement: 'top', //top, left, right, bottom
                 offset: '0 0',
                 collision: 'fit', //TODO RIGHT BOTTOM
-                buttons: []
+                buttons: [],
+                theme: 'classic'
             };
             this.default = extend(this.default, config);
             this._injectStyles();
@@ -703,6 +704,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function setElementContents(selector) {
                 var div = document.createElement('div');
                 div.innerHTML = this.default.template;
+
                 var title = div.querySelector('.popover-title');
                 var inner = div.querySelector('.popover-content');
                 var btns = div.querySelector('.btns');
@@ -721,6 +723,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 inner.innerHTML = this.default.content;
                 this.popover = div.children[0];
+                setClass(this.popover, 'popover-theme-' + this.default.theme);
             }
         }, {
             key: 'addButtons',
@@ -1096,6 +1099,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * focus on element
                  */
                 var chainItem = this.chain[this.chainIndex];
+                var defaults = clone(this.defaults);
+                var settings = extend(defaults, chainItem);
+
                 if (typeof chainItem === 'function') {
                     chainItem();
                     this.chainIndex++;
@@ -1105,12 +1111,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (chainItem._type === 'modal') {
                     this._removePopover();
                     this.focus.coverAll();
-                    new Modal(chainItem);
+                    new Modal(settings);
                     this.chainIndex++;
                     return;
                 }
-                var defaults = clone(this.defaults);
-                var settings = extend(defaults, chainItem);
 
                 //focus is reused until tour.quit() then it gets deleted and we have to create it again.
                 if (!this.focus) this._createFocus();
@@ -1124,7 +1128,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     placement: settings.placement, //top, left, right, bottom
                     collision: '',
                     offset: this._resolveOffsets(settings),
-                    buttons: settings.buttons
+                    buttons: settings.buttons,
+                    theme: 'blue'
                 });
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
