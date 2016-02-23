@@ -1136,7 +1136,6 @@
             let btn = this.modal.querySelector('.close');
             this.chainDialog = this.modal.querySelector('.chain_dialog');
             btn.onclick = ()=> {
-                console.log('cæcio');
                 this.close();
             };
             setClass(document.body, 'modal-mode');
@@ -1460,10 +1459,8 @@
             let viewportHeight = getViewPortHeight();
             //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
             if (!isElementInViewport(focusElm)) {
-                console.log('element is not in the viewport');
                 //let y = styles.top - (viewportHeight / 2);
                 let y = elementOffsetTop(focusElm) - (viewportHeight / 2 );
-                console.log(elementOffsetTop(focusElm), viewportHeight);
                 scrollToY(y, 1500, 'easeInOutQuint', function () {
                     styles = focusElm.getBoundingClientRect();
                     animate();
@@ -1581,6 +1578,7 @@
                 focusClick: null,
                 dimentions: null,
                 removeOnOuterClick: false,
+                theme: 'classic'
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -1634,7 +1632,7 @@
                 collision: '',
                 offset: this._resolveOffsets(settings),
                 buttons: settings.buttons,
-                theme: 'blue'
+                theme: settings.theme
             });
             this.focus.focusOn(settings.element, settings.dimentions);
             this.focus.complete = ()=> {

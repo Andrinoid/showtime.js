@@ -600,7 +600,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var btn = this.modal.querySelector('.close');
                 this.chainDialog = this.modal.querySelector('.chain_dialog');
                 btn.onclick = function () {
-                    console.log('cæcio');
                     _this2.close();
                 };
                 setClass(document.body, 'modal-mode');
@@ -949,10 +948,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var viewportHeight = getViewPortHeight();
                 //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
                 if (!isElementInViewport(focusElm)) {
-                    console.log('element is not in the viewport');
                     //let y = styles.top - (viewportHeight / 2);
                     var y = elementOffsetTop(focusElm) - viewportHeight / 2;
-                    console.log(elementOffsetTop(focusElm), viewportHeight);
                     scrollToY(y, 1500, 'easeInOutQuint', function () {
                         styles = focusElm.getBoundingClientRect();
                         animate();
@@ -1071,7 +1068,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 buttons: [],
                 focusClick: null,
                 dimentions: null,
-                removeOnOuterClick: false
+                removeOnOuterClick: false,
+                theme: 'classic'
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -1129,7 +1127,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     collision: '',
                     offset: this._resolveOffsets(settings),
                     buttons: settings.buttons,
-                    theme: 'blue'
+                    theme: settings.theme
                 });
                 this.focus.focusOn(settings.element, settings.dimentions);
                 this.focus.complete = function () {
