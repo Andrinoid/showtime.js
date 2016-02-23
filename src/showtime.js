@@ -725,6 +725,10 @@
             border: 1px solid rgb(70, 90, 106);
             padding: 20px;
          }
+         .popover-theme-blue b, .popover-theme-blue strong {
+            font-weight: bold;
+            color: white;
+         }
          .popover.top {
              margin-top: -10px;
          }
@@ -850,23 +854,11 @@
          }
          .popover .btns {
              padding: 9px 14px;
-             text-align: right;
+             text-align: left;
          }
          .popover-theme-blue .btns {
              padding: 9px 0px;
          }
-
-         //.popover .popBtn {
-         //    color: #333;
-         //    font-weight: bold;
-         //    border: solid 1px #333;
-         //    display: inline-block;
-         //    padding: 4px 18px;
-         //    border-radius: 1px;
-         //    font-size: 13px;
-         //    cursor: pointer;
-         //    margin-left: 8px;
-         //}
 
          .popover .popBtn {
              display: inline-block;
@@ -887,12 +879,27 @@
              user-select: none;
              background-image: none;
              border: 1px solid transparent;
-             border-radius: 1px;
+             border-radius: 2px;
              color: #333;
              background-color: #fff;
              border-color: #ccc;
+             margin-right: 5px;
          }
-
+         .popover .popBtn:hover {
+            color: #333;
+            background-color: #e6e6e6;
+            border-color: #adadad;
+         }
+         .popover-theme-blue .popBtn {
+            background: #ffcc01;
+            border-color: #ffcc01;
+            color: #465A6A;
+            font-weight: bold;
+         }
+         .popover-theme-blue .popBtn:hover {
+             background: #465A6A;
+             color: white;
+          }
 
          /* Focus styles */
          .to_left,
