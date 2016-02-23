@@ -284,7 +284,6 @@
 
             if (p < 1) {
                 requestAnimationFrame(tick);
-
                 window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
             } else {
                 cb();
@@ -917,7 +916,6 @@
              z-index: 1000;
          }
 
-
          /*** Animations ***/
          @-webkit-keyframes fadeInDown {
              from {
@@ -1151,7 +1149,8 @@
             }
         }
 
-        _close(cb = ()=> {}) {
+        _close(cb = ()=> {
+        }) {
             if (this.defaults.withBackdrop) {
                 fadeOutRemove(this.backdrop);
             }
@@ -1578,7 +1577,8 @@
                 focusClick: null,
                 dimentions: null,
                 removeOnOuterClick: false,
-                theme: 'classic'
+                theme: 'classic',
+                onComplete: function() {}
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -1637,7 +1637,7 @@
             this.focus.focusOn(settings.element, settings.dimentions);
             this.focus.complete = ()=> {
                 this.popover.show();
-
+                settings.onComplete();
                 if (this.defaults.autoplay) {
                     this._callAgain()
                 }
@@ -1704,7 +1704,7 @@
         }
 
         next() {
-            if(this.chainIndex)
+            if (this.chainIndex)
                 Modal.prototype.closeAll();
             if (this._isNext())
                 this._callchain();
