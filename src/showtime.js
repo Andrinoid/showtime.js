@@ -60,6 +60,49 @@
         }
     }());
 
+    if (!String.prototype.repeat) {
+        String.prototype.repeat = function (count) {
+            'use strict';
+            if (this == null) {
+                throw new TypeError('can\'t convert ' + this + ' to object');
+            }
+            var str = '' + this;
+            count = +count;
+            if (count != count) {
+                count = 0;
+            }
+            if (count < 0) {
+                throw new RangeError('repeat count must be non-negative');
+            }
+            if (count == Infinity) {
+                throw new RangeError('repeat count must be less than infinity');
+            }
+            count = Math.floor(count);
+            if (str.length == 0 || count == 0) {
+                return '';
+            }
+            // Ensuring count is a 31-bit integer allows us to heavily optimize the
+            // main part. But anyway, most current (August 2014) browsers can't handle
+            // strings 1 << 28 chars or longer, so:
+            if (str.length * count >= 1 << 28) {
+                throw new RangeError('repeat count must not overflow maximum string size');
+            }
+            var rpt = '';
+            for (; ;) {
+                if ((count & 1) == 1) {
+                    rpt += str;
+                }
+                count >>>= 1;
+                if (count == 0) {
+                    break;
+                }
+                str += str;
+            }
+
+            return rpt;
+        }
+    }
+
     //http://stackoverflow.com/questions/8830839/javascript-dom-remove-element
     (function () {
         var typesToPatch = ['DocumentType', 'Element', 'CharacterData'],
@@ -116,6 +159,15 @@
             }
         };
     };
+
+    var isArray = (function () {
+        if (typeof Array.isArray === 'undefined') {
+            return function (value) {
+                return toString.call(value) === '[object Array]';
+            };
+        }
+        return Array.isArray;
+    })();
 
 //extend Object
     var extend = function () {
@@ -548,10 +600,15 @@
          }
          .modal-body,
          .modal-title {
-             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
              line-height: 1.42857143;
              color: #333
          }
+         .modal-footer {
+             padding: 15px;
+             text-align: center;
+             //border-top: 1px solid #e5e5e5;
+         }
+
          .chain_modal,
          .modal-backdrop {
              position: fixed;
@@ -573,6 +630,7 @@
              outline: 0
          }
          .chain_dialog {
+             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
              position: relative;
              width: auto;
              margin: 10px
@@ -649,6 +707,20 @@
              text-shadow: 0 1px 0 #fff;
              opacity: .2
          }
+         .pag-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #c0c0c0;
+            border: solid 1px #c0c0c0;
+            border-radius: 50%;
+            margin: 7px;
+            cursor: pointer;
+         }
+         .pag-dot.active {
+            background: #white;
+         }
+
          @media (min-width: 768px) {
              .chain_dialog {
                  width: 600px;
@@ -1004,6 +1076,7 @@
             this.defaults = {
                 title: '',
                 message: '',
+                footer: '',
                 theme: 'classic',
                 withBackdrop: true,
                 size: 'normal',//large small
@@ -1012,6 +1085,7 @@
                 onOpen: function () {
                 }
             };
+            this.isCarousel = false;
             this.defaults = extend(this.defaults, options);
 
             this.__proto__.closeAll();
@@ -1032,11 +1106,41 @@
                 this.backdrop = new Elm('div.modal-backdrop', document.body);
             }
 
+            let content = this.defaults.message;
+            let slides = 0;
+
+            //if message is array we create carousel content
+            if (isArray(this.defaults.message)) {
+                slides = content.length;
+                this.isCarousel = true;
+                let merge = '';
+                this.defaults.message.forEach((item, i) => {
+                    merge += `<div class="carusel slide${i}">${item}</div>`;
+                });
+                content = merge;
+                console.log(content);
+            }
+
             let header = this.defaults.title ?
                 `<div class="modal-header">
                     <button type="button" class="close"><span>×</span></button>
                     <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
                 </div>` : '<button type="button" class="close standalone"><span>×</span></button>';
+
+            let footer = `
+                <div class="modal-footer">
+                    ${this.defaults.footer}
+                </div>`;
+
+
+            if (this.isCarousel) {
+                let pagers = '<div class="pag-dot"></div>'.repeat(slides);
+                footer = `
+                <div class="modal-footer">
+                    ${pagers}
+                    ${this.defaults.footer}
+                </div>`;
+            }
 
 
             let main = `
@@ -1045,18 +1149,19 @@
                         <div class="modal-content">
                             ${header}
                             <div class="modal-body">
-                                <div>${this.defaults.message}</div>
+                                <div>${content}</div>
                             </div>
+                            ${footer}
                         </div>
                     </div>
                 </div>`;
+
 
             this.modal = new Elm('div', {html: main, 'class': `modal-theme-${this.defaults.theme}`}, document.body);
 
             let btn = this.modal.querySelector('.close');
             this.chainDialog = this.modal.querySelector('.chain_dialog');
             btn.onclick = ()=> {
-                console.log('cæcio');
                 this.close();
             };
             setClass(document.body, 'modal-mode');
@@ -1072,7 +1177,8 @@
             }
         }
 
-        _close(cb = ()=> {}) {
+        _close(cb = ()=> {
+        }) {
             if (this.defaults.withBackdrop) {
                 fadeOutRemove(this.backdrop);
             }
@@ -1621,7 +1727,7 @@
         }
 
         next() {
-            if(this.chainIndex)
+            if (this.chainIndex)
                 Modal.prototype.closeAll();
             if (this._isNext())
                 this._callchain();
