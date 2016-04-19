@@ -94,7 +94,7 @@
                 message: ['sdf', 'dfgdfg', 'dfgeg']
             })
             .show({
-                element: '.ball',
+                element: document.querySelector('.ball'),
                 title: 'hey I have a title again.',
                 placement: 'right',
                 content: '<p>This is a ball</p>',
@@ -122,12 +122,12 @@
             })
 
             .show({
-                element: '.four',
+                element: document.querySelector('.four'),
                 placement: 'top',
                 content: '<p>This is a box2</p>'
             })
             .show({
-                element: '.two',
+                element: document.querySelector('.four'),
                 placement: 'bottom',
                 content: '<p>This is a box1</p>',
                 focusClick: function () {
@@ -136,7 +136,7 @@
                 }
             })
             .show({
-                element: '.three',
+                element: document.querySelector('.four'),
                 placement: 'left',
                 content: '<p>This is a box2</p>'
             });

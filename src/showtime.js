@@ -60,6 +60,7 @@
         }
     }());
 
+    //Pollyfill for string repeat
     if (!String.prototype.repeat) {
         String.prototype.repeat = function (count) {
             'use strict';
@@ -132,6 +133,21 @@
      * Utilities
      * ------------------------------------------------------------------------
      */
+
+    //Get element offset position
+    var getScreenPosition = function (node) {
+        var x = document.documentElement.offsetLeft,
+            y = document.documentElement.offsetTop;
+
+        if (node.offsetParent) {
+            do {
+                x += node.offsetLeft;
+                y += node.offsetTop;
+            } while (node = node.offsetParent);
+        }
+
+        return {x: x, y: y};
+    };
 
     var capitalize = function (s) {
         return s[0].toUpperCase() + s.slice(1);
@@ -295,7 +311,7 @@
     };
 
 
-    function scrollToY(scrollTargetY, speed, easing, cb) {
+    function scrollToY(scrollTargetY) {
         //credit http://stackoverflow.com/questions/12199363/scrollto-with-animation/26798337#26798337
         // scrollTargetY: the target scrollY property of the window
         // speed: time in pixels per second
@@ -303,12 +319,13 @@
 
         var scrollY = window.scrollY,
             scrollTargetY = scrollTargetY || 0,
-            speed = speed || 2000,
-            easing = easing || 'easeOutSine',
+            speed = 2000,
+            easing = 'linear',
             currentTime = 0;
 
         // min time .1, max time .8 seconds
-        var time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, .8));
+        var time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, 0.9));
+        console.log(time);
 
         // easing equations from https://github.com/danro/easing-js/blob/master/easing.js
         var PI_D2 = Math.PI / 2,
@@ -324,13 +341,15 @@
                         return 0.5 * Math.pow(pos, 5);
                     }
                     return 0.5 * (Math.pow((pos - 2), 5) + 2);
-                }
+                },
+                linear: function (progress) {
+                    return progress;
+                },
             };
 
         // add animation loop
         function tick() {
             currentTime += 1 / 60;
-
             var p = currentTime / time;
             var t = easingEquations[easing](p);
 
@@ -339,7 +358,6 @@
 
                 window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
             } else {
-                cb();
                 window.scrollTo(0, scrollTargetY);
             }
         }
@@ -356,6 +374,12 @@
             el.remove();
         }, 500);
     }
+
+    function roundUp(num) {
+        return Math.ceil(num * 10) / 10;
+    }
+
+    const MAX_ZINDEX = 2147483647;
 
 
     /**
@@ -467,129 +491,6 @@
         }
 
     }
-    window.Elm = Elm;
-
-    /**
-     * ------------------------------------------------------------------------
-     * Animations
-     * Animates element from current location to given style/location
-     *
-     * TODO animate-able styles are limeted.
-     * ------------------------------------------------------------------------
-     */
-    class Animator {
-
-        constructor(elm, options) {
-
-            this.options = {
-                speed: 2000,
-                easing: 'easeOut',
-                slomo: false,
-                time: null,
-            };
-            this.options = extend(this.options, options);
-            this.elm = normalizeElement(elm);
-
-            this.currentTime = 0;
-
-            this.time = 1;
-            this.easingEquations = {
-                easeOutSine: function (pos) {
-                    return Math.sin(pos * (Math.PI / 2));
-                },
-                easeInOutSine: function (pos) {
-                    return (-0.5 * (Math.cos(Math.PI * pos) - 1));
-                },
-                easeInOutQuint: function (pos) {
-                    if ((pos /= 0.5) < 1) {
-                        return 0.5 * Math.pow(pos, 5);
-                    }
-                    return 0.5 * (Math.pow((pos - 2), 5) + 2);
-                },
-                linear: function (progress) {
-                    return progress;
-                },
-                quadratic: function (progress) {
-                    return Math.pow(progress, 2);
-                },
-                swing: function (progress) {
-                    return 0.5 - Math.cos(progress * Math.PI) / 2;
-                },
-                circ: function (progress) {
-                    return 1 - Math.sin(Math.acos(progress));
-                },
-                easeOut: function (t) {
-                    return t * (2 - t)
-                }
-            };
-        }
-
-        resolveTime() {
-            let computed = getComputedStyle(this.elm);
-            let valueMap = ['left', 'right', 'top', 'bottom'];
-            let currentStyles = {};
-            valueMap.forEach((prop)=> {
-                currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
-            });
-            let distance = Math.abs((currentStyles.top - this.styles.top) + (currentStyles.left - this.styles.left) / 2);
-            return Math.max(.1, Math.min(distance / this.options.speed, .8));
-        }
-
-        tick() {
-            this.currentTime += 1 / 60;
-
-
-            var p = this.currentTime / this.time;
-            var t = this.easingEquations[this.options.easing](p);
-
-            if (p < 1) {
-                this.step();
-                requestAnimationFrame(this.tick.bind(this));
-                this.applyStyles(t);
-            } else {
-                this.complete();
-                this.currentTime = 0;
-            }
-        }
-
-        applyStyles(t) {
-            //this.fireEvent('tick', this.elm);
-            for (let prop in this.styles) {
-                if (!this.styles.hasOwnProperty(prop)) {
-                    continue;
-                }
-                let to = this.styles[prop];
-                let from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
-                let nextValue = Math.round(this.compute(from, to, t));
-                this.elm.style[prop] = nextValue + 'px';
-            }
-
-        }
-
-        compute(from, to, delta) {
-            return (to - from) * delta + from;
-        }
-
-        complete() {
-        }
-
-        step() {
-        }
-
-        start(styles) {
-            this.styles = styles;
-            this.time = this.resolveTime();
-            if (this.options.slomo) {
-                this.time = 5;
-            }
-            if (this.options.time) {
-                this.time = this.options.time;
-            }
-            this.tick();
-
-        }
-
-    }
 
     //TODO style fallback is injected on every tour start
     var STYLES = `
@@ -617,14 +518,9 @@
              bottom: 0;
              left: 0
          }
-         .modal-backdrop {
-             z-index: 1040;
-             background-color: #000;
-             opacity: .5
-         }
 
          .chain_modal {
-             z-index: 10000;
+             z-index: ${MAX_ZINDEX};
              overflow-y: scroll;
              -webkit-overflow-scrolling: touch;
              outline: 0
@@ -635,7 +531,7 @@
              width: auto;
              margin: 10px
          }
-         .modal-header .close {
+         .modal-content .close {
              margin-top: -2px;
              position: static;
              height: 30px;
@@ -656,7 +552,7 @@
              position: absolute;
              right: 15px;
              top: 13px;
-             z-index: 1;
+             z-index: ${MAX_ZINDEX};
              height: 30px;
          }
          .modal-title {
@@ -747,7 +643,7 @@
              min-width: 250px;
              top: 0;
              left: 0;
-             z-index: 1060;
+             z-index: ${MAX_ZINDEX};
              display: none;
              max-width: 276px;
              padding: 1px;
@@ -1078,7 +974,7 @@
                 message: '',
                 footer: '',
                 theme: 'classic',
-                withBackdrop: true,
+                closeButton: true,
                 size: 'normal',//large small
                 onClose: function () {
                 },
@@ -1095,6 +991,7 @@
         }
 
         buildTemplate() {
+            //The Modal ships with three sizes bootstrap style
             let sizeMap = {
                 'small': 'chain_modal-sm',
                 'normal': '',
@@ -1102,10 +999,7 @@
             };
             let sizeClass = sizeMap[this.defaults.size];
 
-            if (this.defaults.withBackdrop) {
-                this.backdrop = new Elm('div.modal-backdrop', document.body);
-            }
-
+            //TODO default message can be rich html so message is not a god name for it
             let content = this.defaults.message;
             let slides = 0;
 
@@ -1121,11 +1015,26 @@
                 console.log(content);
             }
 
-            let header = this.defaults.title ?
-                `<div class="modal-header">
+            //Add header if we have a title. if not we only add the close button.
+            console.log(this.defaults.closeButton);
+            let header = '';
+            if (this.defaults.title) {
+                header = `
+                <div class="modal-header">
                     <button type="button" class="close"><span>×</span></button>
                     <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
-                </div>` : '<button type="button" class="close standalone"><span>×</span></button>';
+                </div>`;
+            }
+            if (this.defaults.title && !this.defaults.closeButton) {
+                header = `
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
+                </div>`;
+            }
+            if (!this.defaults.title && this.defaults.closeButton) {
+                header = '<button type="button" class="close standalone"><span>×</span></button>';
+            }
+
 
             let footer = `
                 <div class="modal-footer">
@@ -1141,7 +1050,6 @@
                     ${this.defaults.footer}
                 </div>`;
             }
-
 
             let main = `
                 <div class="chain_modal fadeInDown">
@@ -1159,12 +1067,19 @@
 
             this.modal = new Elm('div', {html: main, 'class': `modal-theme-${this.defaults.theme}`}, document.body);
 
-            let btn = this.modal.querySelector('.close');
+            if (this.defaults.closeButton) {
+                let btn = this.modal.querySelector('.close');
+                btn.onclick = ()=> {
+                    this.close();
+                };
+            }
             this.chainDialog = this.modal.querySelector('.chain_dialog');
-            btn.onclick = ()=> {
-                this.close();
-            };
             setClass(document.body, 'modal-mode');
+            this.defaults.onOpen();
+
+        }
+
+        makeSlides() {
 
         }
 
@@ -1179,9 +1094,6 @@
 
         _close(cb = ()=> {
         }) {
-            if (this.defaults.withBackdrop) {
-                fadeOutRemove(this.backdrop);
-            }
             setClass(this.chainDialog, 'fadeOutTop');
             setTimeout(()=> {
                 this.modal.remove();
@@ -1401,185 +1313,220 @@
     /**
      * ------------------------------------------------------------------------
      * Focus
-     * Creates 4 transparent overlay around the given element
-     *
-     * TODO Create nice animation for show hide
-     * TODO prevent overflow of viewport
-     * TODO add padding option
+     * Creates a overlay with focus on the given element.
+     * It includes linear animation between elements and animated scroll to
+     * ensure the given element is in view
      * ------------------------------------------------------------------------
      */
-    class Focus {
-
+    // In the first version we created 4 transparent overlays around the given element. That had a blinking line problem on mobile.
+    // This Class is based on https://github.com/hakimel/Fokus. A better approach with fixed canvas as overlay and clearRect for
+    // selected area
+    class Focus {.
         constructor(config) {
-            this.default = {
-                padding: 0,
-                removeOnClick: false
+            this.options = {
+                padding: 5
             };
-            this.default = extend(this.default, config);
-            this.buildDom();
+            this.options = extend(this.options, config);
 
-            this.animator = new Animator(this.focusBox.middle, {
-                //effect: 'easeOut',
-                //duration: 60000
-            });
-            this.animator.complete = ()=> {
-                this.complete();
-            };
+            this.ELEMENT = null;
+            // Padding around the selection
+            this.PADDING = this.options.padding;
+            // Opacity of the overlay
+            this.OPACITY = 0.5;
 
+            this._fadeIn = true;
+            //padding is disregarded if cover is true
+            this.cover = false;
+
+            this.overlayAlpha = 0;
+            // Reference to the redraw animation so it can be cancelled
+            this.redrawAnimation;
+            // Currently selected region
+            this.selectedRegion = {left: 0, top: 0, right: 0, bottom: 0};
+            // Currently cleared region
+            this.clearedRegion = {left: 0, top: 0, right: 0, bottom: 0};
+            //setja overlay sem canvas
+            this.overlay = document.createElement('canvas');
+            this.overlayContext = this.overlay.getContext('2d');
+
+            // Place the canvas on top of everything
+            //fletja canvas yfir skjáinn
+            this.overlay.style.position = 'fixed';
+            this.overlay.style.left = 0;
+            this.overlay.style.top = 0;
+            this.overlay.style.zIndex = MAX_ZINDEX - 1; //just about as high as it can get
+            this.overlay.style.pointerEvents = 'none';
+            this.overlay.style.background = 'transparent';
+
+            window.addEventListener('resize', this.onWindowResize, false);
+
+            // Trigger an initial resize
+            this.onWindowResize();
         }
 
-        complete() {
-
+        fadeIn() {
+            this._fadeIn = true;
         }
 
-        buildDom() {
-            let elmOptions = this.default.closeOnClick ? {
-                click: ()=> {
-                    this.remove()
-                }
-            } : {};
-            this.focusBox = {
-                middle: new Elm('div.ghost-focus', {
-                    css: {
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                    }
-                }, document.body),
-                right: new Elm('div.to_right', elmOptions, document.body),
-                top: new Elm('div.to_top', elmOptions, document.body),
-                bottom: new Elm('div.to_bottom', elmOptions, document.body),
-                left: new Elm('div.to_left', elmOptions, document.body)
-            };
-        }
-
-        focusOn(elm, customPos) {
-            let focusElm = normalizeElement(elm);
-            let styles = focusElm.getBoundingClientRect();
-            if (typeof customPos !== 'undefined') {
-                //ClientRect object only have getters, so we cant extend it and need to clone it
-                let styleObj = {
-                    bottom: styles.bottom,
-                    height: styles.height,
-                    left: styles.left,
-                    right: styles.right,
-                    top: styles.top,
-                    width: styles.width
-                };
-                styles = extend(styleObj, customPos);
-            }
-            let animate = ()=> {
-                this.animator.start({
-                    width: styles.width,
-                    height: styles.height,
-                    left: styles.left,
-                    top: styles.top + window.scrollY
-                });
-                this.animator.step = (el)=> {
-                    this.setCoverPos(el);
-                }
-            };
-
-            let viewportHeight = getViewPortHeight();
-            //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
-            if (!isElementInViewport(focusElm)) {
-                console.log('element is not in the viewport');
-                //let y = styles.top - (viewportHeight / 2);
-                let y = elementOffsetTop(focusElm) - (viewportHeight / 2 );
-                console.log(elementOffsetTop(focusElm), viewportHeight);
-                scrollToY(y, 1500, 'easeInOutQuint', function () {
-                    styles = focusElm.getBoundingClientRect();
-                    animate();
-                });
-            }
-            else if (styles.top < window.scrollY) {
-                let y = styles.top;
-                scrollToY(y, 1500, 'easeInOutQuint', function () {
-                    styles = focusElm.getBoundingClientRect();
-                    animate();
-                });
-            }
-            else {
-                animate();
-            }
-
-        }
-
-        coverAll() {
-            setStyles(this.focusBox.top, {
-                top: 0,
-                left: 0,
-                right: 0,
-                height: getPageHeight() + 'px'
-            });
-            setStyles(this.focusBox.bottom, {
-                top: 0,
-                height: 0,
-                left: 0,
-                width: 0
-            });
-            setStyles(this.focusBox.right, {
-                top: 0,
-                height: 0,
-                right: 0,
-                left: 0
-            });
-            setStyles(this.focusBox.left, {
-                top: 0,
-                height: 0,
-                left: 0,
-                width: 0
-            });
+        fadeOut() {
+            this._fadeIn = false;
         }
 
         remove() {
-            for (let key in this.focusBox) {
-                if (!this.focusBox.hasOwnProperty(key)) {
-                    continue;
-                }
-                fadeOutRemove(this.focusBox[key]);
+            this._fadeIn = false;
+        }
+
+        scrollToView(elm) {
+            let styles = getScreenPosition(elm);
+            let viewportHeight = getViewPortHeight();
+
+            //If element is not in the viewport on the y axis we scroll to that element.
+            if (!isElementInViewport(elm)) {
+                let y = elementOffsetTop(elm) - (viewportHeight / 2 );
+                scrollToY(y);
+            }
+            else if (styles.top < window.scrollY) {
+                let y = styles.top;
+                scrollToY(y);
             }
         }
 
-        setCoverPos(el) {
-            let body = document.body;
-            let html = document.documentElement;
-            var pageHeight = Math.max(body.scrollHeight, body.offsetHeight,
-                html.clientHeight, html.scrollHeight, html.offsetHeight);
-            let dimentions = this.focusBox.middle.getBoundingClientRect();
-
-
-            setStyles(this.focusBox.top, {
-                top: 0,
-                left: 0,
-                right: 0,
-                height: (()=> {
-                    return dimentions.top > 0 ? dimentions.top - this.default.padding + window.scrollY + 'px' : 0
-                })() //if element overflow top height is 0
-            });
-            setStyles(this.focusBox.bottom, {
-                top: dimentions.top + dimentions.height + this.default.padding + window.scrollY + 'px',
-                height: pageHeight - (dimentions.top + dimentions.height + this.default.padding) + 'px', //pageHeight - top position
-                left: dimentions.left - this.default.padding + 'px',
-                width: dimentions.width + (this.default.padding * 2) + 'px'
-            });
-            setStyles(this.focusBox.right, {
-                top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
-                right: 0,
-                left: dimentions.left + dimentions.width + this.default.padding + 'px',
-            });
-            setStyles(this.focusBox.left, {
-                top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
-                left: 0,
-                width: (()=> {
-                    return dimentions.left > 0 ? dimentions.left - this.default.padding + 'px' : 0
-                })()
-            });
+        focusOnElement(elm) {
+            this.cover = false;
+            this.scrollToView(elm);
+            this.fadeIn();
+            this.ELEMENT = elm;
+            this.updateSelection();
         }
 
+        coverAll() {
+            this.cover = true;
+            let x = window.innerWidth / 2;
+            let y = window.innerHeight / 2;
+            this.selectedRegion = {left: x, top: y, right: x, bottom: y};
+            this.redraw();
+        }
+
+        onWindowResize(event) {
+            this.overlay.width = window.innerWidth;
+            this.overlay.height = window.innerHeight;
+        }
+
+        updateSelection(immediate = false) {
+            // Default to negative space
+            var currentRegion = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0};
+
+            var node = this.ELEMENT;
+
+            // Fetch the screen coordinates for this element
+            var position = getScreenPosition(node);
+
+            var x = position.x,
+                y = position.y,
+                w = node.offsetWidth,
+                h = node.offsetHeight;
+
+            // 1. offsetLeft works
+            // 2. offsetWidth works
+            // 3. Element is larger than zero pixels
+            // 4. Element is not <br>
+            if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
+                currentRegion.left = Math.min(currentRegion.left, x);
+                currentRegion.top = Math.min(currentRegion.top, y);
+                currentRegion.right = Math.max(currentRegion.right, x + w);
+                currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+            }
+
+            this.selectedRegion = currentRegion;
+
+            // If flagged, update the cleared region immediately
+            if (immediate) {
+                this.clearedRegion = this.selectedRegion;
+            }
+
+            if (this.hasSelection()) {
+                this.redraw();
+            }
+        }
+
+        animationComplete() {
+            let left = Math.round(this.clearedRegion.left) === this.selectedRegion.left;
+            let top = Math.round(this.clearedRegion.top) === this.selectedRegion.top;
+            let right = Math.round(this.clearedRegion.right) === this.selectedRegion.right;
+            let bottom = Math.round(this.clearedRegion.bottom) === this.selectedRegion.bottom;
+            let overlay = Math.round(this.overlayAlpha * 100) / 100 === this.OPACITY;
+
+            //returns true if all cleared and selected regions are identical and overlay is same as opacity
+            return left && top && right && bottom && overlay;
+        }
+
+        hasSelection() {
+            return this.selectedRegion.left < this.selectedRegion.right && this.selectedRegion.top < this.selectedRegion.bottom;
+        }
+
+        complete() {
+        }
+
+        redraw() {
+            // Reset to a solid (less opacity) overlay fill
+            this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
+            this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
+            this.overlayContext.fillRect(0, 0, this.overlay.width, this.overlay.height);
+
+            if (this.overlayAlpha < 0.1) {
+                // Clear the selection instantly if we're just fading in
+                this.clearedRegion = this.selectedRegion;
+            }
+            else {
+                // Ease the cleared region towards the selected selection
+                this.clearedRegion.left += ( this.selectedRegion.left - this.clearedRegion.left ) * 0.118;
+                this.clearedRegion.top += ( this.selectedRegion.top - this.clearedRegion.top ) * 0.118;
+                this.clearedRegion.right += ( this.selectedRegion.right - this.clearedRegion.right ) * 0.118;
+                this.clearedRegion.bottom += ( this.selectedRegion.bottom - this.clearedRegion.bottom ) * 0.118;
+            }
+
+            // Cut out the cleared region
+            let padding = this.cover ? 0 : this.PADDING;
+            this.overlayContext.clearRect(
+                this.clearedRegion.left - window.scrollX - padding,
+                this.clearedRegion.top - window.scrollY - padding,
+                ( this.clearedRegion.right - this.clearedRegion.left ) + ( padding * 2 ),
+                ( this.clearedRegion.bottom - this.clearedRegion.top ) + ( padding * 2 )
+            );
+            // Fade in if there's a valid selection...
+            if (this._fadeIn) {
+                this.overlayAlpha += ( this.OPACITY - this.overlayAlpha ) * 0.08;
+            }
+            // Otherwise fade out
+            else {
+                this.overlayAlpha = Math.max(( this.overlayAlpha * 0.85 ) - 0.02, 0);
+            }
+
+            // Ensure there is no overlap
+            cancelAnimationFrame(this.redrawAnimation);
+
+            if (this.animationComplete()) {
+                this.complete();
+            }
+            // Continue so long as there is content selected or we are fading out
+            if (this.overlayAlpha > 0) {
+                // Append the overlay if it isn't already in the DOM
+                if (!this.overlay.parentNode) document.body.appendChild(this.overlay);
+
+                // Stage a new animation frame
+                this.redrawAnimation = requestAnimationFrame(() => {
+                    this.redraw()
+                });
+            }
+
+            else {
+                document.body.removeChild(this.overlay);
+            }
+
+        }
     }
+
+    window.focus = Focus;
 
 
     /**
@@ -1602,8 +1549,7 @@
                 autoplayDelay: 1000,
                 buttons: [],
                 focusClick: null,
-                dimentions: null,
-                removeOnOuterClick: false,
+                removeOnOuterClick: false
             };
             //override default with user options
             this.defaults = extend(this.defaults, options);
@@ -1612,8 +1558,7 @@
 
         _createFocus() {
             this.focus = new Focus({
-                padding: this.defaults.padding,
-                closeOnClick: this.defaults.removeOnOuterClick
+                padding: this.defaults.padding
             });
             //TODO Focus needs to fire event on remove so we can use it here to quit tour
         }
@@ -1625,6 +1570,9 @@
              * create popover
              * focus on element
              */
+            //focus is reused until tour.quit() then it gets deleted and we have to create it again.
+            if (!this.focus) this._createFocus();
+
             let chainItem = this.chain[this.chainIndex];
             if (typeof(chainItem) === 'function') {
                 chainItem();
@@ -1643,13 +1591,11 @@
             let defaults = clone(this.defaults);
             let settings = extend(defaults, chainItem);
 
-            //focus is reused until tour.quit() then it gets deleted and we have to create it again.
-            if (!this.focus) this._createFocus();
             //override defaults with given for this focus
-            this.focus.default.padding = settings.padding;
+            //this.focus.default.padding = settings.padding; //TODO fix this
             this._removePopover();
             //We create new popover for every focus point. This is easier to manage than collecting them
-            this.popover = new Popover(this.focus.focusBox.middle, {
+            this.popover = new Popover(settings.element, {
                 title: settings.title,
                 content: settings.content,
                 placement: settings.placement,//top, left, right, bottom
@@ -1657,7 +1603,7 @@
                 offset: this._resolveOffsets(settings),
                 buttons: settings.buttons
             });
-            this.focus.focusOn(settings.element, settings.dimentions);
+            this.focus.focusOnElement(settings.element);
             this.focus.complete = ()=> {
                 this.popover.show();
 
@@ -1666,13 +1612,13 @@
                 }
             };
             this.chainIndex++;
-            if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
-                this.focus.focusBox.middle.style.pointerEvents = 'none'
-            }
-            else {
-                this.focus.focusBox.middle.style.pointerEvents = 'auto';
-                this.focus.focusBox.middle.onclick = settings.focusClick;
-            }
+            //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
+            //    this.focus.focusBox.middle.style.pointerEvents = 'none'
+            //}
+            //else {
+            //    this.focus.focusBox.middle.style.pointerEvents = 'auto';
+            //    this.focus.focusBox.middle.onclick = settings.focusClick;
+            //}
         }
 
         _removePopover() {
@@ -1718,10 +1664,6 @@
 
         modal(options) {
             options._type = 'modal';
-            options.withBackdrop = false;
-            options.onClose = ()=> {
-                this.next();
-            };
             this.chain.push(options);
             return this;
         }

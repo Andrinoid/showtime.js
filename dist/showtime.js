@@ -65,6 +65,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
     })();
 
+    //Pollyfill for string repeat
     if (!String.prototype.repeat) {
         String.prototype.repeat = function (count) {
             'use strict';
@@ -137,6 +138,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * Utilities
      * ------------------------------------------------------------------------
      */
+
+    //Get element offset position
+    var getScreenPosition = function getScreenPosition(node) {
+        var x = document.documentElement.offsetLeft,
+            y = document.documentElement.offsetTop;
+
+        if (node.offsetParent) {
+            do {
+                x += node.offsetLeft;
+                y += node.offsetTop;
+            } while (node = node.offsetParent);
+        }
+
+        return { x: x, y: y };
+    };
 
     var capitalize = function capitalize(s) {
         return s[0].toUpperCase() + s.slice(1);
@@ -282,7 +298,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
     };
 
-    function scrollToY(scrollTargetY, speed, easing, cb) {
+    function scrollToY(scrollTargetY) {
         //credit http://stackoverflow.com/questions/12199363/scrollto-with-animation/26798337#26798337
         // scrollTargetY: the target scrollY property of the window
         // speed: time in pixels per second
@@ -290,12 +306,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var scrollY = window.scrollY,
             scrollTargetY = scrollTargetY || 0,
-            speed = speed || 2000,
-            easing = easing || 'easeOutSine',
+            speed = 2000,
+            easing = 'linear',
             currentTime = 0;
 
         // min time .1, max time .8 seconds
-        var time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, .8));
+        var time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, 0.9));
+        console.log(time);
 
         // easing equations from https://github.com/danro/easing-js/blob/master/easing.js
         var PI_D2 = Math.PI / 2,
@@ -311,13 +328,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     return 0.5 * Math.pow(pos, 5);
                 }
                 return 0.5 * (Math.pow(pos - 2, 5) + 2);
+            },
+            linear: function linear(progress) {
+                return progress;
             }
         };
 
         // add animation loop
         function tick() {
             currentTime += 1 / 60;
-
             var p = currentTime / time;
             var t = easingEquations[easing](p);
 
@@ -326,7 +345,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 window.scrollTo(0, scrollY + (scrollTargetY - scrollY) * t);
             } else {
-                cb();
                 window.scrollTo(0, scrollTargetY);
             }
         }
@@ -343,6 +361,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             el.remove();
         }, 500);
     }
+
+    function roundUp(num) {
+        return Math.ceil(num * 10) / 10;
+    }
+
+    var MAX_ZINDEX = 2147483647;
 
     /**
      * ------------------------------------------------------------------------
@@ -477,129 +501,122 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * TODO animate-able styles are limeted.
      * ------------------------------------------------------------------------
      */
-
-    var Animator = function () {
-        function Animator(elm, options) {
-            _classCallCheck(this, Animator);
-
-            this.options = {
-                speed: 2000,
-                easing: 'easeOut',
-                slomo: false,
-                time: null
-            };
-            this.options = extend(this.options, options);
-            this.elm = normalizeElement(elm);
-
-            this.currentTime = 0;
-
-            this.time = 1;
-            this.easingEquations = {
-                easeOutSine: function easeOutSine(pos) {
-                    return Math.sin(pos * (Math.PI / 2));
-                },
-                easeInOutSine: function easeInOutSine(pos) {
-                    return -0.5 * (Math.cos(Math.PI * pos) - 1);
-                },
-                easeInOutQuint: function easeInOutQuint(pos) {
-                    if ((pos /= 0.5) < 1) {
-                        return 0.5 * Math.pow(pos, 5);
-                    }
-                    return 0.5 * (Math.pow(pos - 2, 5) + 2);
-                },
-                linear: function linear(progress) {
-                    return progress;
-                },
-                quadratic: function quadratic(progress) {
-                    return Math.pow(progress, 2);
-                },
-                swing: function swing(progress) {
-                    return 0.5 - Math.cos(progress * Math.PI) / 2;
-                },
-                circ: function circ(progress) {
-                    return 1 - Math.sin(Math.acos(progress));
-                },
-                easeOut: function easeOut(t) {
-                    return t * (2 - t);
-                }
-            };
-        }
-
-        _createClass(Animator, [{
-            key: 'resolveTime',
-            value: function resolveTime() {
-                var computed = getComputedStyle(this.elm);
-                var valueMap = ['left', 'right', 'top', 'bottom'];
-                var currentStyles = {};
-                valueMap.forEach(function (prop) {
-                    currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
-                });
-                var distance = Math.abs(currentStyles.top - this.styles.top + (currentStyles.left - this.styles.left) / 2);
-                return Math.max(.1, Math.min(distance / this.options.speed, .8));
-            }
-        }, {
-            key: 'tick',
-            value: function tick() {
-                this.currentTime += 1 / 60;
-
-                var p = this.currentTime / this.time;
-                var t = this.easingEquations[this.options.easing](p);
-
-                if (p < 1) {
-                    this.step();
-                    requestAnimationFrame(this.tick.bind(this));
-                    this.applyStyles(t);
-                } else {
-                    this.complete();
-                    this.currentTime = 0;
-                }
-            }
-        }, {
-            key: 'applyStyles',
-            value: function applyStyles(t) {
-                //this.fireEvent('tick', this.elm);
-                for (var prop in this.styles) {
-                    if (!this.styles.hasOwnProperty(prop)) {
-                        continue;
-                    }
-                    var to = this.styles[prop];
-                    var from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
-                    var nextValue = Math.round(this.compute(from, to, t));
-                    this.elm.style[prop] = nextValue + 'px';
-                }
-            }
-        }, {
-            key: 'compute',
-            value: function compute(from, to, delta) {
-                return (to - from) * delta + from;
-            }
-        }, {
-            key: 'complete',
-            value: function complete() {}
-        }, {
-            key: 'step',
-            value: function step() {}
-        }, {
-            key: 'start',
-            value: function start(styles) {
-                this.styles = styles;
-                this.time = this.resolveTime();
-                if (this.options.slomo) {
-                    this.time = 5;
-                }
-                if (this.options.time) {
-                    this.time = this.options.time;
-                }
-                this.tick();
-            }
-        }]);
-
-        return Animator;
-    }();
+    //class Animator {
+    //
+    //    constructor(elm, options) {
+    //
+    //        this.options = {
+    //            speed: 2000,
+    //            easing: 'easeOut',
+    //            slomo: false,
+    //            time: null,
+    //        };
+    //        this.options = extend(this.options, options);
+    //        this.elm = normalizeElement(elm);
+    //
+    //        this.currentTime = 0;
+    //
+    //        this.time = 1;
+    //        this.easingEquations = {
+    //            easeOutSine: function (pos) {
+    //                return Math.sin(pos * (Math.PI / 2));
+    //            },
+    //            easeInOutSine: function (pos) {
+    //                return (-0.5 * (Math.cos(Math.PI * pos) - 1));
+    //            },
+    //            easeInOutQuint: function (pos) {
+    //                if ((pos /= 0.5) < 1) {
+    //                    return 0.5 * Math.pow(pos, 5);
+    //                }
+    //                return 0.5 * (Math.pow((pos - 2), 5) + 2);
+    //            },
+    //            linear: function (progress) {
+    //                return progress;
+    //            },
+    //            quadratic: function (progress) {
+    //                return Math.pow(progress, 2);
+    //            },
+    //            swing: function (progress) {
+    //                return 0.5 - Math.cos(progress * Math.PI) / 2;
+    //            },
+    //            circ: function (progress) {
+    //                return 1 - Math.sin(Math.acos(progress));
+    //            },
+    //            easeOut: function (t) {
+    //                return t * (2 - t)
+    //            }
+    //        };
+    //    }
+    //
+    //    resolveTime() {
+    //        let computed = getComputedStyle(this.elm);
+    //        let valueMap = ['left', 'right', 'top', 'bottom'];
+    //        let currentStyles = {};
+    //        valueMap.forEach((prop)=> {
+    //            currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
+    //        });
+    //        let distance = Math.abs((currentStyles.top - this.styles.top) + (currentStyles.left - this.styles.left) / 2);
+    //        return Math.max(.1, Math.min(distance / this.options.speed, .8));
+    //    }
+    //
+    //    tick() {
+    //        this.currentTime += 1 / 60;
+    //
+    //
+    //        var p = this.currentTime / this.time;
+    //        var t = this.easingEquations[this.options.easing](p);
+    //
+    //        if (p < 1) {
+    //            this.step();
+    //            requestAnimationFrame(this.tick.bind(this));
+    //            this.applyStyles(t);
+    //        } else {
+    //            this.complete();
+    //            this.currentTime = 0;
+    //        }
+    //    }
+    //
+    //    applyStyles(t) {
+    //        //this.fireEvent('tick', this.elm);
+    //        for (let prop in this.styles) {
+    //            if (!this.styles.hasOwnProperty(prop)) {
+    //                continue;
+    //            }
+    //            let to = this.styles[prop];
+    //            let from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
+    //            let nextValue = Math.round(this.compute(from, to, t));
+    //            this.elm.style[prop] = nextValue + 'px';
+    //        }
+    //
+    //    }
+    //
+    //    compute(from, to, delta) {
+    //        return (to - from) * delta + from;
+    //    }
+    //
+    //    complete() {
+    //    }
+    //
+    //    step() {
+    //    }
+    //
+    //    start(styles) {
+    //        this.styles = styles;
+    //        this.time = this.resolveTime();
+    //        if (this.options.slomo) {
+    //            this.time = 5;
+    //        }
+    //        if (this.options.time) {
+    //            this.time = this.options.time;
+    //        }
+    //        this.tick();
+    //
+    //    }
+    //
+    //}
 
     //TODO style fallback is injected on every tour start
-
-    var STYLES = '\n        <style>\n        /* Modal styles */\n         body.modal-mode {\n             overflow: hidden\n         }\n         .modal-body,\n         .modal-title {\n             line-height: 1.42857143;\n             color: #333\n         }\n         .modal-footer {\n             padding: 15px;\n             text-align: center;\n             //border-top: 1px solid #e5e5e5;\n         }\n\n         .chain_modal,\n         .modal-backdrop {\n             position: fixed;\n             top: 0;\n             right: 0;\n             bottom: 0;\n             left: 0\n         }\n         .modal-backdrop {\n             z-index: 1040;\n             background-color: #000;\n             opacity: .5\n         }\n\n         .chain_modal {\n             z-index: 10000;\n             overflow-y: scroll;\n             -webkit-overflow-scrolling: touch;\n             outline: 0\n         }\n         .chain_dialog {\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             position: relative;\n             width: auto;\n             margin: 10px\n         }\n         .modal-header .close {\n             margin-top: -2px;\n             position: static;\n             height: 30px;\n         }\n         .modal-theme-blue .close {\n             text-shadow: none;\n             opacity: 1;\n             font-size: 31px;\n             font-weight: normal;\n         }\n         .modal-theme-blue .close span {\n             color: white;\n         }\n         .modal-theme-blue .close span:hover {\n             color: #fbc217;\n         }\n         .close.standalone {\n             position: absolute;\n             right: 15px;\n             top: 13px;\n             z-index: 1;\n             height: 30px;\n         }\n         .modal-title {\n             margin: 0;\n             font-size: 18px;\n             font-weight: 500\n         }\n         button.close {\n             -webkit-appearance: none;\n             padding: 0;\n             cursor: pointer;\n             background: 0 0;\n             border: 0\n         }\n         .modal-content {\n             position: relative;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #999;\n             border: 1px solid rgba(0, 0, 0, .2);\n             border-radius: 2px;\n             outline: 0;\n             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)\n         }\n         .modal-theme-blue .modal-content {\n            background-color: #4a6173;\n         }\n         .modal-header {\n             min-height: 16.43px;\n             padding: 15px;\n             border-bottom: 1px solid #e5e5e5;\n             min-height: 50px\n         }\n         .modal-theme-blue .modal-header {\n            border-bottom: none;\n         }\n         .modal-body {\n             position: relative;\n             padding: 15px;\n             font-size: 14px\n         }\n         .close {\n             float: right;\n             font-size: 21px;\n             font-weight: 700;\n             line-height: 1;\n             color: #000;\n             text-shadow: 0 1px 0 #fff;\n             opacity: .2\n         }\n         .pag-dot {\n            display: inline-block;\n            width: 10px;\n            height: 10px;\n            background: #c0c0c0;\n            border: solid 1px #c0c0c0;\n            border-radius: 50%;\n            margin: 7px;\n            cursor: pointer;\n         }\n         .pag-dot.active {\n            background: #white;\n         }\n\n         @media (min-width: 768px) {\n             .chain_dialog {\n                 width: 600px;\n                 margin: 30px auto\n             }\n             .modal-content {\n                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)\n             }\n             .chain_modal-sm {\n                 width: 300px\n             }\n         }\n         @media (min-width: 992px) {\n             .chain_modal-lg {\n                 width: 900px\n             }\n         }\n\n\n         /*popover styles*/\n         .popover {\n             position: absolute;\n             box-sizing: border-box;\n             min-width: 250px;\n             top: 0;\n             left: 0;\n             z-index: 1060;\n             display: none;\n             max-width: 276px;\n             padding: 1px;\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             font-style: normal;\n             font-weight: normal;\n             letter-spacing: normal;\n             line-break: auto;\n             line-height: 1.42857143;\n             text-align: left;\n             text-align: start;\n             text-decoration: none;\n             text-shadow: none;\n             text-transform: none;\n             white-space: normal;\n             word-break: normal;\n             word-spacing: normal;\n             word-wrap: normal;\n             font-size: 14px;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #ccc;\n             border: 1px solid rgba(0, 0, 0, 0.2);\n             border-radius: 2px;\n             -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n         }\n         .popover.top {\n             margin-top: -10px;\n         }\n         .popover.right {\n             margin-left: 10px;\n         }\n         .popover.bottom {\n             margin-top: 10px;\n         }\n         .popover.left {\n             margin-left: -10px;\n         }\n         .popover-title {\n             margin: 0;\n             padding: 8px 14px;\n             font-size: 14px;\n             background-color: #f7f7f7;\n             border-bottom: 1px solid #ebebeb;\n             border-radius: 1px 1px 0 0;\n             box-sizing: border-box;\n         }\n         .popover-content {\n             padding: 9px 14px;\n             box-sizing: border-box;\n         }\n         .popover > .arrow,\n         .popover > .arrow:after {\n             position: absolute;\n             display: block;\n             width: 0;\n             height: 0;\n             border-color: transparent;\n             border-style: solid;\n         }\n         .popover > .arrow {\n             border-width: 11px;\n         }\n         .popover > .arrow:after {\n             border-width: 10px;\n             content: "";\n         }\n         .popover.top > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-bottom-width: 0;\n             border-top-color: #999999;\n             border-top-color: rgba(0, 0, 0, 0.25);\n             bottom: -11px;\n         }\n         .popover.top > .arrow:after {\n             content: " ";\n             bottom: 1px;\n             margin-left: -10px;\n             border-bottom-width: 0;\n             border-top-color: #fff;\n         }\n         .popover.right > .arrow {\n             top: 50%;\n             left: -11px;\n             margin-top: -11px;\n             border-left-width: 0;\n             border-right-color: #999999;\n             border-right-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.right > .arrow:after {\n             content: " ";\n             left: 1px;\n             bottom: -10px;\n             border-left-width: 0;\n             border-right-color: #fff;\n         }\n         .popover.bottom > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-top-width: 0;\n             border-bottom-color: #999999;\n             border-bottom-color: rgba(0, 0, 0, 0.25);\n             top: -11px;\n         }\n         .popover.bottom > .arrow:after {\n             content: " ";\n             top: 1px;\n             margin-left: -10px;\n             border-top-width: 0;\n             border-bottom-color: #fff;\n         }\n         .popover.left > .arrow {\n             top: 50%;\n             right: -11px;\n             margin-top: -11px;\n             border-right-width: 0;\n             border-left-color: #999999;\n             border-left-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.left > .arrow:after {\n             content: " ";\n             right: 1px;\n             border-right-width: 0;\n             border-left-color: #fff;\n             bottom: -10px;\n         }\n         .popover .btns {\n             padding: 9px 14px;\n             text-align: right;\n         }\n         .popover .popBtn {\n             color: #333;\n             font-weight: bold;\n             border: solid 1px #333;\n             display: inline-block;\n             padding: 4px 18px;\n             border-radius: 1px;\n             font-size: 13px;\n             cursor: pointer;\n             margin-left: 8px;\n         }\n\n\n         /* Focus styles */\n         .to_left,\n         .to_right,\n         .to_top,\n         .to_bottom {\n             position: absolute;\n             background: black;\n             opacity: .5;\n             filter: alpha(opacity=50);\n             z-index: 1000;\n         }\n         .ghost-focus {\n             background: transparent;\n             z-index: 1000;\n         }\n\n\n         /*** Animations ***/\n         @-webkit-keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @-webkit-keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         .fadeInDown,\n         .fadeInLeft,\n         .fadeInRight,\n         .fadeInTop,\n         .fadeOutTop{\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s;\n             animation-duration: .5s;\n             animation-fill-mode: both;\n         }\n         .fadeInDown {\n             -webkit-animation-name: fadeInDown;\n             animation-name: fadeInDown;\n         }\n         .fadeInLeft {\n             -webkit-animation-name: fadeInLeft;\n             animation-name: fadeInLeft;\n         }\n         .fadeInRight {\n             -webkit-animation-name: fadeInRight;\n             animation-name: fadeInRight;\n         }\n         .fadeInTop {\n             -webkit-animation-name: fadeInTop;\n             animation-name: fadeInTop;\n         }\n         .fadeOutTop {\n             -webkit-animation-name: fadeOutTop;\n             animation-name: fadeOutTop;\n         }\n        </style>';
+    var STYLES = '\n        <style>\n        /* Modal styles */\n         body.modal-mode {\n             overflow: hidden\n         }\n         .modal-body,\n         .modal-title {\n             line-height: 1.42857143;\n             color: #333\n         }\n         .modal-footer {\n             padding: 15px;\n             text-align: center;\n             //border-top: 1px solid #e5e5e5;\n         }\n\n         .chain_modal,\n         .modal-backdrop {\n             position: fixed;\n             top: 0;\n             right: 0;\n             bottom: 0;\n             left: 0\n         }\n\n         .chain_modal {\n             z-index: ' + MAX_ZINDEX + ';\n             overflow-y: scroll;\n             -webkit-overflow-scrolling: touch;\n             outline: 0\n         }\n         .chain_dialog {\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             position: relative;\n             width: auto;\n             margin: 10px\n         }\n         .modal-content .close {\n             margin-top: -2px;\n             position: static;\n             height: 30px;\n         }\n         .modal-theme-blue .close {\n             text-shadow: none;\n             opacity: 1;\n             font-size: 31px;\n             font-weight: normal;\n         }\n         .modal-theme-blue .close span {\n             color: white;\n         }\n         .modal-theme-blue .close span:hover {\n             color: #fbc217;\n         }\n         .close.standalone {\n             position: absolute;\n             right: 15px;\n             top: 13px;\n             z-index: ' + MAX_ZINDEX + ';\n             height: 30px;\n         }\n         .modal-title {\n             margin: 0;\n             font-size: 18px;\n             font-weight: 500\n         }\n         button.close {\n             -webkit-appearance: none;\n             padding: 0;\n             cursor: pointer;\n             background: 0 0;\n             border: 0\n         }\n         .modal-content {\n             position: relative;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #999;\n             border: 1px solid rgba(0, 0, 0, .2);\n             border-radius: 2px;\n             outline: 0;\n             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)\n         }\n         .modal-theme-blue .modal-content {\n            background-color: #4a6173;\n         }\n         .modal-header {\n             min-height: 16.43px;\n             padding: 15px;\n             border-bottom: 1px solid #e5e5e5;\n             min-height: 50px\n         }\n         .modal-theme-blue .modal-header {\n            border-bottom: none;\n         }\n         .modal-body {\n             position: relative;\n             padding: 15px;\n             font-size: 14px\n         }\n         .close {\n             float: right;\n             font-size: 21px;\n             font-weight: 700;\n             line-height: 1;\n             color: #000;\n             text-shadow: 0 1px 0 #fff;\n             opacity: .2\n         }\n         .pag-dot {\n            display: inline-block;\n            width: 10px;\n            height: 10px;\n            background: #c0c0c0;\n            border: solid 1px #c0c0c0;\n            border-radius: 50%;\n            margin: 7px;\n            cursor: pointer;\n         }\n         .pag-dot.active {\n            background: #white;\n         }\n\n         @media (min-width: 768px) {\n             .chain_dialog {\n                 width: 600px;\n                 margin: 30px auto\n             }\n             .modal-content {\n                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)\n             }\n             .chain_modal-sm {\n                 width: 300px\n             }\n         }\n         @media (min-width: 992px) {\n             .chain_modal-lg {\n                 width: 900px\n             }\n         }\n\n\n         /*popover styles*/\n         .popover {\n             position: absolute;\n             box-sizing: border-box;\n             min-width: 250px;\n             top: 0;\n             left: 0;\n             z-index: ' + MAX_ZINDEX + ';\n             display: none;\n             max-width: 276px;\n             padding: 1px;\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             font-style: normal;\n             font-weight: normal;\n             letter-spacing: normal;\n             line-break: auto;\n             line-height: 1.42857143;\n             text-align: left;\n             text-align: start;\n             text-decoration: none;\n             text-shadow: none;\n             text-transform: none;\n             white-space: normal;\n             word-break: normal;\n             word-spacing: normal;\n             word-wrap: normal;\n             font-size: 14px;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #ccc;\n             border: 1px solid rgba(0, 0, 0, 0.2);\n             border-radius: 2px;\n             -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n         }\n         .popover.top {\n             margin-top: -10px;\n         }\n         .popover.right {\n             margin-left: 10px;\n         }\n         .popover.bottom {\n             margin-top: 10px;\n         }\n         .popover.left {\n             margin-left: -10px;\n         }\n         .popover-title {\n             margin: 0;\n             padding: 8px 14px;\n             font-size: 14px;\n             background-color: #f7f7f7;\n             border-bottom: 1px solid #ebebeb;\n             border-radius: 1px 1px 0 0;\n             box-sizing: border-box;\n         }\n         .popover-content {\n             padding: 9px 14px;\n             box-sizing: border-box;\n         }\n         .popover > .arrow,\n         .popover > .arrow:after {\n             position: absolute;\n             display: block;\n             width: 0;\n             height: 0;\n             border-color: transparent;\n             border-style: solid;\n         }\n         .popover > .arrow {\n             border-width: 11px;\n         }\n         .popover > .arrow:after {\n             border-width: 10px;\n             content: "";\n         }\n         .popover.top > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-bottom-width: 0;\n             border-top-color: #999999;\n             border-top-color: rgba(0, 0, 0, 0.25);\n             bottom: -11px;\n         }\n         .popover.top > .arrow:after {\n             content: " ";\n             bottom: 1px;\n             margin-left: -10px;\n             border-bottom-width: 0;\n             border-top-color: #fff;\n         }\n         .popover.right > .arrow {\n             top: 50%;\n             left: -11px;\n             margin-top: -11px;\n             border-left-width: 0;\n             border-right-color: #999999;\n             border-right-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.right > .arrow:after {\n             content: " ";\n             left: 1px;\n             bottom: -10px;\n             border-left-width: 0;\n             border-right-color: #fff;\n         }\n         .popover.bottom > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-top-width: 0;\n             border-bottom-color: #999999;\n             border-bottom-color: rgba(0, 0, 0, 0.25);\n             top: -11px;\n         }\n         .popover.bottom > .arrow:after {\n             content: " ";\n             top: 1px;\n             margin-left: -10px;\n             border-top-width: 0;\n             border-bottom-color: #fff;\n         }\n         .popover.left > .arrow {\n             top: 50%;\n             right: -11px;\n             margin-top: -11px;\n             border-right-width: 0;\n             border-left-color: #999999;\n             border-left-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.left > .arrow:after {\n             content: " ";\n             right: 1px;\n             border-right-width: 0;\n             border-left-color: #fff;\n             bottom: -10px;\n         }\n         .popover .btns {\n             padding: 9px 14px;\n             text-align: right;\n         }\n         .popover .popBtn {\n             color: #333;\n             font-weight: bold;\n             border: solid 1px #333;\n             display: inline-block;\n             padding: 4px 18px;\n             border-radius: 1px;\n             font-size: 13px;\n             cursor: pointer;\n             margin-left: 8px;\n         }\n\n\n         /* Focus styles */\n         .to_left,\n         .to_right,\n         .to_top,\n         .to_bottom {\n             position: absolute;\n             background: black;\n             opacity: .5;\n             filter: alpha(opacity=50);\n             z-index: 1000;\n         }\n         .ghost-focus {\n             background: transparent;\n             z-index: 1000;\n         }\n\n\n         /*** Animations ***/\n         @-webkit-keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @-webkit-keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         .fadeInDown,\n         .fadeInLeft,\n         .fadeInRight,\n         .fadeInTop,\n         .fadeOutTop{\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s;\n             animation-duration: .5s;\n             animation-fill-mode: both;\n         }\n         .fadeInDown {\n             -webkit-animation-name: fadeInDown;\n             animation-name: fadeInDown;\n         }\n         .fadeInLeft {\n             -webkit-animation-name: fadeInLeft;\n             animation-name: fadeInLeft;\n         }\n         .fadeInRight {\n             -webkit-animation-name: fadeInRight;\n             animation-name: fadeInRight;\n         }\n         .fadeInTop {\n             -webkit-animation-name: fadeInTop;\n             animation-name: fadeInTop;\n         }\n         .fadeOutTop {\n             -webkit-animation-name: fadeOutTop;\n             animation-name: fadeOutTop;\n         }\n        </style>';
     /**
      * ------------------------------------------------------------------------
      * Modal
@@ -616,7 +633,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 message: '',
                 footer: '',
                 theme: 'classic',
-                withBackdrop: true,
+                closeButton: true,
                 size: 'normal', //large small
                 onClose: function onClose() {},
                 onOpen: function onOpen() {}
@@ -635,6 +652,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function buildTemplate() {
                 var _this2 = this;
 
+                //The Modal ships with three sizes bootstrap style
                 var sizeMap = {
                     'small': 'chain_modal-sm',
                     'normal': '',
@@ -642,10 +660,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 };
                 var sizeClass = sizeMap[this.defaults.size];
 
-                if (this.defaults.withBackdrop) {
-                    this.backdrop = new Elm('div.modal-backdrop', document.body);
-                }
-
+                //TODO default message can be rich html so message is not a god name for it
                 var content = this.defaults.message;
                 var slides = 0;
 
@@ -661,7 +676,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     console.log(content);
                 }
 
-                var header = this.defaults.title ? '<div class="modal-header">\n                    <button type="button" class="close"><span>×</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>' : '<button type="button" class="close standalone"><span>×</span></button>';
+                //Add header if we have a title. if not we only add the close button.
+                console.log(this.defaults.closeButton);
+                var header = '';
+                if (this.defaults.title) {
+                    header = '\n                <div class="modal-header">\n                    <button type="button" class="close"><span>×</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
+                }
+                if (this.defaults.title && !this.defaults.closeButton) {
+                    header = '\n                <div class="modal-header">\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
+                }
+                if (!this.defaults.title && this.defaults.closeButton) {
+                    header = '<button type="button" class="close standalone"><span>×</span></button>';
+                }
 
                 var footer = '\n                <div class="modal-footer">\n                    ' + this.defaults.footer + '\n                </div>';
 
@@ -674,13 +700,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 this.modal = new Elm('div', { html: main, 'class': 'modal-theme-' + this.defaults.theme }, document.body);
 
-                var btn = this.modal.querySelector('.close');
+                if (this.defaults.closeButton) {
+                    var btn = this.modal.querySelector('.close');
+                    btn.onclick = function () {
+                        _this2.close();
+                    };
+                }
                 this.chainDialog = this.modal.querySelector('.chain_dialog');
-                btn.onclick = function () {
-                    _this2.close();
-                };
                 setClass(document.body, 'modal-mode');
+                this.defaults.onOpen();
             }
+        }, {
+            key: 'makeSlides',
+            value: function makeSlides() {}
         }, {
             key: '_injectStyles',
             value: function _injectStyles() {
@@ -698,9 +730,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 var cb = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
 
-                if (this.defaults.withBackdrop) {
-                    fadeOutRemove(this.backdrop);
-                }
                 setClass(this.chainDialog, 'fadeOutTop');
                 setTimeout(function () {
                     _this3.modal.remove();
@@ -938,189 +967,399 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * TODO add padding option
      * ------------------------------------------------------------------------
      */
+    //class Focus {
+    //
+    //    constructor(config) {
+    //        this.default = {
+    //            padding: 0,
+    //            removeOnClick: false
+    //        };
+    //        this.default = extend(this.default, config);
+    //        this.buildDom();
+    //
+    //        this.animator = new Animator(this.focusBox.middle, {
+    //            //effect: 'easeOut',
+    //            //duration: 60000
+    //        });
+    //        this.animator.complete = ()=> {
+    //            this.complete();
+    //        };
+    //
+    //    }
+    //
+    //    complete() {
+    //
+    //    }
+    //
+    //    buildDom() {
+    //        let elmOptions = this.default.closeOnClick ? {
+    //            click: ()=> {
+    //                this.remove()
+    //            }
+    //        } : {};
+    //        this.focusBox = {
+    //            middle: new Elm('div.ghost-focus', {
+    //                css: {
+    //                    position: 'absolute',
+    //                    top: '50%',
+    //                    left: '50%',
+    //                }
+    //            }, document.body),
+    //            right: new Elm('div.to_right', elmOptions, document.body),
+    //            top: new Elm('div.to_top', elmOptions, document.body),
+    //            bottom: new Elm('div.to_bottom', elmOptions, document.body),
+    //            left: new Elm('div.to_left', elmOptions, document.body)
+    //        };
+    //    }
+    //
+    //    focusOn(elm, customPos) {
+    //        let focusElm = normalizeElement(elm);
+    //        let styles = focusElm.getBoundingClientRect();
+    //        if (typeof customPos !== 'undefined') {
+    //            //ClientRect object only have getters, so we cant extend it and need to clone it
+    //            let styleObj = {
+    //                bottom: styles.bottom,
+    //                height: styles.height,
+    //                left: styles.left,
+    //                right: styles.right,
+    //                top: styles.top,
+    //                width: styles.width
+    //            };
+    //            styles = extend(styleObj, customPos);
+    //        }
+    //        let animate = ()=> {
+    //            this.animator.start({
+    //                width: styles.width,
+    //                height: styles.height,
+    //                left: styles.left,
+    //                top: styles.top + window.scrollY
+    //            });
+    //            this.animator.step = (el)=> {
+    //                this.setCoverPos(el);
+    //            }
+    //        };
+    //
+    //        let viewportHeight = getViewPortHeight();
+    //        //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
+    //        if (!isElementInViewport(focusElm)) {
+    //            console.log('element is not in the viewport');
+    //            //let y = styles.top - (viewportHeight / 2);
+    //            let y = elementOffsetTop(focusElm) - (viewportHeight / 2 );
+    //            console.log(elementOffsetTop(focusElm), viewportHeight);
+    //            scrollToY(y, 1500, 'easeInOutQuint', function () {
+    //                styles = focusElm.getBoundingClientRect();
+    //                animate();
+    //            });
+    //        }
+    //        else if (styles.top < window.scrollY) {
+    //            let y = styles.top;
+    //            scrollToY(y, 1500, 'easeInOutQuint', function () {
+    //                styles = focusElm.getBoundingClientRect();
+    //                animate();
+    //            });
+    //        }
+    //        else {
+    //            animate();
+    //        }
+    //
+    //    }
+    //
+    //    coverAll() {
+    //        setStyles(this.focusBox.top, {
+    //            top: 0,
+    //            left: 0,
+    //            right: 0,
+    //            height: getPageHeight() + 'px'
+    //        });
+    //        setStyles(this.focusBox.bottom, {
+    //            top: 0,
+    //            height: 0,
+    //            left: 0,
+    //            width: 0
+    //        });
+    //        setStyles(this.focusBox.right, {
+    //            top: 0,
+    //            height: 0,
+    //            right: 0,
+    //            left: 0
+    //        });
+    //        setStyles(this.focusBox.left, {
+    //            top: 0,
+    //            height: 0,
+    //            left: 0,
+    //            width: 0
+    //        });
+    //    }
+    //
+    //    remove() {
+    //        for (let key in this.focusBox) {
+    //            if (!this.focusBox.hasOwnProperty(key)) {
+    //                continue;
+    //            }
+    //            fadeOutRemove(this.focusBox[key]);
+    //        }
+    //    }
+    //
+    //    setCoverPos(el) {
+    //        let body = document.body;
+    //        let html = document.documentElement;
+    //        var pageHeight = Math.max(body.scrollHeight, body.offsetHeight,
+    //            html.clientHeight, html.scrollHeight, html.offsetHeight);
+    //        let dimentions = this.focusBox.middle.getBoundingClientRect();
+    //
+    //
+    //        setStyles(this.focusBox.top, {
+    //            top: 0,
+    //            left: 0,
+    //            right: 0,
+    //            height: (()=> {
+    //                return dimentions.top > 0 ? dimentions.top - this.default.padding + window.scrollY + 'px' : 0
+    //            })() //if element overflow top height is 0
+    //        });
+    //        setStyles(this.focusBox.bottom, {
+    //            top: dimentions.top + dimentions.height + this.default.padding + window.scrollY + 'px',
+    //            height: pageHeight - (dimentions.top + dimentions.height + this.default.padding) + 'px', //pageHeight - top position
+    //            left: dimentions.left - this.default.padding + 'px',
+    //            width: dimentions.width + (this.default.padding * 2) + 'px'
+    //        });
+    //        setStyles(this.focusBox.right, {
+    //            top: dimentions.top - this.default.padding + window.scrollY + 'px',
+    //            height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
+    //            right: 0,
+    //            left: dimentions.left + dimentions.width + this.default.padding + 'px',
+    //        });
+    //        setStyles(this.focusBox.left, {
+    //            top: dimentions.top - this.default.padding + window.scrollY + 'px',
+    //            height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
+    //            left: 0,
+    //            width: (()=> {
+    //                return dimentions.left > 0 ? dimentions.left - this.default.padding + 'px' : 0
+    //            })()
+    //        });
+    //    }
+    //
+    //}
+
+    // In first version we animated 5 divs to create the focus point. That had a blinking line problem on mobile.
+    // This Class is based on https://github.com/hakimel/Fokus . A better approach
 
     var Focus = function () {
         function Focus(config) {
-            var _this5 = this;
-
             _classCallCheck(this, Focus);
 
-            this.default = {
-                padding: 0,
-                removeOnClick: false
+            this.options = {
+                padding: 5
             };
-            this.default = extend(this.default, config);
-            this.buildDom();
+            this.options = extend(this.options, config);
 
-            this.animator = new Animator(this.focusBox.middle, {
-                //effect: 'easeOut',
-                //duration: 60000
-            });
-            this.animator.complete = function () {
-                _this5.complete();
-            };
+            this.ELEMENT = null;
+            // Padding around the selection
+            this.PADDING = this.options.padding;
+            // Opacity of the overlay
+            this.OPACITY = 0.5;
+
+            this._fadeIn = true;
+            //padding is disregarded if cover is true
+            this.cover = false;
+
+            this.overlayAlpha = 0;
+            // Reference to the redraw animation so it can be cancelled
+            this.redrawAnimation;
+            // Currently selected region
+            this.selectedRegion = { left: 0, top: 0, right: 0, bottom: 0 };
+            // Currently cleared region
+            this.clearedRegion = { left: 0, top: 0, right: 0, bottom: 0 };
+            //setja overlay sem canvas
+            this.overlay = document.createElement('canvas');
+            this.overlayContext = this.overlay.getContext('2d');
+
+            // Place the canvas on top of everything
+            //fletja canvas yfir skjáinn
+            this.overlay.style.position = 'fixed';
+            this.overlay.style.left = 0;
+            this.overlay.style.top = 0;
+            this.overlay.style.zIndex = MAX_ZINDEX - 1; //just about as high as it can get
+            this.overlay.style.pointerEvents = 'none';
+            this.overlay.style.background = 'transparent';
+
+            window.addEventListener('resize', this.onWindowResize, false);
+
+            // Trigger an initial resize
+            this.onWindowResize();
         }
 
         _createClass(Focus, [{
-            key: 'complete',
-            value: function complete() {}
-        }, {
-            key: 'buildDom',
-            value: function buildDom() {
-                var _this6 = this;
-
-                var elmOptions = this.default.closeOnClick ? {
-                    click: function click() {
-                        _this6.remove();
-                    }
-                } : {};
-                this.focusBox = {
-                    middle: new Elm('div.ghost-focus', {
-                        css: {
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%'
-                        }
-                    }, document.body),
-                    right: new Elm('div.to_right', elmOptions, document.body),
-                    top: new Elm('div.to_top', elmOptions, document.body),
-                    bottom: new Elm('div.to_bottom', elmOptions, document.body),
-                    left: new Elm('div.to_left', elmOptions, document.body)
-                };
+            key: 'fadeIn',
+            value: function fadeIn() {
+                this._fadeIn = true;
             }
         }, {
-            key: 'focusOn',
-            value: function focusOn(elm, customPos) {
-                var _this7 = this;
-
-                var focusElm = normalizeElement(elm);
-                var styles = focusElm.getBoundingClientRect();
-                if (typeof customPos !== 'undefined') {
-                    //ClientRect object only have getters, so we cant extend it and need to clone it
-                    var styleObj = {
-                        bottom: styles.bottom,
-                        height: styles.height,
-                        left: styles.left,
-                        right: styles.right,
-                        top: styles.top,
-                        width: styles.width
-                    };
-                    styles = extend(styleObj, customPos);
-                }
-                var animate = function animate() {
-                    _this7.animator.start({
-                        width: styles.width,
-                        height: styles.height,
-                        left: styles.left,
-                        top: styles.top + window.scrollY
-                    });
-                    _this7.animator.step = function (el) {
-                        _this7.setCoverPos(el);
-                    };
-                };
-
-                var viewportHeight = getViewPortHeight();
-                //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
-                if (!isElementInViewport(focusElm)) {
-                    console.log('element is not in the viewport');
-                    //let y = styles.top - (viewportHeight / 2);
-                    var y = elementOffsetTop(focusElm) - viewportHeight / 2;
-                    console.log(elementOffsetTop(focusElm), viewportHeight);
-                    scrollToY(y, 1500, 'easeInOutQuint', function () {
-                        styles = focusElm.getBoundingClientRect();
-                        animate();
-                    });
-                } else if (styles.top < window.scrollY) {
-                    var y = styles.top;
-                    scrollToY(y, 1500, 'easeInOutQuint', function () {
-                        styles = focusElm.getBoundingClientRect();
-                        animate();
-                    });
-                } else {
-                    animate();
-                }
-            }
-        }, {
-            key: 'coverAll',
-            value: function coverAll() {
-                setStyles(this.focusBox.top, {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: getPageHeight() + 'px'
-                });
-                setStyles(this.focusBox.bottom, {
-                    top: 0,
-                    height: 0,
-                    left: 0,
-                    width: 0
-                });
-                setStyles(this.focusBox.right, {
-                    top: 0,
-                    height: 0,
-                    right: 0,
-                    left: 0
-                });
-                setStyles(this.focusBox.left, {
-                    top: 0,
-                    height: 0,
-                    left: 0,
-                    width: 0
-                });
+            key: 'fadeOut',
+            value: function fadeOut() {
+                this._fadeIn = false;
             }
         }, {
             key: 'remove',
             value: function remove() {
-                for (var key in this.focusBox) {
-                    if (!this.focusBox.hasOwnProperty(key)) {
-                        continue;
-                    }
-                    fadeOutRemove(this.focusBox[key]);
+                this._fadeIn = false;
+            }
+        }, {
+            key: 'scrollToView',
+            value: function scrollToView(elm) {
+                var styles = getScreenPosition(elm);
+                var viewportHeight = getViewPortHeight();
+
+                //If element is not in the viewport on the y axis we scroll to that element.
+                if (!isElementInViewport(elm)) {
+                    var y = elementOffsetTop(elm) - viewportHeight / 2;
+                    scrollToY(y);
+                } else if (styles.top < window.scrollY) {
+                    var y = styles.top;
+                    scrollToY(y);
                 }
             }
         }, {
-            key: 'setCoverPos',
-            value: function setCoverPos(el) {
-                var _this8 = this;
+            key: 'focusOnElement',
+            value: function focusOnElement(elm) {
+                this.cover = false;
+                this.scrollToView(elm);
+                this.fadeIn();
+                this.ELEMENT = elm;
+                this.updateSelection();
+            }
+        }, {
+            key: 'coverAll',
+            value: function coverAll() {
+                this.cover = true;
+                var x = window.innerWidth / 2;
+                var y = window.innerHeight / 2;
+                this.selectedRegion = { left: x, top: y, right: x, bottom: y };
+                this.redraw();
+            }
+        }, {
+            key: 'onWindowResize',
+            value: function onWindowResize(event) {
+                this.overlay.width = window.innerWidth;
+                this.overlay.height = window.innerHeight;
+            }
+        }, {
+            key: 'updateSelection',
+            value: function updateSelection() {
+                var immediate = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
-                var body = document.body;
-                var html = document.documentElement;
-                var pageHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-                var dimentions = this.focusBox.middle.getBoundingClientRect();
+                // Default to negative space
+                var currentRegion = { left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0 };
 
-                setStyles(this.focusBox.top, {
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: function () {
-                        return dimentions.top > 0 ? dimentions.top - _this8.default.padding + window.scrollY + 'px' : 0;
-                    }() //if element overflow top height is 0
-                });
-                setStyles(this.focusBox.bottom, {
-                    top: dimentions.top + dimentions.height + this.default.padding + window.scrollY + 'px',
-                    height: pageHeight - (dimentions.top + dimentions.height + this.default.padding) + 'px', //pageHeight - top position
-                    left: dimentions.left - this.default.padding + 'px',
-                    width: dimentions.width + this.default.padding * 2 + 'px'
-                });
-                setStyles(this.focusBox.right, {
-                    top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                    height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
-                    right: 0,
-                    left: dimentions.left + dimentions.width + this.default.padding + 'px'
-                });
-                setStyles(this.focusBox.left, {
-                    top: dimentions.top - this.default.padding + window.scrollY + 'px',
-                    height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
-                    left: 0,
-                    width: function () {
-                        return dimentions.left > 0 ? dimentions.left - _this8.default.padding + 'px' : 0;
-                    }()
-                });
+                var node = this.ELEMENT;
+
+                // Fetch the screen coordinates for this element
+                var position = getScreenPosition(node);
+
+                var x = position.x,
+                    y = position.y,
+                    w = node.offsetWidth,
+                    h = node.offsetHeight;
+
+                // 1. offsetLeft works
+                // 2. offsetWidth works
+                // 3. Element is larger than zero pixels
+                // 4. Element is not <br>
+                if (node && typeof x === 'number' && typeof w === 'number' && (w > 0 || h > 0) && !node.nodeName.match(/^br$/gi)) {
+                    currentRegion.left = Math.min(currentRegion.left, x);
+                    currentRegion.top = Math.min(currentRegion.top, y);
+                    currentRegion.right = Math.max(currentRegion.right, x + w);
+                    currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+                }
+
+                this.selectedRegion = currentRegion;
+
+                // If flagged, update the cleared region immediately
+                if (immediate) {
+                    this.clearedRegion = this.selectedRegion;
+                }
+
+                if (this.hasSelection()) {
+                    this.redraw();
+                }
+            }
+        }, {
+            key: 'animationComplete',
+            value: function animationComplete() {
+                var left = Math.round(this.clearedRegion.left) === this.selectedRegion.left;
+                var top = Math.round(this.clearedRegion.top) === this.selectedRegion.top;
+                var right = Math.round(this.clearedRegion.right) === this.selectedRegion.right;
+                var bottom = Math.round(this.clearedRegion.bottom) === this.selectedRegion.bottom;
+                var overlay = Math.round(this.overlayAlpha * 100) / 100 === this.OPACITY;
+
+                //returns true if all cleared and selected regions are identical and overlay is same as opacity
+                return left && top && right && bottom && overlay;
+            }
+        }, {
+            key: 'hasSelection',
+            value: function hasSelection() {
+                return this.selectedRegion.left < this.selectedRegion.right && this.selectedRegion.top < this.selectedRegion.bottom;
+            }
+        }, {
+            key: 'complete',
+            value: function complete() {}
+        }, {
+            key: 'redraw',
+            value: function redraw() {
+                var _this5 = this;
+
+                // Reset to a solid (less opacity) overlay fill
+                this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
+                this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
+                this.overlayContext.fillRect(0, 0, this.overlay.width, this.overlay.height);
+
+                if (this.overlayAlpha < 0.1) {
+                    // Clear the selection instantly if we're just fading in
+                    this.clearedRegion = this.selectedRegion;
+                } else {
+                    // Ease the cleared region towards the selected selection
+                    this.clearedRegion.left += (this.selectedRegion.left - this.clearedRegion.left) * 0.118;
+                    this.clearedRegion.top += (this.selectedRegion.top - this.clearedRegion.top) * 0.118;
+                    this.clearedRegion.right += (this.selectedRegion.right - this.clearedRegion.right) * 0.118;
+                    this.clearedRegion.bottom += (this.selectedRegion.bottom - this.clearedRegion.bottom) * 0.118;
+                }
+
+                // Cut out the cleared region
+                var padding = this.cover ? 0 : this.PADDING;
+                this.overlayContext.clearRect(this.clearedRegion.left - window.scrollX - padding, this.clearedRegion.top - window.scrollY - padding, this.clearedRegion.right - this.clearedRegion.left + padding * 2, this.clearedRegion.bottom - this.clearedRegion.top + padding * 2);
+                // Fade in if there's a valid selection...
+                if (this._fadeIn) {
+                    this.overlayAlpha += (this.OPACITY - this.overlayAlpha) * 0.08;
+                }
+                // Otherwise fade out
+                else {
+                        this.overlayAlpha = Math.max(this.overlayAlpha * 0.85 - 0.02, 0);
+                    }
+
+                // Ensure there is no overlap
+                cancelAnimationFrame(this.redrawAnimation);
+
+                if (this.animationComplete()) {
+                    this.complete();
+                }
+                // Continue so long as there is content selected or we are fading out
+                if (this.overlayAlpha > 0) {
+                    // Append the overlay if it isn't already in the DOM
+                    if (!this.overlay.parentNode) document.body.appendChild(this.overlay);
+
+                    // Stage a new animation frame
+                    this.redrawAnimation = requestAnimationFrame(function () {
+                        _this5.redraw();
+                    });
+                } else {
+                    document.body.removeChild(this.overlay);
+                }
             }
         }]);
 
         return Focus;
     }();
+
+    window.focus = Focus;
 
     /**
      * ------------------------------------------------------------------------
@@ -1143,7 +1382,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 autoplayDelay: 1000,
                 buttons: [],
                 focusClick: null,
-                dimentions: null,
                 removeOnOuterClick: false
             };
             //override default with user options
@@ -1155,15 +1393,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: '_createFocus',
             value: function _createFocus() {
                 this.focus = new Focus({
-                    padding: this.defaults.padding,
-                    closeOnClick: this.defaults.removeOnOuterClick
+                    padding: this.defaults.padding
                 });
                 //TODO Focus needs to fire event on remove so we can use it here to quit tour
             }
         }, {
             key: '_callchain',
             value: function _callchain() {
-                var _this9 = this;
+                var _this6 = this;
 
                 /*
                  * We clone the default settings and merge it with the current chain settings.
@@ -1171,6 +1408,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                  * create popover
                  * focus on element
                  */
+                //focus is reused until tour.quit() then it gets deleted and we have to create it again.
+                if (!this.focus) this._createFocus();
+
                 var chainItem = this.chain[this.chainIndex];
                 if (typeof chainItem === 'function') {
                     chainItem();
@@ -1188,13 +1428,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var defaults = clone(this.defaults);
                 var settings = extend(defaults, chainItem);
 
-                //focus is reused until tour.quit() then it gets deleted and we have to create it again.
-                if (!this.focus) this._createFocus();
                 //override defaults with given for this focus
-                this.focus.default.padding = settings.padding;
+                //this.focus.default.padding = settings.padding; //TODO fix this
                 this._removePopover();
                 //We create new popover for every focus point. This is easier to manage than collecting them
-                this.popover = new Popover(this.focus.focusBox.middle, {
+                this.popover = new Popover(settings.element, {
                     title: settings.title,
                     content: settings.content,
                     placement: settings.placement, //top, left, right, bottom
@@ -1202,21 +1440,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     offset: this._resolveOffsets(settings),
                     buttons: settings.buttons
                 });
-                this.focus.focusOn(settings.element, settings.dimentions);
+                this.focus.focusOnElement(settings.element);
                 this.focus.complete = function () {
-                    _this9.popover.show();
+                    _this6.popover.show();
 
-                    if (_this9.defaults.autoplay) {
-                        _this9._callAgain();
+                    if (_this6.defaults.autoplay) {
+                        _this6._callAgain();
                     }
                 };
                 this.chainIndex++;
-                if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
-                    this.focus.focusBox.middle.style.pointerEvents = 'none';
-                } else {
-                    this.focus.focusBox.middle.style.pointerEvents = 'auto';
-                    this.focus.focusBox.middle.onclick = settings.focusClick;
-                }
+                //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
+                //    this.focus.focusBox.middle.style.pointerEvents = 'none'
+                //}
+                //else {
+                //    this.focus.focusBox.middle.style.pointerEvents = 'auto';
+                //    this.focus.focusBox.middle.onclick = settings.focusClick;
+                //}
             }
         }, {
             key: '_removePopover',
@@ -1231,10 +1470,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: '_callAgain',
             value: function _callAgain() {
-                var _this10 = this;
+                var _this7 = this;
 
                 setTimeout(function () {
-                    _this10.next();
+                    _this7.next();
                 }, this.defaults.autoplayDelay);
             }
         }, {
@@ -1269,13 +1508,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'modal',
             value: function modal(options) {
-                var _this11 = this;
-
                 options._type = 'modal';
-                options.withBackdrop = false;
-                options.onClose = function () {
-                    _this11.next();
-                };
                 this.chain.push(options);
                 return this;
             }
