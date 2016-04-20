@@ -1431,8 +1431,46 @@
             this.overlay.height = window.innerHeight;
         }
 
+        updateSelection2(immediate = false) {
+            // Default to negative space
+            let currentRegion = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0};
+
+            //TODO make sure multiple elements is valid
+            if(this.ELEMENT == null) return false;
+            let nodes = this.ELEMENT.length ? this.ELEMENT : [this.ELEMENT];
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                var node = nodes[i];
+
+                // Fetch the screen coordinates for this element
+                var position = getScreenPosition(node);
+
+                var x = position.x,
+                    y = position.y,
+                    w = node.offsetWidth,
+                    h = node.offsetHeight;
+
+                // 1. offsetLeft works
+                // 2. offsetWidth works
+                // 3. Element is larger than zero pixels
+                // 4. Element is not <br>
+                if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
+                    currentRegion.left = Math.min(currentRegion.left, x);
+                    currentRegion.top = Math.min(currentRegion.top, y);
+                    currentRegion.right = Math.max(currentRegion.right, x + w);
+                    currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+                }
+            }
+
+            this.selectedRegion = currentRegion;
+
+            // If flagged, update the cleared region immediately
+            if (immediate) {
+                this.clearedRegion = this.selectedRegion;
+            }
+
+        }
+
         updateSelection(immediate = false) {
-            console.log(immediate);
             // Default to negative space
             let currentRegion = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0};
 
@@ -1493,8 +1531,9 @@
         complete() {
         }
 
+
         redraw() {
-            //if(this.idleState) return false;
+            //if(this.idleState) return false; // TODO deal with scroll delema
             // Reset to a solid (less opacity) overlay fill
             this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
             this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
@@ -1543,7 +1582,7 @@
 
                 // Stage a new animation frame
                 this.redrawAnimation = requestAnimationFrame(() => {
-                    this.redraw()
+                    this.redraw();
                 });
             }
 
