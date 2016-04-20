@@ -991,6 +991,66 @@
              animation-name: fadeOutTop;
          }
         </style>`;
+
+
+    /**
+     * ------------------------------------------------------------------------
+     * Carousel
+     * It's really simple take on it. it's not even a carousel yet
+     * plenty of room for improvements
+     * ------------------------------------------------------------------------
+     */
+    class Carousel {
+
+        constructor(options, parent = document.body) {
+            this.defaults = {};
+            this.defaults = extend(this.defaults, options);
+
+            this.parent = parent;
+            this.slides = this.parent.querySelectorAll('.carousel');
+            this.pagers = [];
+            this.arangeSlides();
+
+        }
+
+        arangeSlides() {
+
+            foreach(this.slides, (item, i) => {
+
+                item.style.display = 'none';
+
+                this.pagers.push(new Elm('div.pag-dot', {
+                    'id': 'pag-' + i,
+                    'click': ()=> {this.setSlide(i)}
+                }, this.parent.querySelector('.modal-footer')));
+
+            });
+
+            this.slides[0].style.display = 'block';
+            setClass(this.pagers[0], 'active');
+        }
+
+        setSlide(i) {
+            // Get selected
+            let currentPag = this.pagers[i];
+            let currentSlide = this.slides[i];
+
+            // remove active from previous pags
+            foreach(this.pagers, function(item) {
+               removeClass(item, 'active');
+            });
+            setClass(currentPag, 'active');
+
+            // hide all and show current slide
+            foreach(this.slides, function(item) {
+               item.style.display = 'none';
+            });
+            currentSlide.style.display = 'block';
+
+        }
+    }
+
+
     /**
      * ------------------------------------------------------------------------
      * Modal
@@ -1034,11 +1094,9 @@
 
             //TODO default message can be rich html so message is not a god name for it
             let content = this.defaults.message;
-            let slides = 0;
 
             //if message is array we create carousel content
             if (isArray(this.defaults.message)) {
-                slides = content.length;
                 this.isCarousel = true;
                 let merge = '';
                 this.defaults.message.forEach((item, i) => {
@@ -1103,13 +1161,14 @@
                     this.close();
                 };
             }
+
+            if(this.isCarousel) {
+                new Carousel({}, this.modal);
+            }
+
             this.chainDialog = this.modal.querySelector('.chain_dialog');
             setClass(document.body, 'modal-mode');
             this.defaults.onOpen();
-
-        }
-
-        makeSlides() {
 
         }
 
@@ -1608,60 +1667,6 @@
         }
     }
 
-    /**
-     * ------------------------------------------------------------------------
-     * Carousel
-     * It's really simple take on it. it's not even a carousel yet
-     * plenty of room for improvements
-     * ------------------------------------------------------------------------
-     */
-    class Carousel {
-
-        constructor(options) {
-            this.defaults = {};
-            this.defaults = extend(this.defaults, options);
-
-            this.slides = document.querySelectorAll('.carousel');
-            this.pagers = [];
-            this.arangeSlides();
-
-        }
-
-        arangeSlides() {
-
-            foreach(this.slides, (item, i) => {
-                console.log(item, i);
-                item.style.display = 'none';
-                this.pagers.push(new Elm('div.pag-dot', {
-                    'id': 'pag-' + i,
-                    'click': ()=> {this.setSlide(i)}
-                }, document.querySelector('.modal-footer')));
-            });
-            this.slides[0].style.display = 'block';
-            setClass(this.pagers[0], 'active');
-        }
-
-        setSlide(i) {
-            // Get selected
-            let currentPag = this.pagers[i];
-            let currentSlide = this.slides[i];
-
-            // remove active from previous pags
-            foreach(this.pagers, function(item) {
-               removeClass(item, 'active');
-            });
-            setClass(currentPag, 'active');
-
-            // hide all and show current slide
-            foreach(this.slides, function(item) {
-               item.style.display = 'none';
-            });
-            currentSlide.style.display = 'block';
-
-        }
-    }
-
-    window.Carousel = Carousel;
 
     /**
      * ------------------------------------------------------------------------
