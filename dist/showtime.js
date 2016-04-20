@@ -859,7 +859,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                     width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
                 };
-                console.log('elDim', elDim);
 
                 var top = undefined,
                     left = undefined;
@@ -1045,47 +1044,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.overlay.height = window.innerHeight;
             }
         }, {
-            key: 'updateSelection2',
-            value: function updateSelection2() {
-                var immediate = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-                // Default to negative space
-                var currentRegion = { left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0 };
-
-                //TODO make sure multiple elements is valid
-                if (this.ELEMENT == null) return false;
-                var nodes = this.ELEMENT.length ? this.ELEMENT : [this.ELEMENT];
-                for (var i = 0, len = nodes.length; i < len; i++) {
-                    var node = nodes[i];
-
-                    // Fetch the screen coordinates for this element
-                    var position = getScreenPosition(node);
-
-                    var x = position.x,
-                        y = position.y,
-                        w = node.offsetWidth,
-                        h = node.offsetHeight;
-
-                    // 1. offsetLeft works
-                    // 2. offsetWidth works
-                    // 3. Element is larger than zero pixels
-                    // 4. Element is not <br>
-                    if (node && typeof x === 'number' && typeof w === 'number' && (w > 0 || h > 0) && !node.nodeName.match(/^br$/gi)) {
-                        currentRegion.left = Math.min(currentRegion.left, x);
-                        currentRegion.top = Math.min(currentRegion.top, y);
-                        currentRegion.right = Math.max(currentRegion.right, x + w);
-                        currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
-                    }
-                }
-
-                this.selectedRegion = currentRegion;
-
-                // If flagged, update the cleared region immediately
-                if (immediate) {
-                    this.clearedRegion = this.selectedRegion;
-                }
-            }
-        }, {
             key: 'updateSelection',
             value: function updateSelection() {
                 var immediate = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
@@ -1134,10 +1092,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'animationComplete',
             value: function animationComplete() {
-                var left = Math.round(this.clearedRegion.left) === this.selectedRegion.left;
-                var top = Math.round(this.clearedRegion.top) === this.selectedRegion.top;
-                var right = Math.round(this.clearedRegion.right) === this.selectedRegion.right;
-                var bottom = Math.round(this.clearedRegion.bottom) === this.selectedRegion.bottom;
+                var left = Math.round(this.clearedRegion.left) === Math.round(this.selectedRegion.left);
+                var top = Math.round(this.clearedRegion.top) === Math.round(this.selectedRegion.top);
+                var right = Math.round(this.clearedRegion.right) === Math.round(this.selectedRegion.right);
+                var bottom = Math.round(this.clearedRegion.bottom) === Math.round(this.selectedRegion.bottom);
                 var overlay = Math.round(this.overlayAlpha * 100) / 100 === this.OPACITY;
 
                 //returns true if all cleared and selected regions are identical and overlay is same as opacity
@@ -1156,7 +1114,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function redraw() {
                 var _this6 = this;
 
-                //if(this.idleState) return false; // TODO deal with scroll delema
+                if (this.idleState) return false; // TODO deal with scroll delema
                 // Reset to a solid (less opacity) overlay fill
                 this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
                 this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
@@ -1291,7 +1249,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 this.focus.focusOnElement(settings.element);
                 this.focus.complete = function () {
-                    console.log('goo');
                     _this7.popover.show();
 
                     if (_this7.defaults.autoplay) {
