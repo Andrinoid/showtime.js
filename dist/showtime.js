@@ -257,11 +257,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
     };
 
-    var isElementInViewport = function isElementInViewport(el) {
-        var rect = el.getBoundingClientRect();
+    var getHigestBoundingRect = function getHigestBoundingRect(nodes) {
+        if (!nodes.length) {
+            return nodes.getBoundingClientRect();
+        }
+        var rect = { bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0 };
+        for (var i = 0; i < nodes.length; i++) {
+            var el = nodes[i];
+            var r = el.getBoundingClientRect();
+            rect.bottom = Math.min(rect.bottom, r.bottom);
+            rect.height = Math.min(rect.height, r.height);
+            rect.left = Math.max(rect.left, r.left);
+            rect.right = Math.max(rect.right, r.right);
+            rect.top = Math.max(rect.top, r.top);
+            rect.width = Math.max(rect.width, r.width);
+        }
+        return rect;
+    };
 
+    var isElementInViewport = function isElementInViewport(el) {
+        var rect = getHigestBoundingRect(el);
         return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
     };
+    window.foo = isElementInViewport;
 
     var getViewPortHeight = function getViewPortHeight() {
         return window.innerHeight || document.documentElement.clientHeight;
@@ -312,7 +330,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         // min time .1, max time .8 seconds
         var time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, 0.9));
-        console.log(time);
 
         // easing equations from https://github.com/danro/easing-js/blob/master/easing.js
         var PI_D2 = Math.PI / 2,
@@ -491,131 +508,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return Elm;
     }();
 
-    window.Elm = Elm;
-
-    /**
-     * ------------------------------------------------------------------------
-     * Animations
-     * Animates element from current location to given style/location
-     *
-     * TODO animate-able styles are limeted.
-     * ------------------------------------------------------------------------
-     */
-    //class Animator {
-    //
-    //    constructor(elm, options) {
-    //
-    //        this.options = {
-    //            speed: 2000,
-    //            easing: 'easeOut',
-    //            slomo: false,
-    //            time: null,
-    //        };
-    //        this.options = extend(this.options, options);
-    //        this.elm = normalizeElement(elm);
-    //
-    //        this.currentTime = 0;
-    //
-    //        this.time = 1;
-    //        this.easingEquations = {
-    //            easeOutSine: function (pos) {
-    //                return Math.sin(pos * (Math.PI / 2));
-    //            },
-    //            easeInOutSine: function (pos) {
-    //                return (-0.5 * (Math.cos(Math.PI * pos) - 1));
-    //            },
-    //            easeInOutQuint: function (pos) {
-    //                if ((pos /= 0.5) < 1) {
-    //                    return 0.5 * Math.pow(pos, 5);
-    //                }
-    //                return 0.5 * (Math.pow((pos - 2), 5) + 2);
-    //            },
-    //            linear: function (progress) {
-    //                return progress;
-    //            },
-    //            quadratic: function (progress) {
-    //                return Math.pow(progress, 2);
-    //            },
-    //            swing: function (progress) {
-    //                return 0.5 - Math.cos(progress * Math.PI) / 2;
-    //            },
-    //            circ: function (progress) {
-    //                return 1 - Math.sin(Math.acos(progress));
-    //            },
-    //            easeOut: function (t) {
-    //                return t * (2 - t)
-    //            }
-    //        };
-    //    }
-    //
-    //    resolveTime() {
-    //        let computed = getComputedStyle(this.elm);
-    //        let valueMap = ['left', 'right', 'top', 'bottom'];
-    //        let currentStyles = {};
-    //        valueMap.forEach((prop)=> {
-    //            currentStyles[prop] = parseInt(computed.getPropertyValue(prop)) || 0;
-    //        });
-    //        let distance = Math.abs((currentStyles.top - this.styles.top) + (currentStyles.left - this.styles.left) / 2);
-    //        return Math.max(.1, Math.min(distance / this.options.speed, .8));
-    //    }
-    //
-    //    tick() {
-    //        this.currentTime += 1 / 60;
-    //
-    //
-    //        var p = this.currentTime / this.time;
-    //        var t = this.easingEquations[this.options.easing](p);
-    //
-    //        if (p < 1) {
-    //            this.step();
-    //            requestAnimationFrame(this.tick.bind(this));
-    //            this.applyStyles(t);
-    //        } else {
-    //            this.complete();
-    //            this.currentTime = 0;
-    //        }
-    //    }
-    //
-    //    applyStyles(t) {
-    //        //this.fireEvent('tick', this.elm);
-    //        for (let prop in this.styles) {
-    //            if (!this.styles.hasOwnProperty(prop)) {
-    //                continue;
-    //            }
-    //            let to = this.styles[prop];
-    //            let from = parseInt(getComputedStyle(this.elm).getPropertyValue(prop)) || 0;
-    //            let nextValue = Math.round(this.compute(from, to, t));
-    //            this.elm.style[prop] = nextValue + 'px';
-    //        }
-    //
-    //    }
-    //
-    //    compute(from, to, delta) {
-    //        return (to - from) * delta + from;
-    //    }
-    //
-    //    complete() {
-    //    }
-    //
-    //    step() {
-    //    }
-    //
-    //    start(styles) {
-    //        this.styles = styles;
-    //        this.time = this.resolveTime();
-    //        if (this.options.slomo) {
-    //            this.time = 5;
-    //        }
-    //        if (this.options.time) {
-    //            this.time = this.options.time;
-    //        }
-    //        this.tick();
-    //
-    //    }
-    //
-    //}
-
     //TODO style fallback is injected on every tour start
+
     var STYLES = '\n        <style>\n        /* Modal styles */\n         body.modal-mode {\n             overflow: hidden\n         }\n         .modal-body,\n         .modal-title {\n             line-height: 1.42857143;\n             color: #333\n         }\n         .modal-footer {\n             padding: 15px;\n             text-align: center;\n             //border-top: 1px solid #e5e5e5;\n         }\n\n         .chain_modal,\n         .modal-backdrop {\n             position: fixed;\n             top: 0;\n             right: 0;\n             bottom: 0;\n             left: 0\n         }\n\n         .chain_modal {\n             z-index: ' + MAX_ZINDEX + ';\n             overflow-y: scroll;\n             -webkit-overflow-scrolling: touch;\n             outline: 0\n         }\n         .chain_dialog {\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             position: relative;\n             width: auto;\n             margin: 10px\n         }\n         .modal-content .close {\n             margin-top: -2px;\n             position: static;\n             height: 30px;\n         }\n         .modal-theme-blue .close {\n             text-shadow: none;\n             opacity: 1;\n             font-size: 31px;\n             font-weight: normal;\n         }\n         .modal-theme-blue .close span {\n             color: white;\n         }\n         .modal-theme-blue .close span:hover {\n             color: #fbc217;\n         }\n         .close.standalone {\n             position: absolute;\n             right: 15px;\n             top: 13px;\n             z-index: ' + MAX_ZINDEX + ';\n             height: 30px;\n         }\n         .modal-title {\n             margin: 0;\n             font-size: 18px;\n             font-weight: 500\n         }\n         button.close {\n             -webkit-appearance: none;\n             padding: 0;\n             cursor: pointer;\n             background: 0 0;\n             border: 0\n         }\n         .modal-content {\n             position: relative;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #999;\n             border: 1px solid rgba(0, 0, 0, .2);\n             border-radius: 2px;\n             outline: 0;\n             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)\n         }\n         .modal-theme-blue .modal-content {\n            background-color: #4a6173;\n         }\n         .modal-header {\n             min-height: 16.43px;\n             padding: 15px;\n             border-bottom: 1px solid #e5e5e5;\n             min-height: 50px\n         }\n         .modal-theme-blue .modal-header {\n            border-bottom: none;\n         }\n         .modal-body {\n             position: relative;\n             padding: 15px;\n             font-size: 14px\n         }\n         .close {\n             float: right;\n             font-size: 21px;\n             font-weight: 700;\n             line-height: 1;\n             color: #000;\n             text-shadow: 0 1px 0 #fff;\n             opacity: .2\n         }\n         .pag-dot {\n            display: inline-block;\n            width: 10px;\n            height: 10px;\n            background: #c0c0c0;\n            border: solid 1px #c0c0c0;\n            border-radius: 50%;\n            margin: 7px;\n            cursor: pointer;\n         }\n         .pag-dot.active {\n            background: #white;\n         }\n\n         @media (min-width: 768px) {\n             .chain_dialog {\n                 width: 600px;\n                 margin: 30px auto\n             }\n             .modal-content {\n                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)\n             }\n             .chain_modal-sm {\n                 width: 300px\n             }\n         }\n         @media (min-width: 992px) {\n             .chain_modal-lg {\n                 width: 900px\n             }\n         }\n\n\n         /*popover styles*/\n         .popover {\n             position: absolute;\n             box-sizing: border-box;\n             min-width: 250px;\n             top: 0;\n             left: 0;\n             z-index: ' + MAX_ZINDEX + ';\n             display: none;\n             max-width: 276px;\n             padding: 1px;\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             font-style: normal;\n             font-weight: normal;\n             letter-spacing: normal;\n             line-break: auto;\n             line-height: 1.42857143;\n             text-align: left;\n             text-align: start;\n             text-decoration: none;\n             text-shadow: none;\n             text-transform: none;\n             white-space: normal;\n             word-break: normal;\n             word-spacing: normal;\n             word-wrap: normal;\n             font-size: 14px;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #ccc;\n             border: 1px solid rgba(0, 0, 0, 0.2);\n             border-radius: 2px;\n             -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n         }\n         .popover.top {\n             margin-top: -10px;\n         }\n         .popover.right {\n             margin-left: 10px;\n         }\n         .popover.bottom {\n             margin-top: 10px;\n         }\n         .popover.left {\n             margin-left: -10px;\n         }\n         .popover-title {\n             margin: 0;\n             padding: 8px 14px;\n             font-size: 14px;\n             background-color: #f7f7f7;\n             border-bottom: 1px solid #ebebeb;\n             border-radius: 1px 1px 0 0;\n             box-sizing: border-box;\n         }\n         .popover-content {\n             padding: 9px 14px;\n             box-sizing: border-box;\n         }\n         .popover > .arrow,\n         .popover > .arrow:after {\n             position: absolute;\n             display: block;\n             width: 0;\n             height: 0;\n             border-color: transparent;\n             border-style: solid;\n         }\n         .popover > .arrow {\n             border-width: 11px;\n         }\n         .popover > .arrow:after {\n             border-width: 10px;\n             content: "";\n         }\n         .popover.top > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-bottom-width: 0;\n             border-top-color: #999999;\n             border-top-color: rgba(0, 0, 0, 0.25);\n             bottom: -11px;\n         }\n         .popover.top > .arrow:after {\n             content: " ";\n             bottom: 1px;\n             margin-left: -10px;\n             border-bottom-width: 0;\n             border-top-color: #fff;\n         }\n         .popover.right > .arrow {\n             top: 50%;\n             left: -11px;\n             margin-top: -11px;\n             border-left-width: 0;\n             border-right-color: #999999;\n             border-right-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.right > .arrow:after {\n             content: " ";\n             left: 1px;\n             bottom: -10px;\n             border-left-width: 0;\n             border-right-color: #fff;\n         }\n         .popover.bottom > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-top-width: 0;\n             border-bottom-color: #999999;\n             border-bottom-color: rgba(0, 0, 0, 0.25);\n             top: -11px;\n         }\n         .popover.bottom > .arrow:after {\n             content: " ";\n             top: 1px;\n             margin-left: -10px;\n             border-top-width: 0;\n             border-bottom-color: #fff;\n         }\n         .popover.left > .arrow {\n             top: 50%;\n             right: -11px;\n             margin-top: -11px;\n             border-right-width: 0;\n             border-left-color: #999999;\n             border-left-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.left > .arrow:after {\n             content: " ";\n             right: 1px;\n             border-right-width: 0;\n             border-left-color: #fff;\n             bottom: -10px;\n         }\n         .popover .btns {\n             padding: 9px 14px;\n             text-align: right;\n         }\n         .popover .popBtn {\n             color: #333;\n             font-weight: bold;\n             border: solid 1px #333;\n             display: inline-block;\n             padding: 4px 18px;\n             border-radius: 1px;\n             font-size: 13px;\n             cursor: pointer;\n             margin-left: 8px;\n         }\n\n\n         /* Focus styles */\n         .to_left,\n         .to_right,\n         .to_top,\n         .to_bottom {\n             position: absolute;\n             background: black;\n             opacity: .5;\n             filter: alpha(opacity=50);\n             z-index: 1000;\n         }\n         .ghost-focus {\n             background: transparent;\n             z-index: 1000;\n         }\n\n\n         /*** Animations ***/\n         @-webkit-keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @-webkit-keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         .fadeInDown,\n         .fadeInLeft,\n         .fadeInRight,\n         .fadeInTop,\n         .fadeOutTop{\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s;\n             animation-duration: .5s;\n             animation-fill-mode: both;\n         }\n         .fadeInDown {\n             -webkit-animation-name: fadeInDown;\n             animation-name: fadeInDown;\n         }\n         .fadeInLeft {\n             -webkit-animation-name: fadeInLeft;\n             animation-name: fadeInLeft;\n         }\n         .fadeInRight {\n             -webkit-animation-name: fadeInRight;\n             animation-name: fadeInRight;\n         }\n         .fadeInTop {\n             -webkit-animation-name: fadeInTop;\n             animation-name: fadeInTop;\n         }\n         .fadeOutTop {\n             -webkit-animation-name: fadeOutTop;\n             animation-name: fadeOutTop;\n         }\n        </style>';
     /**
      * ------------------------------------------------------------------------
@@ -673,11 +567,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         merge += '<div class="carusel slide' + i + '">' + item + '</div>';
                     });
                     content = merge;
-                    console.log(content);
                 }
 
                 //Add header if we have a title. if not we only add the close button.
-                console.log(this.defaults.closeButton);
                 var header = '';
                 if (this.defaults.title) {
                     header = '\n                <div class="modal-header">\n                    <button type="button" class="close"><span>×</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
@@ -881,12 +773,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: 'setPosition',
             value: function setPosition() {
                 var placement = this.default.placement;
-                var elDim = this.element.getBoundingClientRect();
+                var elDim = getHigestBoundingRect(this.element);
                 var popDim = this.popover.getBoundingClientRect();
                 var bodyDim = {
                     height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                     width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
                 };
+                console.log('elDim', elDim);
 
                 var top = undefined,
                     left = undefined;
@@ -960,188 +853,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     /**
      * ------------------------------------------------------------------------
      * Focus
-     * Creates 4 transparent overlay around the given element
-     *
-     * TODO Create nice animation for show hide
-     * TODO prevent overflow of viewport
-     * TODO add padding option
+     * Creates a overlay with focus on the given element.
+     * It includes linear animation between elements and animated scroll to
+     * ensure the given element is in view
      * ------------------------------------------------------------------------
      */
-    //class Focus {
-    //
-    //    constructor(config) {
-    //        this.default = {
-    //            padding: 0,
-    //            removeOnClick: false
-    //        };
-    //        this.default = extend(this.default, config);
-    //        this.buildDom();
-    //
-    //        this.animator = new Animator(this.focusBox.middle, {
-    //            //effect: 'easeOut',
-    //            //duration: 60000
-    //        });
-    //        this.animator.complete = ()=> {
-    //            this.complete();
-    //        };
-    //
-    //    }
-    //
-    //    complete() {
-    //
-    //    }
-    //
-    //    buildDom() {
-    //        let elmOptions = this.default.closeOnClick ? {
-    //            click: ()=> {
-    //                this.remove()
-    //            }
-    //        } : {};
-    //        this.focusBox = {
-    //            middle: new Elm('div.ghost-focus', {
-    //                css: {
-    //                    position: 'absolute',
-    //                    top: '50%',
-    //                    left: '50%',
-    //                }
-    //            }, document.body),
-    //            right: new Elm('div.to_right', elmOptions, document.body),
-    //            top: new Elm('div.to_top', elmOptions, document.body),
-    //            bottom: new Elm('div.to_bottom', elmOptions, document.body),
-    //            left: new Elm('div.to_left', elmOptions, document.body)
-    //        };
-    //    }
-    //
-    //    focusOn(elm, customPos) {
-    //        let focusElm = normalizeElement(elm);
-    //        let styles = focusElm.getBoundingClientRect();
-    //        if (typeof customPos !== 'undefined') {
-    //            //ClientRect object only have getters, so we cant extend it and need to clone it
-    //            let styleObj = {
-    //                bottom: styles.bottom,
-    //                height: styles.height,
-    //                left: styles.left,
-    //                right: styles.right,
-    //                top: styles.top,
-    //                width: styles.width
-    //            };
-    //            styles = extend(styleObj, customPos);
-    //        }
-    //        let animate = ()=> {
-    //            this.animator.start({
-    //                width: styles.width,
-    //                height: styles.height,
-    //                left: styles.left,
-    //                top: styles.top + window.scrollY
-    //            });
-    //            this.animator.step = (el)=> {
-    //                this.setCoverPos(el);
-    //            }
-    //        };
-    //
-    //        let viewportHeight = getViewPortHeight();
-    //        //If element is not in the viewport on the y axis we scroll to that element and then animate the foucus.
-    //        if (!isElementInViewport(focusElm)) {
-    //            console.log('element is not in the viewport');
-    //            //let y = styles.top - (viewportHeight / 2);
-    //            let y = elementOffsetTop(focusElm) - (viewportHeight / 2 );
-    //            console.log(elementOffsetTop(focusElm), viewportHeight);
-    //            scrollToY(y, 1500, 'easeInOutQuint', function () {
-    //                styles = focusElm.getBoundingClientRect();
-    //                animate();
-    //            });
-    //        }
-    //        else if (styles.top < window.scrollY) {
-    //            let y = styles.top;
-    //            scrollToY(y, 1500, 'easeInOutQuint', function () {
-    //                styles = focusElm.getBoundingClientRect();
-    //                animate();
-    //            });
-    //        }
-    //        else {
-    //            animate();
-    //        }
-    //
-    //    }
-    //
-    //    coverAll() {
-    //        setStyles(this.focusBox.top, {
-    //            top: 0,
-    //            left: 0,
-    //            right: 0,
-    //            height: getPageHeight() + 'px'
-    //        });
-    //        setStyles(this.focusBox.bottom, {
-    //            top: 0,
-    //            height: 0,
-    //            left: 0,
-    //            width: 0
-    //        });
-    //        setStyles(this.focusBox.right, {
-    //            top: 0,
-    //            height: 0,
-    //            right: 0,
-    //            left: 0
-    //        });
-    //        setStyles(this.focusBox.left, {
-    //            top: 0,
-    //            height: 0,
-    //            left: 0,
-    //            width: 0
-    //        });
-    //    }
-    //
-    //    remove() {
-    //        for (let key in this.focusBox) {
-    //            if (!this.focusBox.hasOwnProperty(key)) {
-    //                continue;
-    //            }
-    //            fadeOutRemove(this.focusBox[key]);
-    //        }
-    //    }
-    //
-    //    setCoverPos(el) {
-    //        let body = document.body;
-    //        let html = document.documentElement;
-    //        var pageHeight = Math.max(body.scrollHeight, body.offsetHeight,
-    //            html.clientHeight, html.scrollHeight, html.offsetHeight);
-    //        let dimentions = this.focusBox.middle.getBoundingClientRect();
-    //
-    //
-    //        setStyles(this.focusBox.top, {
-    //            top: 0,
-    //            left: 0,
-    //            right: 0,
-    //            height: (()=> {
-    //                return dimentions.top > 0 ? dimentions.top - this.default.padding + window.scrollY + 'px' : 0
-    //            })() //if element overflow top height is 0
-    //        });
-    //        setStyles(this.focusBox.bottom, {
-    //            top: dimentions.top + dimentions.height + this.default.padding + window.scrollY + 'px',
-    //            height: pageHeight - (dimentions.top + dimentions.height + this.default.padding) + 'px', //pageHeight - top position
-    //            left: dimentions.left - this.default.padding + 'px',
-    //            width: dimentions.width + (this.default.padding * 2) + 'px'
-    //        });
-    //        setStyles(this.focusBox.right, {
-    //            top: dimentions.top - this.default.padding + window.scrollY + 'px',
-    //            height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
-    //            right: 0,
-    //            left: dimentions.left + dimentions.width + this.default.padding + 'px',
-    //        });
-    //        setStyles(this.focusBox.left, {
-    //            top: dimentions.top - this.default.padding + window.scrollY + 'px',
-    //            height: pageHeight - (dimentions.top - this.default.padding) + 'px', //pageHeight - top position
-    //            left: 0,
-    //            width: (()=> {
-    //                return dimentions.left > 0 ? dimentions.left - this.default.padding + 'px' : 0
-    //            })()
-    //        });
-    //    }
-    //
-    //}
-
-    // In first version we animated 5 divs to create the focus point. That had a blinking line problem on mobile.
-    // This Class is based on https://github.com/hakimel/Fokus . A better approach
+    // In the first version we created 4 transparent overlays around the given element. That had a blinking line problem on mobile.
+    // This Class is based on https://github.com/hakimel/Fokus. A better approach with fixed canvas as overlay and clearRect for
+    // selected area
 
     var Focus = function () {
         function Focus(config) {
@@ -1157,6 +876,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.PADDING = this.options.padding;
             // Opacity of the overlay
             this.OPACITY = 0.5;
+
+            this.idleState = false;
 
             this._fadeIn = true;
             //padding is disregarded if cover is true
@@ -1182,7 +903,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.overlay.style.pointerEvents = 'none';
             this.overlay.style.background = 'transparent';
 
-            window.addEventListener('resize', this.onWindowResize, false);
+            //window.addEventListener('resize', this.onWindowResize.bind(this), false);
+            //window.addEventListener('scroll', this.updateSelection.bind(this), false);
 
             // Trigger an initial resize
             this.onWindowResize();
@@ -1247,28 +969,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function updateSelection() {
                 var immediate = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
+                console.log(immediate);
                 // Default to negative space
                 var currentRegion = { left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0 };
 
-                var node = this.ELEMENT;
+                //TODO make sure multiple elements is valid
+                if (this.ELEMENT == null) return false;
+                var nodes = this.ELEMENT.length ? this.ELEMENT : [this.ELEMENT];
+                for (var i = 0, len = nodes.length; i < len; i++) {
+                    var node = nodes[i];
 
-                // Fetch the screen coordinates for this element
-                var position = getScreenPosition(node);
+                    // Fetch the screen coordinates for this element
+                    var position = getScreenPosition(node);
 
-                var x = position.x,
-                    y = position.y,
-                    w = node.offsetWidth,
-                    h = node.offsetHeight;
+                    var x = position.x,
+                        y = position.y,
+                        w = node.offsetWidth,
+                        h = node.offsetHeight;
 
-                // 1. offsetLeft works
-                // 2. offsetWidth works
-                // 3. Element is larger than zero pixels
-                // 4. Element is not <br>
-                if (node && typeof x === 'number' && typeof w === 'number' && (w > 0 || h > 0) && !node.nodeName.match(/^br$/gi)) {
-                    currentRegion.left = Math.min(currentRegion.left, x);
-                    currentRegion.top = Math.min(currentRegion.top, y);
-                    currentRegion.right = Math.max(currentRegion.right, x + w);
-                    currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+                    // 1. offsetLeft works
+                    // 2. offsetWidth works
+                    // 3. Element is larger than zero pixels
+                    // 4. Element is not <br>
+                    if (node && typeof x === 'number' && typeof w === 'number' && (w > 0 || h > 0) && !node.nodeName.match(/^br$/gi)) {
+                        currentRegion.left = Math.min(currentRegion.left, x);
+                        currentRegion.top = Math.min(currentRegion.top, y);
+                        currentRegion.right = Math.max(currentRegion.right, x + w);
+                        currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+                    }
                 }
 
                 this.selectedRegion = currentRegion;
@@ -1279,6 +1007,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
 
                 if (this.hasSelection()) {
+                    this.idleState = false;
                     this.redraw();
                 }
             }
@@ -1307,6 +1036,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function redraw() {
                 var _this5 = this;
 
+                //if(this.idleState) return false;
                 // Reset to a solid (less opacity) overlay fill
                 this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
                 this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
@@ -1340,6 +1070,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 if (this.animationComplete()) {
                     this.complete();
+                    this.idleState = true;
                 }
                 // Continue so long as there is content selected or we are fading out
                 if (this.overlayAlpha > 0) {
@@ -1442,6 +1173,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 this.focus.focusOnElement(settings.element);
                 this.focus.complete = function () {
+                    console.log('goo');
                     _this6.popover.show();
 
                     if (_this6.defaults.autoplay) {

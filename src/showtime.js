@@ -258,9 +258,26 @@
         }
     };
 
-    var isElementInViewport = function (el) {
-        var rect = el.getBoundingClientRect();
+    var getHigestBoundingRect = function(nodes) {
+        if(!nodes.length) {
+            return nodes.getBoundingClientRect();
+        }
+        let rect = {bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0};
+         for(let i = 0; i < nodes.length; i++) {
+            let el = nodes[i];
+            let r = el.getBoundingClientRect();
+            rect.bottom = Math.min(rect.bottom, r.bottom);
+            rect.height = Math.min(rect.height, r.height);
+            rect.left = Math.max(rect.left, r.left);
+            rect.right = Math.max(rect.right, r.right);
+            rect.top = Math.max(rect.top, r.top);
+            rect.width = Math.max(rect.width, r.width);
+        }
+        return rect
+    };
 
+    var isElementInViewport = function (el) {
+        let rect = getHigestBoundingRect(el);
         return (
             rect.top >= 0 &&
             rect.left >= 0 &&
@@ -268,6 +285,7 @@
             rect.right <= (window.innerWidth || document.documentElement.clientWidth)
         );
     };
+    window.foo = isElementInViewport;
 
     var getViewPortHeight = function () {
         return (window.innerHeight || document.documentElement.clientHeight);
@@ -325,7 +343,6 @@
 
         // min time .1, max time .8 seconds
         var time = Math.max(.1, Math.min(Math.abs(scrollY - scrollTargetY) / speed, 0.9));
-        console.log(time);
 
         // easing equations from https://github.com/danro/easing-js/blob/master/easing.js
         var PI_D2 = Math.PI / 2,
@@ -1012,11 +1029,9 @@
                     merge += `<div class="carusel slide${i}">${item}</div>`;
                 });
                 content = merge;
-                console.log(content);
             }
 
             //Add header if we have a title. if not we only add the close button.
-            console.log(this.defaults.closeButton);
             let header = '';
             if (this.defaults.title) {
                 header = `
@@ -1238,12 +1253,13 @@
 
         setPosition() {
             let placement = this.default.placement;
-            let elDim = this.element.getBoundingClientRect();
+            let elDim = getHigestBoundingRect(this.element);
             let popDim = this.popover.getBoundingClientRect();
             let bodyDim = {
                 height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                 width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
             };
+            console.log('elDim', elDim);
 
             let top, left;
             let offset = this.getOffset();
@@ -1318,10 +1334,10 @@
      * ensure the given element is in view
      * ------------------------------------------------------------------------
      */
-    // In the first version we created 4 transparent overlays around the given element. That had a blinking line problem on mobile.
-    // This Class is based on https://github.com/hakimel/Fokus. A better approach with fixed canvas as overlay and clearRect for
-    // selected area
-    class Focus {.
+        // In the first version we created 4 transparent overlays around the given element. That had a blinking line problem on mobile.
+        // This Class is based on https://github.com/hakimel/Fokus. A better approach with fixed canvas as overlay and clearRect for
+        // selected area
+    class Focus {
         constructor(config) {
             this.options = {
                 padding: 5
@@ -1333,6 +1349,8 @@
             this.PADDING = this.options.padding;
             // Opacity of the overlay
             this.OPACITY = 0.5;
+
+            this.idleState = false;
 
             this._fadeIn = true;
             //padding is disregarded if cover is true
@@ -1358,7 +1376,8 @@
             this.overlay.style.pointerEvents = 'none';
             this.overlay.style.background = 'transparent';
 
-            window.addEventListener('resize', this.onWindowResize, false);
+            //window.addEventListener('resize', this.onWindowResize.bind(this), false);
+            //window.addEventListener('scroll', this.updateSelection.bind(this), false);
 
             // Trigger an initial resize
             this.onWindowResize();
@@ -1413,28 +1432,34 @@
         }
 
         updateSelection(immediate = false) {
+            console.log(immediate);
             // Default to negative space
-            var currentRegion = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0};
+            let currentRegion = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0};
 
-            var node = this.ELEMENT;
+            //TODO make sure multiple elements is valid
+            if(this.ELEMENT == null) return false;
+            let nodes = this.ELEMENT.length ? this.ELEMENT : [this.ELEMENT];
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                var node = nodes[i];
 
-            // Fetch the screen coordinates for this element
-            var position = getScreenPosition(node);
+                // Fetch the screen coordinates for this element
+                var position = getScreenPosition(node);
 
-            var x = position.x,
-                y = position.y,
-                w = node.offsetWidth,
-                h = node.offsetHeight;
+                var x = position.x,
+                    y = position.y,
+                    w = node.offsetWidth,
+                    h = node.offsetHeight;
 
-            // 1. offsetLeft works
-            // 2. offsetWidth works
-            // 3. Element is larger than zero pixels
-            // 4. Element is not <br>
-            if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
-                currentRegion.left = Math.min(currentRegion.left, x);
-                currentRegion.top = Math.min(currentRegion.top, y);
-                currentRegion.right = Math.max(currentRegion.right, x + w);
-                currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+                // 1. offsetLeft works
+                // 2. offsetWidth works
+                // 3. Element is larger than zero pixels
+                // 4. Element is not <br>
+                if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
+                    currentRegion.left = Math.min(currentRegion.left, x);
+                    currentRegion.top = Math.min(currentRegion.top, y);
+                    currentRegion.right = Math.max(currentRegion.right, x + w);
+                    currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+                }
             }
 
             this.selectedRegion = currentRegion;
@@ -1445,6 +1470,7 @@
             }
 
             if (this.hasSelection()) {
+                this.idleState = false;
                 this.redraw();
             }
         }
@@ -1468,6 +1494,7 @@
         }
 
         redraw() {
+            //if(this.idleState) return false;
             // Reset to a solid (less opacity) overlay fill
             this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
             this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
@@ -1507,6 +1534,7 @@
 
             if (this.animationComplete()) {
                 this.complete();
+                this.idleState = true;
             }
             // Continue so long as there is content selected or we are fading out
             if (this.overlayAlpha > 0) {
@@ -1605,6 +1633,7 @@
             });
             this.focus.focusOnElement(settings.element);
             this.focus.complete = ()=> {
+                console.log('goo');
                 this.popover.show();
 
                 if (this.defaults.autoplay) {

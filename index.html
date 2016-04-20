@@ -94,7 +94,7 @@
                 message: ['sdf', 'dfgdfg', 'dfgeg']
             })
             .show({
-                element: document.querySelector('.ball'),
+                element: document.querySelectorAll('.ball, .two'),
                 title: 'hey I have a title again.',
                 placement: 'right',
                 content: '<p>This is a ball</p>',
@@ -127,6 +127,11 @@
                 content: '<p>This is a box2</p>'
             })
             .show({
+                element: document.querySelector('.three'),
+                placement: 'top',
+                content: '<p>This is a box2</p>'
+            })
+            .show({
                 element: document.querySelector('.four'),
                 placement: 'bottom',
                 content: '<p>This is a box1</p>',
@@ -139,6 +144,15 @@
                 element: document.querySelector('.four'),
                 placement: 'left',
                 content: '<p>This is a box2</p>'
+            })
+            .show({
+                element: document.querySelector('.ball'),
+                placement: 'top',
+                content: '<p>This is a box2</p>'
+            })
+            .modal({
+                title: 'sdfsdf',
+                message: ['sdf', 'dfgdfg', 'dfgeg']
             });
 
 
