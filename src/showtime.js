@@ -216,6 +216,14 @@
     };
 
     var foreach = function (arg, func) {
+        if(isElement(arg)) {
+           for (var i = 0; i < arg.length; i++) {
+                if( isElement(arg[i]) )
+                    func.call(window, arg[i], i, arg);
+           }
+            return false;
+        }
+
         if (!isArray(arg) && !isObject(arg))
             var arg = [arg];
         if (isArray(arg)) {
@@ -241,6 +249,10 @@
         return arr;
     };
 
+    var isElement = function(item) {
+        return (item[0] || item).nodeType
+    };
+
     var normalizeElement = function (element) {
         function isElement(obj) {
             return (obj[0] || obj).nodeType
@@ -258,12 +270,12 @@
         }
     };
 
-    var getHigestBoundingRect = function(nodes) {
-        if(!nodes.length) {
+    var getHigestBoundingRect = function (nodes) {
+        if (!nodes.length) {
             return nodes.getBoundingClientRect();
         }
         let rect = {bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0};
-         for(let i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
             let el = nodes[i];
             let r = el.getBoundingClientRect();
             rect.bottom = Math.min(rect.bottom, r.bottom);
@@ -497,8 +509,8 @@
         }
 
         click(fn) {
-            this.element.addEventListener('click', function () {
-                fn();
+            this.element.addEventListener('click', function (e) {
+                fn(e);
             });
         }
 
@@ -620,18 +632,22 @@
              text-shadow: 0 1px 0 #fff;
              opacity: .2
          }
+
+
+         /* Carousel */
+
          .pag-dot {
             display: inline-block;
             width: 10px;
             height: 10px;
-            background: #c0c0c0;
+            background: white;
             border: solid 1px #c0c0c0;
             border-radius: 50%;
             margin: 7px;
             cursor: pointer;
          }
          .pag-dot.active {
-            background: #white;
+            background: #c0c0c0;
          }
 
          @media (min-width: 768px) {
@@ -1026,7 +1042,7 @@
                 this.isCarousel = true;
                 let merge = '';
                 this.defaults.message.forEach((item, i) => {
-                    merge += `<div class="carusel slide${i}">${item}</div>`;
+                    merge += `<div class="carousel slide${i}">${item}</div>`;
                 });
                 content = merge;
             }
@@ -1056,12 +1072,11 @@
                     ${this.defaults.footer}
                 </div>`;
 
-
+            //TODO sameina footer of iscarousel þetta er tvítekið
             if (this.isCarousel) {
-                let pagers = '<div class="pag-dot"></div>'.repeat(slides);
+                //let pagers = '<div class="pag-dot"></div>'.repeat(slides); depricated
                 footer = `
                 <div class="modal-footer">
-                    ${pagers}
                     ${this.defaults.footer}
                 </div>`;
             }
@@ -1436,7 +1451,7 @@
             let currentRegion = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0};
 
             //TODO make sure multiple elements is valid
-            if(this.ELEMENT == null) return false;
+            if (this.ELEMENT == null) return false;
             let nodes = this.ELEMENT.length ? this.ELEMENT : [this.ELEMENT];
             for (var i = 0, len = nodes.length; i < len; i++) {
                 var node = nodes[i];
@@ -1475,7 +1490,7 @@
             let currentRegion = {left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0};
 
             //TODO make sure multiple elements is valid
-            if(this.ELEMENT == null) return false;
+            if (this.ELEMENT == null) return false;
             let nodes = this.ELEMENT.length ? this.ELEMENT : [this.ELEMENT];
             for (var i = 0, len = nodes.length; i < len; i++) {
                 var node = nodes[i];
@@ -1593,8 +1608,60 @@
         }
     }
 
-    window.focus = Focus;
+    /**
+     * ------------------------------------------------------------------------
+     * Carousel
+     * It's really simple take on it. it's not even a carousel yet
+     * plenty of room for improvements
+     * ------------------------------------------------------------------------
+     */
+    class Carousel {
 
+        constructor(options) {
+            this.defaults = {};
+            this.defaults = extend(this.defaults, options);
+
+            this.slides = document.querySelectorAll('.carousel');
+            this.pagers = [];
+            this.arangeSlides();
+
+        }
+
+        arangeSlides() {
+
+            foreach(this.slides, (item, i) => {
+                console.log(item, i);
+                item.style.display = 'none';
+                this.pagers.push(new Elm('div.pag-dot', {
+                    'id': 'pag-' + i,
+                    'click': ()=> {this.setSlide(i)}
+                }, document.querySelector('.modal-footer')));
+            });
+            this.slides[0].style.display = 'block';
+            setClass(this.pagers[0], 'active');
+        }
+
+        setSlide(i) {
+            // Get selected
+            let currentPag = this.pagers[i];
+            let currentSlide = this.slides[i];
+
+            // remove active from previous pags
+            foreach(this.pagers, function(item) {
+               removeClass(item, 'active');
+            });
+            setClass(currentPag, 'active');
+
+            // hide all and show current slide
+            foreach(this.slides, function(item) {
+               item.style.display = 'none';
+            });
+            currentSlide.style.display = 'block';
+
+        }
+    }
+
+    window.Carousel = Carousel;
 
     /**
      * ------------------------------------------------------------------------
