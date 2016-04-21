@@ -1449,7 +1449,7 @@
             this.overlay.style.pointerEvents = 'none';
             this.overlay.style.background = 'transparent';
 
-            //window.addEventListener('resize', this.onWindowResize.bind(this), false);
+            window.addEventListener('resize', this.onWindowResize.bind(this), false);
             //window.addEventListener('scroll', this.updateSelection.bind(this), false);
 
             // Trigger an initial resize
@@ -1502,6 +1502,7 @@
         onWindowResize(event) {
             this.overlay.width = window.innerWidth;
             this.overlay.height = window.innerHeight;
+            this.updateSelection();
         }
 
         updateSelection(immediate = false) {

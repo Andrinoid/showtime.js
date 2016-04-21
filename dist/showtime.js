@@ -982,7 +982,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.overlay.style.pointerEvents = 'none';
             this.overlay.style.background = 'transparent';
 
-            //window.addEventListener('resize', this.onWindowResize.bind(this), false);
+            window.addEventListener('resize', this.onWindowResize.bind(this), false);
             //window.addEventListener('scroll', this.updateSelection.bind(this), false);
 
             // Trigger an initial resize
@@ -1042,6 +1042,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function onWindowResize(event) {
                 this.overlay.width = window.innerWidth;
                 this.overlay.height = window.innerHeight;
+                this.updateSelection();
             }
         }, {
             key: 'updateSelection',
