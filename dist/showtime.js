@@ -1145,7 +1145,7 @@ var Focus = function () {
         value: function redraw() {
             var _this6 = this;
 
-            if (this.idleState) return false; // TODO deal with scroll delema
+            //if (this.idleState) return false; // TODO deal with scroll and fadeout delema
             // Reset to a solid (less opacity) overlay fill
             this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
             this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
@@ -1179,7 +1179,6 @@ var Focus = function () {
 
             if (this.animationComplete()) {
                 this.complete();
-                this.idleState = true;
             }
             // Continue so long as there is content selected or we are fading out
             if (this.overlayAlpha > 0) {
@@ -1198,6 +1197,8 @@ var Focus = function () {
 
     return Focus;
 }();
+
+window.focus = Focus;
 
 /**
  * ------------------------------------------------------------------------
@@ -1279,13 +1280,16 @@ var Showtime = function () {
                 buttons: settings.buttons
             });
             this.focus.focusOnElement(settings.element);
-            this.focus.complete = function () {
+
+            this.focus.complete = throttle(function () {
+                console.log('throttle');
                 _this7.popover.show();
 
                 if (_this7.defaults.autoplay) {
                     _this7._callAgain();
                 }
-            };
+            }, 400);
+
             this.chainIndex++;
             //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
             //    this.focus.focusBox.middle.style.pointerEvents = 'none'
@@ -1389,9 +1393,15 @@ var Showtime = function () {
     }, {
         key: 'quit',
         value: function quit() {
+            console.log(this);
+            Modal.prototype.closeAll();
             this.focus.remove();
             delete this.focus;
-            this.popover.remove();
+            try {
+                this.popover.remove();
+            } catch (err) {
+                //pass
+            }
             Modal.prototype.instances.length = 0;
         }
     }, {

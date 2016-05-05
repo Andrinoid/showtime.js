@@ -1590,7 +1590,7 @@ class Focus {
 
 
     redraw() {
-        if (this.idleState) return false; // TODO deal with scroll delema
+        //if (this.idleState) return false; // TODO deal with scroll and fadeout delema
         // Reset to a solid (less opacity) overlay fill
         this.overlayContext.clearRect(0, 0, this.overlay.width, this.overlay.height);
         this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
@@ -1630,7 +1630,6 @@ class Focus {
 
         if (this.animationComplete()) {
             this.complete();
-            this.idleState = true;
         }
         // Continue so long as there is content selected or we are fading out
         if (this.overlayAlpha > 0) {
@@ -1649,7 +1648,7 @@ class Focus {
 
     }
 }
-
+window.focus = Focus;
 
 /**
  * ------------------------------------------------------------------------
@@ -1725,13 +1724,16 @@ class Showtime {
             buttons: settings.buttons
         });
         this.focus.focusOnElement(settings.element);
-        this.focus.complete = ()=> {
-            this.popover.show();
+
+        this.focus.complete = throttle(()=> {
+            console.log('throttle');
+             this.popover.show();
 
             if (this.defaults.autoplay) {
                 this._callAgain()
             }
-        };
+        }, 400);
+
         this.chainIndex++;
         //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
         //    this.focus.focusBox.middle.style.pointerEvents = 'none'
@@ -1817,9 +1819,15 @@ class Showtime {
     }
 
     quit() {
+        console.log(this);
+        Modal.prototype.closeAll();
         this.focus.remove();
         delete this.focus;
-        this.popover.remove();
+        try {
+            this.popover.remove();
+        } catch(err) {
+            //pass
+        }
         Modal.prototype.instances.length = 0;
     }
 
