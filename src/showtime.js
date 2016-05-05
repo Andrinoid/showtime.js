@@ -1726,13 +1726,12 @@ class Showtime {
         this.focus.focusOnElement(settings.element);
 
         this.focus.complete = throttle(()=> {
-            console.log('throttle');
              this.popover.show();
 
             if (this.defaults.autoplay) {
                 this._callAgain()
             }
-        }, 400);
+        }, 10000); //TODO can we modify this to act like once
 
         this.chainIndex++;
         //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {

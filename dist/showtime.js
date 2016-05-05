@@ -1282,13 +1282,12 @@ var Showtime = function () {
             this.focus.focusOnElement(settings.element);
 
             this.focus.complete = throttle(function () {
-                console.log('throttle');
                 _this7.popover.show();
 
                 if (_this7.defaults.autoplay) {
                     _this7._callAgain();
                 }
-            }, 400);
+            }, 10000); //TODO can we modify this to act like once
 
             this.chainIndex++;
             //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
