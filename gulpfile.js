@@ -1,6 +1,8 @@
 var gulp = require('gulp');
 var babel = require('gulp-babel');
 var watch = require('gulp-watch');
+var umd = require('gulp-umd');
+
 var del = require('del');
 var browserSync = require('browser-sync').create();
 
@@ -13,6 +15,7 @@ gulp.task('babel', function() {
 		.pipe(babel({
 			presets: ['es2015']
 		}))
+        .pipe(umd())
 		.pipe(gulp.dest('dist'));
 });
 
