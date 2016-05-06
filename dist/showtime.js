@@ -1360,7 +1360,7 @@ var Showtime = function () {
                 var _loop = function _loop(i) {
                     _this9.chain.push(function () {
                         window[options.uid].carousel.setSlide(i);
-                    }); //TODO change this to gotoSlide with index
+                    });
                 };
 
                 for (var i = 1; i < options.message.length; i++) {

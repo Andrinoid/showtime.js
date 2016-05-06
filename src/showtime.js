@@ -1792,7 +1792,7 @@ class Showtime {
 
         if(options.message && isArray(options.message)) {
             for(let i = 1; i < options.message.length; i++) {
-                 this.chain.push(function(){ window[options.uid].carousel.setSlide(i) });//TODO change this to gotoSlide with index
+                 this.chain.push(function(){ window[options.uid].carousel.setSlide(i) });
             }
         }
         return this;

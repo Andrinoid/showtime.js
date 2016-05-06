@@ -89,72 +89,80 @@
                 }
             }
         ]
-    })
-            .modal({
-                title: 'sdfsdf',
-                message: ['skref 1. blabalbla', 'skref 2 foobar', 'skref 3 all done']
-            })
-            .show({
-                element: document.querySelectorAll('.ball, .two'),
-                title: 'hey I have a title again.',
-                placement: 'right',
-                content: '<p>This is a ball</p>',
-                padding: 10,
-                dimentions: {
-                    height: 400
-                },
-                focusClick: function () {
-                    tour.next();
-                },
-                buttons: [
-                    {
-                        label: 'quit',
-                        click: function () {
-                            tour.quit()
-                        }
-                    },
-                    {
-                        label: 'next',
-                        click: function () {
-                            tour.next()
-                        }
-                    }
-                ]
-            })
+    });
 
-            .show({
-                element: document.querySelector('.four'),
-                placement: 'top',
-                content: '<p>This is a box2</p>'
-            })
-            .show({
-                element: document.querySelector('.three'),
-                placement: 'top',
-                content: '<p>This is a box2</p>'
-            })
-            .show({
-                element: document.querySelector('.four'),
-                placement: 'bottom',
-                content: '<p>This is a box1</p>',
-                focusClick: function () {
-                    alert('');
-                    tour.next();
+    tour.modal({
+        title: 'sdfsdf',
+        message: ['skref 1. blabalbla', 'skref 2 foobar', 'skref 3 all done'],
+        onClose: function () {
+            tour.next();
+            tour.next();
+            tour.next();
+        }
+    });
+    tour.show({
+        element: document.querySelectorAll('.ball, .two'),
+        title: 'hey I have a title again.',
+        placement: 'left',
+        content: '<p>This is a ball</p>',
+        padding: 10,
+        dimentions: {
+            height: 400
+        },
+        focusClick: function () {
+            tour.next();
+        },
+        buttons: [
+            {
+                label: 'quit',
+                click: function () {
+                    tour.quit()
                 }
-            })
-            .show({
-                element: document.querySelector('.four'),
-                placement: 'left',
-                content: '<p>This is a box2</p>'
-            })
-            .show({
-                element: document.querySelector('.ball'),
-                placement: 'top',
-                content: '<p>This is a box2</p>'
-            })
-            .modal({
-                title: 'sdfsdf',
-                message: 'sdfsdf'
-            });
+            },
+            {
+                label: 'next',
+                click: function () {
+                    tour.next()
+                }
+            }
+        ]
+    });
+
+    tour.show({
+        element: document.querySelector('.four'),
+        placement: 'top',
+        content: '<p>This is a box2</p>'
+    })
+    .show({
+        element: document.querySelector('.three'),
+        placement: 'top',
+        content: '<p>This is a box2</p>'
+    })
+    .show({
+        element: document.querySelector('.four'),
+        placement: 'bottom',
+        content: '<p>This is a box1</p>',
+        focusClick: function () {
+            tour.next();
+        }
+    })
+    .show({
+        element: document.querySelector('.four'),
+        placement: 'left',
+        content: '<p>This is a box2</p>'
+    })
+    .show({
+        element: document.querySelector('.ball'),
+        placement: 'bottom',
+        content: '<p>This is a box2</p>'
+    })
+    .modal({
+        title: 'sdfsdf',
+        message: 'sdfsdf',
+        onClose: function () {
+            tour.quit();
+        }
+    });
 
 
 </script>
