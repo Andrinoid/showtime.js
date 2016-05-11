@@ -393,15 +393,15 @@ function roundUp(num) {
     return Math.ceil(num * 10) / 10;
 }
 
-function randomstring(L){
-    var s= '';
-    var randomchar=function(){
-    	var n= Math.floor(Math.random()*62);
-    	if(n<10) return n; //1-10
-    	if(n<36) return String.fromCharCode(n+55); //A-Z
-    	return String.fromCharCode(n+61); //a-z
+function randomstring(L) {
+    var s = '';
+    var randomchar = function () {
+        var n = Math.floor(Math.random() * 62);
+        if (n < 10) return n; //1-10
+        if (n < 36) return String.fromCharCode(n + 55); //A-Z
+        return String.fromCharCode(n + 61); //a-z
     };
-    while(s.length < L) s += randomchar();
+    while (s.length < L) s += randomchar();
     return s;
 }
 
@@ -1031,13 +1031,13 @@ class Carousel {
     }
 
     next() {
-        if(this.currentSlide + 1 >= this.slides.length)
+        if (this.currentSlide + 1 >= this.slides.length)
             return false;
         this.setSlide(++this.currentSlide);
     }
 
     prev() {
-        if(this.currentSlide === 0)
+        if (this.currentSlide === 0)
             return false;
         this.setSlide(--this.currentSlide);
     }
@@ -1093,7 +1093,7 @@ class Modal {
         this.carousel = null; //maybe these two can merge
         this.defaults = extend(this.defaults, options);
 
-        if(this.defaults.uid) {
+        if (this.defaults.uid) {
             window[this.defaults.uid] = this;
         }
         this.__proto__.closeAll();
@@ -1225,7 +1225,6 @@ Modal.prototype.closeAll = function () {
     });
     this.instances.length = 0;
 };
-window.modal = Modal;
 
 
 /**
@@ -1648,7 +1647,6 @@ class Focus {
 
     }
 }
-window.focus = Focus;
 
 /**
  * ------------------------------------------------------------------------
@@ -1664,6 +1662,7 @@ class Showtime {
         this.chain = [];
         this.chainIndex = 0;
         this.defaults = {
+            nameSpace: null,
             padding: 0,
             placement: 'right',
             autoplay: false,
@@ -1675,6 +1674,35 @@ class Showtime {
         //override default with user options
         this.defaults = extend(this.defaults, options);
         this._createFocus();
+    }
+
+    /*
+     * Events Methods
+     */
+    onStart() {
+    }
+
+    onStep(index, maxStep) {
+    }
+
+    onQuit() {
+    }
+    /*
+     * Event Methods end
+     */
+
+    _uniqueNameGenerator() {
+        /*
+         * Find all elements given in the chain and make an hopefully uniqe name form classes and id
+         */
+        var name = '';
+        foreach(this.chain, item => {
+            let elm = item.element || document;
+            let cls = elm.id || elm.className;
+            if(cls) name += cls;
+        });
+
+        return name;
     }
 
     _createFocus() {
@@ -1726,7 +1754,7 @@ class Showtime {
         this.focus.focusOnElement(settings.element);
 
         this.focus.complete = throttle(()=> {
-             this.popover.show();
+            this.popover.show();
 
             if (this.defaults.autoplay) {
                 this._callAgain()
@@ -1778,6 +1806,13 @@ class Showtime {
         return this.chainIndex < this.chain.length;
     }
 
+    _getNameSpace() {
+        if(!this.defaults.nameSpace) {
+            this.defaults.nameSpace = this._uniqueNameGenerator();
+        }
+        this.completedSteps = parseInt(localStorage.getItem(this.defaults.nameSpace) || 0);
+    }
+
     show(options) {
         options._type = 'show';
         this.chain.push(options);
@@ -1790,9 +1825,11 @@ class Showtime {
         options.uid = randomstring(9);
         this.chain.push(options);
 
-        if(options.message && isArray(options.message)) {
-            for(let i = 1; i < options.message.length; i++) {
-                 this.chain.push(function(){ window[options.uid].carousel.setSlide(i) });
+        if (options.message && isArray(options.message)) {
+            for (let i = 1; i < options.message.length; i++) {
+                this.chain.push(function () {
+                    window[options.uid].carousel.setSlide(i)
+                });
             }
         }
         return this;
@@ -1801,13 +1838,22 @@ class Showtime {
     next() {
         if (this.chainIndex) {
             // Dont close the modal if we have a function
-            if(typeof(this.chain[this.chainIndex]) !== 'function') {
+            if (typeof(this.chain[this.chainIndex]) !== 'function') {
                 Modal.prototype.closeAll();
             }
         }
         if (this._isNext()) {
             this._callchain();
-            this.onStep(this.chainIndex);
+
+            // cache the higest seen step to local storage
+            if (this.chainIndex > this.completedSteps) {
+                this.completedSteps = this.chainIndex;
+                localStorage.setItem(this.defaults.nameSpace, this.chainIndex);
+            }
+            this.onStep(this.chainIndex, this.completedSteps);
+            if(this.completedSteps === this.chain.length) {
+                console.warn('Tour' + this.defaults.nameSpace + ' is alredy completed. Use start method to go again.');
+            }
         }
         else {
             this.quit();
@@ -1819,17 +1865,17 @@ class Showtime {
     }
 
     quit() {
-        console.log(this);
         Modal.prototype.closeAll();
         this.focus.remove();
         delete this.focus;
         try {
             this.popover.remove();
-        } catch(err) {
+        } catch (err) {
             //pass
         }
         Modal.prototype.instances.length = 0;
         this.onQuit();
+
     }
 
     call(fn) {
@@ -1837,24 +1883,40 @@ class Showtime {
         return this;
     }
 
-    previous() {//control not tested
+    previous() {
         this.chainIndex--;
         this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
         this._callchain();
-        this.onStep(this.chainIndex);
+        this.onStep(this.chainIndex, this.completedSteps);
     }
 
-    //Methods fired as events
-    onStart() {}
-    onStep() {}
-    onQuit() {}
-
-
     start() {
+        // get the unique name for this instance for cache
+        this._getNameSpace();
+
+        // fire the onStart event
         this.onStart();
         this.chainIndex = 0;
         this.next();
     }
 
+    resume() {
+        // get the unique name for this instance for cache
+        this._getNameSpace();
+
+        // fire the onStart event
+        this.onStart();
+
+        // set index to the last completed step from cache
+        this.chainIndex = this.completedSteps;
+
+        // TODO this needs some thinking. It fails if previous step is a pagnation function on a modal
+        try {
+            this.previous();
+        } catch(err) {
+            --this.chainIndex;
+            this.previous();
+        }
+    }
 
 }

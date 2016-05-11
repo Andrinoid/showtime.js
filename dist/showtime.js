@@ -756,7 +756,6 @@ Modal.prototype.closeAll = function () {
     });
     this.instances.length = 0;
 };
-window.modal = Modal;
 
 /**
  * ------------------------------------------------------------------------
@@ -1198,8 +1197,6 @@ var Focus = function () {
     return Focus;
 }();
 
-window.focus = Focus;
-
 /**
  * ------------------------------------------------------------------------
  * Tour / Showtime
@@ -1215,6 +1212,7 @@ var Showtime = function () {
         this.chain = [];
         this.chainIndex = 0;
         this.defaults = {
+            nameSpace: null,
             padding: 0,
             placement: 'right',
             autoplay: false,
@@ -1228,7 +1226,39 @@ var Showtime = function () {
         this._createFocus();
     }
 
+    /*
+     * Events Methods
+     */
+
     _createClass(Showtime, [{
+        key: 'onStart',
+        value: function onStart() {}
+    }, {
+        key: 'onStep',
+        value: function onStep(index, maxStep) {}
+    }, {
+        key: 'onQuit',
+        value: function onQuit() {}
+        /*
+         * Event Methods end
+         */
+
+    }, {
+        key: '_uniqueNameGenerator',
+        value: function _uniqueNameGenerator() {
+            /*
+             * Find all elements given in the chain and make an hopefully uniqe name form classes and id
+             */
+            var name = '';
+            foreach(this.chain, function (item) {
+                var elm = item.element || document;
+                var cls = elm.id || elm.className;
+                if (cls) name += cls;
+            });
+
+            return name;
+        }
+    }, {
         key: '_createFocus',
         value: function _createFocus() {
             this.focus = new Focus({
@@ -1340,6 +1370,14 @@ var Showtime = function () {
             return this.chainIndex < this.chain.length;
         }
     }, {
+        key: '_getNameSpace',
+        value: function _getNameSpace() {
+            if (!this.defaults.nameSpace) {
+                this.defaults.nameSpace = this._uniqueNameGenerator();
+            }
+            this.completedSteps = parseInt(localStorage.getItem(this.defaults.nameSpace) || 0);
+        }
+    }, {
         key: 'show',
         value: function show(options) {
             options._type = 'show';
@@ -1380,7 +1418,16 @@ var Showtime = function () {
             }
             if (this._isNext()) {
                 this._callchain();
-                this.onStep(this.chainIndex);
+
+                // cache the higest seen step to local storage
+                if (this.chainIndex > this.completedSteps) {
+                    this.completedSteps = this.chainIndex;
+                    localStorage.setItem(this.defaults.nameSpace, this.chainIndex);
+                }
+                this.onStep(this.chainIndex, this.completedSteps);
+                if (this.completedSteps === this.chain.length) {
+                    console.warn('Tour' + this.defaults.nameSpace + ' is alredy completed. Use start method to go again.');
+                }
             } else {
                 this.quit();
             }
@@ -1393,7 +1440,6 @@ var Showtime = function () {
     }, {
         key: 'quit',
         value: function quit() {
-            console.log(this);
             Modal.prototype.closeAll();
             this.focus.remove();
             delete this.focus;
@@ -1414,30 +1460,41 @@ var Showtime = function () {
     }, {
         key: 'previous',
         value: function previous() {
-            //control not tested
             this.chainIndex--;
             this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
             this._callchain();
-            this.onStep(this.chainIndex);
+            this.onStep(this.chainIndex, this.completedSteps);
         }
-
-        //Methods fired as events
-
-    }, {
-        key: 'onStart',
-        value: function onStart() {}
-    }, {
-        key: 'onStep',
-        value: function onStep() {}
-    }, {
-        key: 'onQuit',
-        value: function onQuit() {}
     }, {
         key: 'start',
         value: function start() {
+            // get the unique name for this instance for cache
+            this._getNameSpace();
+
+            // fire the onStart event
             this.onStart();
             this.chainIndex = 0;
             this.next();
+        }
+    }, {
+        key: 'resume',
+        value: function resume() {
+            // get the unique name for this instance for cache
+            this._getNameSpace();
+
+            // fire the onStart event
+            this.onStart();
+
+            // set index to the last completed step from cache
+            this.chainIndex = this.completedSteps;
+
+            // TODO this needs some thinking. It fails if previous step is a pagnation function on a modal
+            try {
+                this.previous();
+            } catch (err) {
+                --this.chainIndex;
+                this.previous();
+            }
         }
     }]);
 

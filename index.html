@@ -54,13 +54,14 @@
     }
 
 </style>
-<div class="ball"></div>
+<div id="ball"></div>
 
 <div class="two" onclick="alert()"></div>
 <div class="three">lorem ipsum</div>
 <div class="four">lorem ipsum</div>
-<button onclick="tour.play()" style="position: relative; z-index: 10000;">next</button>
-<button onclick="tour.next()" style="position: relative; z-index: 10000;">play</button>
+<button onclick="tour.next()" style="position: relative; z-index: 10000;">next</button>
+<button onclick="tour.play()" style="position: relative; z-index: 10000;">play</button>
+<button onclick="tour.resume()" style="position: relative; z-index: 10000;">Resume</button>
 <button onclick="tour.start()" style="position: relative; z-index: 10000;">Take a tour</button>
 
 <script src="dist/showtime.js"></script>
@@ -69,6 +70,7 @@
 
 
     var tour = new Showtime({
+        //nameSpace: 'nbss2',
         autoplay: false,
         padding: 10,
         removeOnOuterClick: false,
@@ -152,7 +154,7 @@
         content: '<p>This is a box2</p>'
     })
     .show({
-        element: document.querySelector('.ball'),
+        element: document.querySelector('#ball'),
         placement: 'bottom',
         content: '<p>This is a box2</p>'
     })
@@ -167,8 +169,10 @@
     tour.onStart = function() {
         console.log('started tour');
     };
-    tour.onStep = function(i) {
+    tour.onStep = function(i, x) {
         console.log('step', i);
+        console.log('max', x);
+
     };
     tour.onQuit = function() {
         console.log('quit')
