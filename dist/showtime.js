@@ -1488,7 +1488,8 @@ var Showtime = function () {
             // set index to the last completed step from cache
             this.chainIndex = this.completedSteps;
 
-            // TODO this needs some thinking. It fails if previous step is a pagnation function on a modal
+            // TODO this needs some thinking. It fails if previous steps are a pagnation functions on a modal
+            // Possible solution is to rewind to the modal function run it and pagnate to the last slide
             try {
                 this.previous();
             } catch (err) {
