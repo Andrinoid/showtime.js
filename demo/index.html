@@ -123,12 +123,12 @@
                     tour.next()
                 }
             }
-        ],
-        theme: 'blue'
-    })      .modal({
+        ]
+    })
+            .modal({
+                closeButton: false,
                 title: 'Yeahh.',
-                message: 'We have a modals too.',
-
+                message: 'We have a modals too.'
             })
             .show({
                 element: '.mainHl',
@@ -136,7 +136,6 @@
                 title: 'Small and independent',
                 content: 'This tour is a demostration of showtime. ' +
                 'you might be interested in viewing the source code',
-                onComplete: function() {console.log('oncomplete')}
             })
             .show({
                 element: 'p',
