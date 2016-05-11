@@ -641,7 +641,6 @@ var STYLES = `
             border: solid 1px #c0c0c0;
             border-radius: 50%;
             margin: 7px;
-            cursor: pointer;
          }
          .pag-dot.active {
             background: #c0c0c0;
@@ -1019,9 +1018,9 @@ class Carousel {
 
             this.pagers.push(new Elm('div.pag-dot', {
                 'id': 'pag-' + i,
-                'click': ()=> {
-                    this.setSlide(i)
-                }
+                //'click': ()=> {
+                //    this.setSlide(i)
+                //}
             }, this.parent.querySelector('.modal-footer')));
 
         });
