@@ -1380,6 +1380,7 @@ var Showtime = function () {
             }
             if (this._isNext()) {
                 this._callchain();
+                this.onStep(this.chainIndex);
             } else {
                 this.quit();
             }
@@ -1402,6 +1403,7 @@ var Showtime = function () {
                 //pass
             }
             Modal.prototype.instances.length = 0;
+            this.onQuit();
         }
     }, {
         key: 'call',
@@ -1416,10 +1418,24 @@ var Showtime = function () {
             this.chainIndex--;
             this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
             this._callchain();
+            this.onStep(this.chainIndex);
         }
+
+        //Methods fired as events
+
+    }, {
+        key: 'onStart',
+        value: function onStart() {}
+    }, {
+        key: 'onStep',
+        value: function onStep() {}
+    }, {
+        key: 'onQuit',
+        value: function onQuit() {}
     }, {
         key: 'start',
         value: function start() {
+            this.onStart();
             this.chainIndex = 0;
             this.next();
         }

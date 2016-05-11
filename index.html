@@ -164,6 +164,16 @@
         }
     });
 
+    tour.onStart = function() {
+        console.log('started tour');
+    };
+    tour.onStep = function(i) {
+        console.log('step', i);
+    };
+    tour.onQuit = function() {
+        console.log('quit')
+    };
+
 
 </script>
 

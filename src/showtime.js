@@ -1807,6 +1807,7 @@ class Showtime {
         }
         if (this._isNext()) {
             this._callchain();
+            this.onStep(this.chainIndex);
         }
         else {
             this.quit();
@@ -1828,6 +1829,7 @@ class Showtime {
             //pass
         }
         Modal.prototype.instances.length = 0;
+        this.onQuit();
     }
 
     call(fn) {
@@ -1839,9 +1841,17 @@ class Showtime {
         this.chainIndex--;
         this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
         this._callchain();
+        this.onStep(this.chainIndex);
     }
 
+    //Methods fired as events
+    onStart() {}
+    onStep() {}
+    onQuit() {}
+
+
     start() {
+        this.onStart();
         this.chainIndex = 0;
         this.next();
     }
