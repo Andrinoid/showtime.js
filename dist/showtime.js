@@ -715,10 +715,10 @@ var Modal = function () {
         key: '_injectStyles',
         value: function _injectStyles() {
             //TODO consider removing styleFallback by splitting styles for each component
-            if (!document.querySelector('.styleFallback')) {
-                new Elm('div.styleFallback', {
+            if (!document.querySelector('.showtimeStyles')) {
+                new Elm('div.showtimeStyles', {
                     html: STYLES
-                }, document.body);
+                }, document.head);
             }
         }
     }, {
