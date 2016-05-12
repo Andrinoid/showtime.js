@@ -1256,6 +1256,7 @@ class Popover {
             buttons: []
         };
         this.default = extend(this.default, config);
+        console.log(this.default.collision);
         this._injectStyles();
         this.setElementContents();
         this.setDirection();
@@ -1396,25 +1397,25 @@ class Popover {
         if (placement === 'right') {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
             left = elDim.left + elDim.width + offset.x;
-            if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
-                left = bodyDim.width - popDim.width;
-            }
+            //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
+            //    left = bodyDim.width - popDim.width;
+            //}
         }
         if (placement === 'bottom') {
             top = elDim.top + elDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
-            //fit to left
-            if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
-                left = bodyDim.width - popDim.width;
-            }
-            //fit to bottom
-            if (this.default.collision === 'fit' && (top + popDim.height) > bodyDim.height) {
-                top = bodyDim.height - popDim.height;
-            }
-            //fit to right
-            if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
-                left = bodyDim.width - popDim.width;
-            }
+            ////fit to left
+            //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
+            //    left = bodyDim.width - popDim.width;
+            //}
+            ////fit to bottom
+            //if (this.default.collision === 'fit' && (top + popDim.height) > bodyDim.height) {
+            //    top = bodyDim.height - popDim.height;
+            //}
+            ////fit to right
+            //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
+            //    left = bodyDim.width - popDim.width;
+            //}
         }
 
         this.popover.style.top = top + 'px';
@@ -1750,7 +1751,7 @@ class Showtime {
             title: settings.title,
             content: settings.content,
             placement: settings.placement,//top, left, right, bottom
-            collision: '',
+            collision: 'fit',
             offset: this._resolveOffsets(settings),
             buttons: settings.buttons
         });
