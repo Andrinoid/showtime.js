@@ -311,7 +311,7 @@ var removeClass = function removeClass(el, className) {
 };
 
 var setStyles = function setStyles(el, styles) {
-    var element = normalizeElement(el);
+    var element = el;
     for (var prop in styles) {
         if (!styles.hasOwnProperty(prop)) {
             continue;
@@ -768,7 +768,7 @@ var Popover = function () {
     function Popover(element, config) {
         _classCallCheck(this, Popover);
 
-        this.element = normalizeElement(element);
+        this.element = element;
         this.popover = null;
 
         this.default = {
@@ -893,6 +893,8 @@ var Popover = function () {
                 left = undefined;
             var offset = this.getOffset();
 
+            //TODO this needs some love
+            //the fit calculations dont work on all sides
             if (placement === 'top') {
                 top = elDim.top - popDim.height + offset.y + window.scrollY;
                 left = elDim.left + elDim.width / 2 - popDim.width / 2 + offset.x;
@@ -1297,6 +1299,7 @@ var Showtime = function () {
             var defaults = clone(this.defaults);
             var settings = extend(defaults, chainItem);
 
+            console.log(settings.element);
             //override defaults with given for this focus
             //this.focus.default.padding = settings.padding; //TODO fix this
             this._removePopover();

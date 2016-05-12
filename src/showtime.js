@@ -316,7 +316,7 @@ var removeClass = function (el, className) {
 };
 
 var setStyles = function (el, styles) {
-    let element = normalizeElement(el);
+    let element = el;
     for (let prop in styles) {
         if (!styles.hasOwnProperty(prop)) {
             continue;
@@ -1235,7 +1235,7 @@ Modal.prototype.closeAll = function () {
 
 class Popover {
     constructor(element, config) {
-        this.element = normalizeElement(element);
+        this.element = element;
         this.popover = null;
 
         this.default = {
@@ -1357,6 +1357,9 @@ class Popover {
         let top, left;
         let offset = this.getOffset();
 
+
+        //TODO this needs some love
+        //the fit calculations dont work on all sides
         if (placement === 'top') {
             top = elDim.top - popDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
@@ -1738,6 +1741,7 @@ class Showtime {
         let defaults = clone(this.defaults);
         let settings = extend(defaults, chainItem);
 
+        console.log(settings.element);
         //override defaults with given for this focus
         //this.focus.default.padding = settings.padding; //TODO fix this
         this._removePopover();

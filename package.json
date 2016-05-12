@@ -1,6 +1,6 @@
 {
   "name": "showtime.js",
-  "version": "0.0.2",
+  "version": "0.5.0",
   "description": "Showtime is a lightweight framework for easily creating stunning tours around your web app. It comes with a built in chain so its really easy to mix your tours with custom functionality.",
   "main": "./dist/showtime.js",
   "dependencies": {},
