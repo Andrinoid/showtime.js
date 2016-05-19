@@ -1225,7 +1225,8 @@ var Showtime = function () {
             autoplayDelay: 1000,
             buttons: [],
             focusClick: null,
-            removeOnOuterClick: false
+            removeOnOuterClick: false,
+            popoverTimer: 'auto' //adjust when popover is animated. auto, false or milliseconds
         };
         //override default with user options
         this.defaults = extend(this.defaults, options);
@@ -1245,6 +1246,7 @@ var Showtime = function () {
     }, {
         key: 'onQuit',
         value: function onQuit() {}
+
         /*
          * Event Methods end
          */
@@ -1331,10 +1333,16 @@ var Showtime = function () {
                 buttons: settings.buttons
             });
             this.focus.focusOnElement(settings.element);
-
+            if (defaults.popoverTimer !== 'auto') {
+                var time = parseInt(defaults.popoverTimer) || 0;
+                setTimeout(function () {
+                    _this7.popover.show();
+                }, time);
+            }
             this.focus.complete = throttle(function () {
-                _this7.popover.show();
-
+                if (defaults.popoverTimer === 'auto') {
+                    _this7.popover.show();
+                }
                 if (_this7.defaults.autoplay) {
                     _this7._callAgain();
                 }

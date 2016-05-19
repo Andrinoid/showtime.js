@@ -1674,7 +1674,8 @@ class Showtime {
             autoplayDelay: 1000,
             buttons: [],
             focusClick: null,
-            removeOnOuterClick: false
+            removeOnOuterClick: false,
+            popoverTimer: 'auto' //adjust when popover is animated. auto, false or milliseconds
         };
         //override default with user options
         this.defaults = extend(this.defaults, options);
@@ -1692,6 +1693,7 @@ class Showtime {
 
     onQuit() {
     }
+
     /*
      * Event Methods end
      */
@@ -1704,7 +1706,7 @@ class Showtime {
         foreach(this.chain, item => {
             let elm = item.element || document;
             let cls = elm.id || elm.className;
-            if(cls) name += cls;
+            if (cls) name += cls;
         });
 
         return name;
@@ -1734,14 +1736,14 @@ class Showtime {
             let fnName = getFnName(chainItem);
 
             // Carousel next
-            if(fnName === '_carouselNext') {
+            if (fnName === '_carouselNext') {
                 chainItem();
                 this.chainIndex++;
                 return;
             }
 
             //call function
-            if(fnName === 'call') {
+            if (fnName === 'call') {
                 chainItem();
                 this.chainIndex++;
                 this.next();
@@ -1772,10 +1774,16 @@ class Showtime {
             buttons: settings.buttons
         });
         this.focus.focusOnElement(settings.element);
-
+        if (defaults.popoverTimer !== 'auto') {
+            let time = parseInt(defaults.popoverTimer) || 0;
+            setTimeout(()=> {
+                this.popover.show();
+            }, time);
+        }
         this.focus.complete = throttle(()=> {
-            this.popover.show();
-
+            if (defaults.popoverTimer === 'auto') {
+                this.popover.show();
+            }
             if (this.defaults.autoplay) {
                 this._callAgain()
             }
@@ -1827,7 +1835,7 @@ class Showtime {
     }
 
     _getNameSpace() {
-        if(!this.defaults.nameSpace) {
+        if (!this.defaults.nameSpace) {
             this.defaults.nameSpace = this._uniqueNameGenerator();
         }
         this.completedSteps = parseInt(localStorage.getItem(this.defaults.nameSpace) || 0);
@@ -1839,10 +1847,10 @@ class Showtime {
          * If we need any special cases this is where to resolve it.
          */
         let item = this.chain[this.chainIndex];
-        if(typeof item === 'function') {
+        if (typeof item === 'function') {
             let fnName = getFnName(item);
             // if item is an anonymous function reslove the results
-            if(!fnName) {
+            if (!fnName) {
                 return item();
             }
         }
@@ -1892,7 +1900,7 @@ class Showtime {
                 localStorage.setItem(this.defaults.nameSpace, this.chainIndex);
             }
             this.onStep(this.chainIndex, this.completedSteps);
-            if(this.completedSteps === this.chain.length) {
+            if (this.completedSteps === this.chain.length) {
                 console.warn('Tour' + this.defaults.nameSpace + ' is alredy completed. Use start method to go again.');
             }
         }
@@ -1962,7 +1970,6 @@ class Showtime {
     }
 
 
-
     resume() {
         // get the unique name for this instangulpce for cache
         this._getNameSpace();
@@ -1977,7 +1984,7 @@ class Showtime {
         // Possible solution is to rewind to the modal function run it and pagnate to the last slide
         try {
             this.previous();
-        } catch(err) {
+        } catch (err) {
             --this.chainIndex;
             this.previous();
         }
