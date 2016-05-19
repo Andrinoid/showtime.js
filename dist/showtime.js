@@ -400,6 +400,10 @@ function randomstring(L) {
     }return s;
 }
 
+function getFnName(fn) {
+    return fn.toString().split(' ')[1].split('(')[0];
+}
+
 var MAX_ZINDEX = 2147483647;
 
 /**
@@ -783,7 +787,6 @@ var Popover = function () {
             buttons: []
         };
         this.default = extend(this.default, config);
-        console.log(this.default.collision);
         this._injectStyles();
         this.setElementContents();
         this.setDirection();
@@ -1283,11 +1286,26 @@ var Showtime = function () {
             //focus is reused until tour.quit() then it gets deleted and we have to create it again.
             if (!this.focus) this._createFocus();
 
-            var chainItem = this.chain[this.chainIndex];
+            var chainItem = this._resolveChainItem();
+            // if chainItem is a function it means it either a carousel next function
+            // or function that returns the settings object dynamically
             if (typeof chainItem === 'function') {
-                chainItem();
-                this.chainIndex++;
-                return;
+                var fnName = getFnName(chainItem);
+
+                // Carousel next
+                if (fnName === '_carouselNext') {
+                    chainItem();
+                    this.chainIndex++;
+                    return;
+                }
+
+                //call function
+                if (fnName === 'call') {
+                    chainItem();
+                    this.chainIndex++;
+                    this.next();
+                    return;
+                }
             }
 
             if (chainItem._type === 'modal') {
@@ -1300,7 +1318,6 @@ var Showtime = function () {
             var defaults = clone(this.defaults);
             var settings = extend(defaults, chainItem);
 
-            console.log(settings.element);
             //override defaults with given for this focus
             //this.focus.default.padding = settings.padding; //TODO fix this
             this._removePopover();
@@ -1321,7 +1338,7 @@ var Showtime = function () {
                 if (_this7.defaults.autoplay) {
                     _this7._callAgain();
                 }
-            }, 10000); //TODO can we modify this to act like once
+            }, 4000); //TODO can we modify this to act like once
 
             this.chainIndex++;
             //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
@@ -1382,6 +1399,24 @@ var Showtime = function () {
             this.completedSteps = parseInt(localStorage.getItem(this.defaults.nameSpace) || 0);
         }
     }, {
+        key: '_resolveChainItem',
+        value: function _resolveChainItem() {
+            /*
+             * This function just returns the current settings item.
+             * If we need any special cases this is where to resolve it.
+             */
+            var item = this.chain[this.chainIndex];
+            if (typeof item === 'function') {
+                var fnName = getFnName(item);
+                // if item is an anonymous function reslove the results
+                if (!fnName) {
+                    return item();
+                }
+            }
+            // here the item can be named function or a settings object. do nothing
+            return item;
+        }
+    }, {
         key: 'show',
         value: function show(options) {
             options._type = 'show';
@@ -1398,9 +1433,11 @@ var Showtime = function () {
             options.uid = randomstring(9);
             this.chain.push(options);
 
+            // if message is array. We have a carousel in the modal
+            // So we generate functions in the chain for each slide
             if (options.message && isArray(options.message)) {
                 var _loop = function _loop(i) {
-                    _this9.chain.push(function () {
+                    _this9.chain.push(function _carouselNext() {
                         window[options.uid].carousel.setSlide(i);
                     });
                 };
@@ -1414,9 +1451,11 @@ var Showtime = function () {
     }, {
         key: 'next',
         value: function next() {
+            var item = this._resolveChainItem();
+
             if (this.chainIndex) {
                 // Dont close the modal if we have a function
-                if (typeof this.chain[this.chainIndex] !== 'function') {
+                if (typeof item !== 'function') {
                     Modal.prototype.closeAll();
                 }
             }
@@ -1435,11 +1474,13 @@ var Showtime = function () {
             } else {
                 this.quit();
             }
+            return this;
         }
     }, {
         key: 'reset',
         value: function reset() {
             this.chainIndex = 0;
+            return this;
         }
     }, {
         key: 'quit',
@@ -1454,11 +1495,15 @@ var Showtime = function () {
             }
             Modal.prototype.instances.length = 0;
             this.onQuit();
+            return this;
         }
     }, {
         key: 'call',
         value: function call(fn) {
-            this.chain.push(fn);
+            this.chain.push(function call() {
+                fn();
+            });
+
             return this;
         }
     }, {
@@ -1468,6 +1513,7 @@ var Showtime = function () {
             this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
             this._callchain();
             this.onStep(this.chainIndex, this.completedSteps);
+            return this;
         }
     }, {
         key: 'start',
@@ -1479,11 +1525,26 @@ var Showtime = function () {
             this.onStart();
             this.chainIndex = 0;
             this.next();
+            return this;
+        }
+    }, {
+        key: 'play',
+        value: function play() {
+            this._getNameSpace();
+            this.onStart();
+            this.next();
+            return this;
+        }
+    }, {
+        key: 'goto',
+        value: function goto(index) {
+            this.chainIndex = index - 1;
+            return this;
         }
     }, {
         key: 'resume',
         value: function resume() {
-            // get the unique name for this instance for cache
+            // get the unique name for this instangulpce for cache
             this._getNameSpace();
 
             // fire the onStart event
@@ -1500,6 +1561,7 @@ var Showtime = function () {
                 --this.chainIndex;
                 this.previous();
             }
+            return this;
         }
     }]);
 

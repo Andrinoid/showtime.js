@@ -325,7 +325,6 @@ var setStyles = function (el, styles) {
     }
 };
 
-
 function scrollToY(scrollTargetY) {
     //credit http://stackoverflow.com/questions/12199363/scrollto-with-animation/26798337#26798337
     // scrollTargetY: the target scrollY property of the window
@@ -403,6 +402,10 @@ function randomstring(L) {
     };
     while (s.length < L) s += randomchar();
     return s;
+}
+
+function getFnName(fn) {
+    return fn.toString().split(' ')[1].split('(')[0];
 }
 
 const MAX_ZINDEX = 2147483647;
@@ -1256,7 +1259,6 @@ class Popover {
             buttons: []
         };
         this.default = extend(this.default, config);
-        console.log(this.default.collision);
         this._injectStyles();
         this.setElementContents();
         this.setDirection();
@@ -1725,11 +1727,26 @@ class Showtime {
         //focus is reused until tour.quit() then it gets deleted and we have to create it again.
         if (!this.focus) this._createFocus();
 
-        let chainItem = this.chain[this.chainIndex];
+        let chainItem = this._resolveChainItem();
+        // if chainItem is a function it means it either a carousel next function
+        // or function that returns the settings object dynamically
         if (typeof(chainItem) === 'function') {
-            chainItem();
-            this.chainIndex++;
-            return;
+            let fnName = getFnName(chainItem);
+
+            // Carousel next
+            if(fnName === '_carouselNext') {
+                chainItem();
+                this.chainIndex++;
+                return;
+            }
+
+            //call function
+            if(fnName === 'call') {
+                chainItem();
+                this.chainIndex++;
+                this.next();
+                return;
+            }
         }
 
         if (chainItem._type === 'modal') {
@@ -1742,7 +1759,6 @@ class Showtime {
         let defaults = clone(this.defaults);
         let settings = extend(defaults, chainItem);
 
-        console.log(settings.element);
         //override defaults with given for this focus
         //this.focus.default.padding = settings.padding; //TODO fix this
         this._removePopover();
@@ -1763,7 +1779,7 @@ class Showtime {
             if (this.defaults.autoplay) {
                 this._callAgain()
             }
-        }, 10000); //TODO can we modify this to act like once
+        }, 4000); //TODO can we modify this to act like once
 
         this.chainIndex++;
         //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
@@ -1817,6 +1833,23 @@ class Showtime {
         this.completedSteps = parseInt(localStorage.getItem(this.defaults.nameSpace) || 0);
     }
 
+    _resolveChainItem() {
+        /*
+         * This function just returns the current settings item.
+         * If we need any special cases this is where to resolve it.
+         */
+        let item = this.chain[this.chainIndex];
+        if(typeof item === 'function') {
+            let fnName = getFnName(item);
+            // if item is an anonymous function reslove the results
+            if(!fnName) {
+                return item();
+            }
+        }
+        // here the item can be named function or a settings object. do nothing
+        return item;
+    }
+
     show(options) {
         options._type = 'show';
         this.chain.push(options);
@@ -1829,9 +1862,11 @@ class Showtime {
         options.uid = randomstring(9);
         this.chain.push(options);
 
+        // if message is array. We have a carousel in the modal
+        // So we generate functions in the chain for each slide
         if (options.message && isArray(options.message)) {
             for (let i = 1; i < options.message.length; i++) {
-                this.chain.push(function () {
+                this.chain.push(function _carouselNext() {
                     window[options.uid].carousel.setSlide(i)
                 });
             }
@@ -1840,9 +1875,11 @@ class Showtime {
     }
 
     next() {
+        let item = this._resolveChainItem();
+
         if (this.chainIndex) {
             // Dont close the modal if we have a function
-            if (typeof(this.chain[this.chainIndex]) !== 'function') {
+            if (typeof(item) !== 'function') {
                 Modal.prototype.closeAll();
             }
         }
@@ -1862,10 +1899,12 @@ class Showtime {
         else {
             this.quit();
         }
+        return this;
     }
 
     reset() {
         this.chainIndex = 0;
+        return this;
     }
 
     quit() {
@@ -1879,11 +1918,14 @@ class Showtime {
         }
         Modal.prototype.instances.length = 0;
         this.onQuit();
-
+        return this;
     }
 
     call(fn) {
-        this.chain.push(fn);
+        this.chain.push(function call() {
+            fn();
+        });
+
         return this;
     }
 
@@ -1892,6 +1934,7 @@ class Showtime {
         this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
         this._callchain();
         this.onStep(this.chainIndex, this.completedSteps);
+        return this;
     }
 
     start() {
@@ -1902,10 +1945,26 @@ class Showtime {
         this.onStart();
         this.chainIndex = 0;
         this.next();
+        return this;
     }
 
+
+    play() {
+        this._getNameSpace();
+        this.onStart();
+        this.next();
+        return this;
+    }
+
+    goto(index) {
+        this.chainIndex = index - 1;
+        return this;
+    }
+
+
+
     resume() {
-        // get the unique name for this instance for cache
+        // get the unique name for this instangulpce for cache
         this._getNameSpace();
 
         // fire the onStart event
@@ -1922,6 +1981,7 @@ class Showtime {
             --this.chainIndex;
             this.previous();
         }
+        return this;
     }
 
 }

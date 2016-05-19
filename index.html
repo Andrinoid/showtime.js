@@ -93,6 +93,8 @@
         ]
     });
 
+    var someTitle = 'changeable';
+
     tour.modal({
         title: 'sdfsdf',
         message: ['skref 1. blabalbla', 'skref 2 foobar', 'skref 3 all done'],
@@ -109,32 +111,37 @@
                 collition: 'fit',
                 buttons: false
             })
-            .show({
-                element: document.querySelectorAll('.two, .four'),
-                title: 'hey I have a title again.',
-                placement: 'left',
-                content: '<p>This is a ball</p>',
-                padding: 10,
-                dimentions: {
-                    height: 400
-                },
-                focusClick: function () {
-                    tour.next();
-                },
-                buttons: [
-                    {
-                        label: 'quit',
-                        click: function () {
-                            tour.quit()
-                        }
+            .call(function() {
+                someTitle = 'I a brand new header';
+            })
+            .show(function(){
+                return {
+                    element: document.querySelectorAll('.two, .four'),
+                    title: someTitle,
+                    placement: 'left',
+                    content: '<p>This is a ball</p>',
+                    padding: 10,
+                    dimentions: {
+                        height: 400
                     },
-                    {
-                        label: 'next',
-                        click: function () {
-                            tour.next()
+                    focusClick: function () {
+                        tour.next();
+                    },
+                    buttons: [
+                        {
+                            label: 'quit',
+                            click: function () {
+                                tour.quit()
+                            }
+                        },
+                        {
+                            label: 'next',
+                            click: function () {
+                                tour.next()
+                            }
                         }
-                    }
-                ]
+                    ]
+                }
             })
             .show({
                 element: document.querySelector('.two'),
@@ -177,17 +184,17 @@
                 }
             });
 
-    tour.onStart = function () {
-        console.log('started tour');
-    };
-    tour.onStep = function (i, x) {
-        console.log('step', i);
-        console.log('max', x);
-
-    };
-    tour.onQuit = function () {
-        console.log('quit')
-    };
+//    tour.onStart = function () {
+//        console.log('started tour');
+//    };
+//    tour.onStep = function (i, x) {
+//        console.log('step', i);
+//        console.log('max', x);
+//
+//    };
+//    tour.onQuit = function () {
+//        console.log('quit')
+//    };
 
 </script>
 
