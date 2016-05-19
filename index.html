@@ -93,7 +93,6 @@
         ]
     });
 
-    var someTitle = 'changeable';
 
     tour.modal({
         title: 'sdfsdf',
@@ -113,8 +112,10 @@
             })
             .call(function() {
                 someTitle = 'I a brand new header';
-            })
-            .show(function(){
+            });
+
+
+            tour.show(function(){
                 return {
                     element: document.querySelectorAll('.two, .four'),
                     title: someTitle,
@@ -142,8 +143,9 @@
                         }
                     ]
                 }
-            })
-            .show({
+            });
+
+            tour.show({
                 element: document.querySelector('.two'),
                 placement: 'left',
                 content: '<p>This is a box2</p>'

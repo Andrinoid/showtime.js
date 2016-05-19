@@ -1204,10 +1204,10 @@ var Focus = function () {
 }();
 
 /**
- * ------------------------------------------------------------------------
+ *
  * Tour / Showtime
  * This class ties it all together
- * ------------------------------------------------------------------------
+ *
  */
 //TODO keep focus on scroll and resize add fit options for Popover
 
