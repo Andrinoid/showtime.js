@@ -1407,6 +1407,12 @@ var Showtime = function () {
             this.completedSteps = parseInt(localStorage.getItem(this.defaults.nameSpace) || 0);
         }
     }, {
+        key: 'clearCache',
+        value: function clearCache() {
+            this._getNameSpace();
+            localStorage.removeItem(this.defaults.nameSpace);
+        }
+    }, {
         key: '_resolveChainItem',
         value: function _resolveChainItem() {
             /*

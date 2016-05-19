@@ -1841,6 +1841,11 @@ class Showtime {
         this.completedSteps = parseInt(localStorage.getItem(this.defaults.nameSpace) || 0);
     }
 
+    clearCache() {
+        this._getNameSpace();
+        localStorage.removeItem(this.defaults.nameSpace);
+    }
+
     _resolveChainItem() {
         /*
          * This function just returns the current settings item.
