@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: showtime.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: showtime.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * --------------------------------------------------------------------------
  * ShowTime.js
  * Licensed under MIT
@@ -24,7 +52,7 @@ if (!Date.now)
     'use strict';
 
     var vendors = ['webkit', 'moz'];
-    for (var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
+    for (var i = 0; i &lt; vendors.length &amp;&amp; !window.requestAnimationFrame; ++i) {
         var vp = vendors[i];
         window.requestAnimationFrame = window[vp + 'RequestAnimationFrame'];
         window.cancelAnimationFrame = (window[vp + 'CancelAnimationFrame']
@@ -57,7 +85,7 @@ if (!String.prototype.repeat) {
         if (count != count) {
             count = 0;
         }
-        if (count < 0) {
+        if (count &lt; 0) {
             throw new RangeError('repeat count must be non-negative');
         }
         if (count == Infinity) {
@@ -69,13 +97,13 @@ if (!String.prototype.repeat) {
         }
         // Ensuring count is a 31-bit integer allows us to heavily optimize the
         // main part. But anyway, most current (August 2014) browsers can't handle
-        // strings 1 << 28 chars or longer, so:
-        if (str.length * count >= 1 << 28) {
+        // strings 1 &lt;&lt; 28 chars or longer, so:
+        if (str.length * count >= 1 &lt;&lt; 28) {
             throw new RangeError('repeat count must not overflow maximum string size');
         }
         var rpt = '';
         for (; ;) {
-            if ((count & 1) == 1) {
+            if ((count &amp; 1) == 1) {
                 rpt += str;
             }
             count >>>= 1;
@@ -104,9 +132,9 @@ if (!String.prototype.repeat) {
             }
         };
 
-    for (var i = 0; i < typesToPatch.length; i++) {
+    for (var i = 0; i &lt; typesToPatch.length; i++) {
         var type = typesToPatch[i];
-        if (window[type] && !window[type].prototype.remove) {
+        if (window[type] &amp;&amp; !window[type].prototype.remove) {
             window[type].prototype.remove = remove;
         }
     }
@@ -147,7 +175,7 @@ var throttle = function (fn, threshhold, scope) {
 
         var now = +new Date,
             args = arguments;
-        if (last && now < last + threshhold) {
+        if (last &amp;&amp; now &lt; last + threshhold) {
             // hold on to it
             clearTimeout(deferTimer);
             deferTimer = setTimeout(function () {
@@ -172,7 +200,7 @@ var isArray = (function () {
 
 //extend Object
 var extend = function () {
-    for (var i = 1; i < arguments.length; i++)
+    for (var i = 1; i &lt; arguments.length; i++)
         for (var key in arguments[i])
             if (arguments[i].hasOwnProperty(key))
                 arguments[0][key] = arguments[i][key];
@@ -197,22 +225,22 @@ var clone = function (obj) {
 };
 
 var isObject = function (value) {
-    return value != null && typeof value === 'object';
+    return value != null &amp;&amp; typeof value === 'object';
 };
 
 var foreach = function (arg, func) {
     if (isElement(arg)) {
-        for (var i = 0; i < arg.length; i++) {
+        for (var i = 0; i &lt; arg.length; i++) {
             if (isElement(arg[i]))
                 func.call(window, arg[i], i, arg);
         }
         return false;
     }
 
-    if (!isArray(arg) && !isObject(arg))
+    if (!isArray(arg) &amp;&amp; !isObject(arg))
         var arg = [arg];
     if (isArray(arg)) {
-        for (var i = 0; i < arg.length; i++) {
+        for (var i = 0; i &lt; arg.length; i++) {
             func.call(window, arg[i], i, arg);
         }
     } else if (isObject(arg)) {
@@ -226,7 +254,7 @@ var foreach = function (arg, func) {
 var map = function (arr, func) {
     if (!isArray(arr))
         var arg = [arg];
-    for (var i = 0; i < arr.length; i++) {
+    for (var i = 0; i &lt; arr.length; i++) {
         var result = func.call(window, arr[i]);
         if (typeof result !== 'undefined')
             arr[i] = result;
@@ -260,7 +288,7 @@ var getHigestBoundingRect = function (nodes) {
         return nodes.getBoundingClientRect();
     }
     let rect = {bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0};
-    for (let i = 0; i < nodes.length; i++) {
+    for (let i = 0; i &lt; nodes.length; i++) {
         let el = nodes[i];
         let r = el.getBoundingClientRect();
         rect.bottom = Math.min(rect.bottom, r.bottom);
@@ -276,10 +304,10 @@ var getHigestBoundingRect = function (nodes) {
 var isElementInViewport = function (el) {
     let rect = getHigestBoundingRect(el);
     return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        rect.top >= 0 &amp;&amp;
+        rect.left >= 0 &amp;&amp;
+        rect.bottom &lt;= (window.innerHeight || document.documentElement.clientHeight) &amp;&amp;
+        rect.right &lt;= (window.innerWidth || document.documentElement.clientWidth)
     );
 };
 window.foo = isElementInViewport;
@@ -350,7 +378,7 @@ function scrollToY(scrollTargetY) {
                 return (-0.5 * (Math.cos(Math.PI * pos) - 1));
             },
             easeInOutQuint: function (pos) {
-                if ((pos /= 0.5) < 1) {
+                if ((pos /= 0.5) &lt; 1) {
                     return 0.5 * Math.pow(pos, 5);
                 }
                 return 0.5 * (Math.pow((pos - 2), 5) + 2);
@@ -366,7 +394,7 @@ function scrollToY(scrollTargetY) {
         var p = currentTime / time;
         var t = easingEquations[easing](p);
 
-        if (p < 1) {
+        if (p &lt; 1) {
             requestAnimationFrame(tick);
 
             window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
@@ -396,11 +424,11 @@ function randomstring(L) {
     var s = '';
     var randomchar = function () {
         var n = Math.floor(Math.random() * 62);
-        if (n < 10) return n; //1-10
-        if (n < 36) return String.fromCharCode(n + 55); //A-Z
+        if (n &lt; 10) return n; //1-10
+        if (n &lt; 36) return String.fromCharCode(n + 55); //A-Z
         return String.fromCharCode(n + 61); //a-z
     };
-    while (s.length < L) s += randomchar();
+    while (s.length &lt; L) s += randomchar();
     return s;
 }
 
@@ -479,7 +507,7 @@ class Elm {
     cls(value) {
         //Name can be comma or space separated values e.q 'foo, bar'
         //Even if one class name is given we clean the string and end up with array
-        let clsList = value.replace(/[|&;$%@"<>()+,]/g, "").split(' ');
+        let clsList = value.replace(/[|&amp;;$%@"&lt;>()+,]/g, "").split(' ');
 
         clsList.forEach(name=> {
             this._setClass(this.element, name);
@@ -523,7 +551,7 @@ class Elm {
 
 //TODO style fallback is injected on every tour start
 var STYLES = `
-        <style>
+        &lt;style>
         /* Modal styles */
          body.modal-mode {
              overflow: hidden
@@ -989,7 +1017,7 @@ var STYLES = `
              -webkit-animation-name: fadeOutTop;
              animation-name: fadeOutTop;
          }
-        </style>`;
+        &lt;/style>`;
 
 
 /**
@@ -1121,7 +1149,7 @@ class Modal {
             this.isCarousel = true;
             let merge = '';
             this.defaults.message.forEach((item, i) => {
-                merge += `<div class="carousel slide${i}">${item}</div>`;
+                merge += `&lt;div class="carousel slide${i}">${item}&lt;/div>`;
             });
             content = merge;
         }
@@ -1130,47 +1158,47 @@ class Modal {
         let header = '';
         if (this.defaults.title) {
             header = `
-                <div class="modal-header">
-                    <button type="button" class="close"><span>×</span></button>
-                    <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
-                </div>`;
+                &lt;div class="modal-header">
+                    &lt;button type="button" class="close">&lt;span>×&lt;/span>&lt;/button>
+                    &lt;h4 class="modal-title" id="myModalLabel">${this.defaults.title}&lt;/h4>
+                &lt;/div>`;
         }
-        if (this.defaults.title && !this.defaults.closeButton) {
+        if (this.defaults.title &amp;&amp; !this.defaults.closeButton) {
             header = `
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
-                </div>`;
+                &lt;div class="modal-header">
+                    &lt;h4 class="modal-title" id="myModalLabel">${this.defaults.title}&lt;/h4>
+                &lt;/div>`;
         }
-        if (!this.defaults.title && this.defaults.closeButton) {
-            header = '<button type="button" class="close standalone"><span>×</span></button>';
+        if (!this.defaults.title &amp;&amp; this.defaults.closeButton) {
+            header = '&lt;button type="button" class="close standalone">&lt;span>×&lt;/span>&lt;/button>';
         }
 
         let footer = `
-                <div class="modal-footer">
+                &lt;div class="modal-footer">
                     ${this.defaults.footer}
-                </div>`;
+                &lt;/div>`;
 
         //TODO sameina footer of iscarousel þetta er tvítekið
         if (this.isCarousel) {
-            //let pagers = '<div class="pag-dot"></div>'.repeat(slides); depricated
+            //let pagers = '&lt;div class="pag-dot">&lt;/div>'.repeat(slides); depricated
             footer = `
-                <div class="modal-footer">
+                &lt;div class="modal-footer">
                     ${this.defaults.footer}
-                </div>`;
+                &lt;/div>`;
         }
 
         let main = `
-                <div class="chain_modal fadeInDown">
-                    <div class="chain_dialog ${sizeClass}">
-                        <div class="modal-content">
+                &lt;div class="chain_modal fadeInDown">
+                    &lt;div class="chain_dialog ${sizeClass}">
+                        &lt;div class="modal-content">
                             ${header}
-                            <div class="modal-body">
-                                <div>${content}</div>
-                            </div>
+                            &lt;div class="modal-body">
+                                &lt;div>${content}&lt;/div>
+                            &lt;/div>
                             ${footer}
-                        </div>
-                    </div>
-                </div>`;
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>`;
 
 
         this.modal = new Elm('div', {html: main, 'class': `modal-theme-${this.defaults.theme}`}, document.body);
@@ -1244,12 +1272,12 @@ class Popover {
         this.default = {
             animation: true,
             template: `
-                 <div class="popover">
-                    <div class="arrow"></div>
-                    <h3 class="popover-title"></h3>
-                    <div class="popover-content"></div>
-                    <div class="btns"></div>
-                 </div>`,
+                 &lt;div class="popover">
+                    &lt;div class="arrow">&lt;/div>
+                    &lt;h3 class="popover-title">&lt;/h3>
+                    &lt;div class="popover-content">&lt;/div>
+                    &lt;div class="btns">&lt;/div>
+                 &lt;/div>`,
             title: '',
             content: '',
             delay: 0,
@@ -1296,7 +1324,7 @@ class Popover {
         else {
             title.style.display = 'none';
         }
-        if (this.default.buttons && this.default.buttons.length) {
+        if (this.default.buttons &amp;&amp; this.default.buttons.length) {
             this.addButtons(btns);
         }
 
@@ -1367,15 +1395,15 @@ class Popover {
             top = elDim.top - popDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
             //fit to top
-            if (this.default.collision === 'fit' && top < 0) {
+            if (this.default.collision === 'fit' &amp;&amp; top &lt; 0) {
                 top = 0;
             }
             //fit to left
-            if (this.default.collision === 'fit' && left < 0) {
+            if (this.default.collision === 'fit' &amp;&amp; left &lt; 0) {
                 left = 0;
             }
             //fit to right
-            if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
+            if (this.default.collision === 'fit' &amp;&amp; (left + popDim.width) > bodyDim.width) {
                 left = bodyDim.width - popDim.width;
             }
         }
@@ -1384,22 +1412,22 @@ class Popover {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
             left = elDim.left - popDim.width + offset.x;
             //fit to left
-            if (this.default.collision === 'fit' && left < 0) {
+            if (this.default.collision === 'fit' &amp;&amp; left &lt; 0) {
                 left = 0;
             }
             //fit to top
-            if (this.default.collision === 'fit' && top < 0) {
+            if (this.default.collision === 'fit' &amp;&amp; top &lt; 0) {
                 top = 0;
             }
             //fit to bottom
-            if (this.default.collision === 'fit' && (top + popDim.height) > bodyDim.height) {
+            if (this.default.collision === 'fit' &amp;&amp; (top + popDim.height) > bodyDim.height) {
                 top = bodyDim.height - popDim.height;
             }
         }
         if (placement === 'right') {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
             left = elDim.left + elDim.width + offset.x;
-            //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
+            //if (this.default.collision === 'fit' &amp;&amp; (left + popDim.width) > bodyDim.width) {
             //    left = bodyDim.width - popDim.width;
             //}
         }
@@ -1407,15 +1435,15 @@ class Popover {
             top = elDim.top + elDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
             ////fit to left
-            //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
+            //if (this.default.collision === 'fit' &amp;&amp; (left + popDim.width) > bodyDim.width) {
             //    left = bodyDim.width - popDim.width;
             //}
             ////fit to bottom
-            //if (this.default.collision === 'fit' && (top + popDim.height) > bodyDim.height) {
+            //if (this.default.collision === 'fit' &amp;&amp; (top + popDim.height) > bodyDim.height) {
             //    top = bodyDim.height - popDim.height;
             //}
             ////fit to right
-            //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
+            //if (this.default.collision === 'fit' &amp;&amp; (left + popDim.width) > bodyDim.width) {
             //    left = bodyDim.width - popDim.width;
             //}
         }
@@ -1503,7 +1531,7 @@ class Focus {
             let y = elementOffsetTop(elm) - (viewportHeight / 2 );
             scrollToY(y);
         }
-        else if (styles.top < window.scrollY) {
+        else if (styles.top &lt; window.scrollY) {
             let y = styles.top;
             scrollToY(y);
         }
@@ -1538,7 +1566,7 @@ class Focus {
         //TODO make sure multiple elements is valid
         if (this.ELEMENT == null) return false;
         let nodes = this.ELEMENT.length ? this.ELEMENT : [this.ELEMENT];
-        for (var i = 0, len = nodes.length; i < len; i++) {
+        for (var i = 0, len = nodes.length; i &lt; len; i++) {
             var node = nodes[i];
 
             // Fetch the screen coordinates for this element
@@ -1552,8 +1580,8 @@ class Focus {
             // 1. offsetLeft works
             // 2. offsetWidth works
             // 3. Element is larger than zero pixels
-            // 4. Element is not <br>
-            if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
+            // 4. Element is not &lt;br>
+            if (node &amp;&amp; typeof x === 'number' &amp;&amp; typeof w === 'number' &amp;&amp; ( w > 0 || h > 0 ) &amp;&amp; !node.nodeName.match(/^br$/gi)) {
                 currentRegion.left = Math.min(currentRegion.left, x);
                 currentRegion.top = Math.min(currentRegion.top, y);
                 currentRegion.right = Math.max(currentRegion.right, x + w);
@@ -1582,11 +1610,11 @@ class Focus {
         let overlay = Math.round(this.overlayAlpha * 100) / 100 === this.OPACITY;
 
         //returns true if all cleared and selected regions are identical and overlay is same as opacity
-        return left && top && right && bottom && overlay;
+        return left &amp;&amp; top &amp;&amp; right &amp;&amp; bottom &amp;&amp; overlay;
     }
 
     hasSelection() {
-        return this.selectedRegion.left < this.selectedRegion.right && this.selectedRegion.top < this.selectedRegion.bottom;
+        return this.selectedRegion.left &lt; this.selectedRegion.right &amp;&amp; this.selectedRegion.top &lt; this.selectedRegion.bottom;
     }
 
     complete() {
@@ -1600,7 +1628,7 @@ class Focus {
         this.overlayContext.fillStyle = 'rgba( 0, 0, 0, ' + this.overlayAlpha + ' )';
         this.overlayContext.fillRect(0, 0, this.overlay.width, this.overlay.height);
 
-        if (this.overlayAlpha < 0.1) {
+        if (this.overlayAlpha &lt; 0.1) {
             // Clear the selection instantly if we're just fading in
             this.clearedRegion = this.selectedRegion;
         }
@@ -1654,10 +1682,10 @@ class Focus {
 }
 
 /**
- *
+ * ------------------------------------------------------------------------
  * Tour / Showtime
  * This class ties it all together
- *
+ * ------------------------------------------------------------------------
  */
     //TODO keep focus on scroll and resize add fit options for Popover
 
@@ -1823,7 +1851,7 @@ class Showtime {
     }
 
     _isNext() {
-        return this.chainIndex < this.chain.length;
+        return this.chainIndex &lt; this.chain.length;
     }
 
     _getNameSpace() {
@@ -1864,8 +1892,8 @@ class Showtime {
 
         // if message is array. We have a carousel in the modal
         // So we generate functions in the chain for each slide
-        if (options.message && isArray(options.message)) {
-            for (let i = 1; i < options.message.length; i++) {
+        if (options.message &amp;&amp; isArray(options.message)) {
+            for (let i = 1; i &lt; options.message.length; i++) {
                 this.chain.push(function _carouselNext() {
                     window[options.uid].carousel.setSlide(i)
                 });
@@ -1931,7 +1959,7 @@ class Showtime {
 
     previous() {
         this.chainIndex--;
-        this.chainIndex < 1 ? this.chainIndex = 0 : this.chainIndex--;
+        this.chainIndex &lt; 1 ? this.chainIndex = 0 : this.chainIndex--;
         this._callchain();
         this.onStep(this.chainIndex, this.completedSteps);
         return this;
@@ -1985,3 +2013,44 @@ class Showtime {
     }
 
 }
+/**
+* This is the description for my class.
+*
+* @class MyClass
+* @constructor
+*/
+
+/**
+* My method description.  Like other pieces of your comment blocks,
+* this can span multiple lines.
+*
+* @method methodName
+* @param {String} foo Argument 1
+* @param {Object} config A config object
+* @param {String} config.name The name on the config object
+* @param {Function} config.callback A callback function on the config object
+* @param {Boolean} [extra=false] Do extra, optional work
+* @return {Boolean} Returns true on success
+*/</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Carousel.html">Carousel</a></li><li><a href="Elm.html">Elm</a></li><li><a href="Focus.html">Focus</a></li><li><a href="Modal.html">Modal</a></li><li><a href="Popover.html">Popover</a></li><li><a href="Showtime.html">Showtime</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getScreenPosition">getScreenPosition</a></li><li><a href="global.html#methodName">methodName</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 19 2016 13:13:27 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
