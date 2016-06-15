@@ -773,6 +773,7 @@ var Popover = function () {
         _classCallCheck(this, Popover);
 
         this.element = element;
+        console.log('da elm', element);
         this.popover = null;
 
         this.default = {
@@ -887,6 +888,33 @@ var Popover = function () {
         value: function setPosition() {
             var placement = this.default.placement;
             var elDim = getHigestBoundingRect(this.element);
+
+            ///////
+            //for (var i = 0, len = nodes.length; i < len; i++) {
+            //    var node = nodes[i];
+            //
+            //    // Fetch the screen coordinates for this element
+            //    var position = getScreenPosition(node);
+            //
+            //    var x = position.x,
+            //        y = position.y,
+            //        w = node.offsetWidth,
+            //        h = node.offsetHeight;
+            //
+            //    // 1. offsetLeft works
+            //    // 2. offsetWidth works
+            //    // 3. Element is larger than zero pixels
+            //    // 4. Element is not <br>
+            //    if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
+            //        currentRegion.left = Math.min(currentRegion.left, x);
+            //        currentRegion.top = Math.min(currentRegion.top, y);
+            //        currentRegion.right = Math.max(currentRegion.right, x + w);
+            //        currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+            //    }
+            //}
+            //
+            ///////
+
             var popDim = this.popover.getBoundingClientRect();
             var bodyDim = {
                 height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
@@ -1514,6 +1542,7 @@ var Showtime = function () {
     }, {
         key: 'call',
         value: function call(fn) {
+            //TODO change to option type to keep consitant
             this.chain.push(function call() {
                 fn();
             });

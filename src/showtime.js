@@ -1351,6 +1351,38 @@ class Popover {
     setPosition() {
         let placement = this.default.placement;
         let elDim = getHigestBoundingRect(this.element);
+
+
+
+
+        ///////
+        //for (var i = 0, len = nodes.length; i < len; i++) {
+        //    var node = nodes[i];
+        //
+        //    // Fetch the screen coordinates for this element
+        //    var position = getScreenPosition(node);
+        //
+        //    var x = position.x,
+        //        y = position.y,
+        //        w = node.offsetWidth,
+        //        h = node.offsetHeight;
+        //
+        //    // 1. offsetLeft works
+        //    // 2. offsetWidth works
+        //    // 3. Element is larger than zero pixels
+        //    // 4. Element is not <br>
+        //    if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
+        //        currentRegion.left = Math.min(currentRegion.left, x);
+        //        currentRegion.top = Math.min(currentRegion.top, y);
+        //        currentRegion.right = Math.max(currentRegion.right, x + w);
+        //        currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
+        //    }
+        //}
+        //
+        ///////
+
+
+
         let popDim = this.popover.getBoundingClientRect();
         let bodyDim = {
             height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
@@ -1935,6 +1967,7 @@ class Showtime {
     }
 
     call(fn) {
+        //TODO change to option type to keep consitant
         this.chain.push(function call() {
             fn();
         });
