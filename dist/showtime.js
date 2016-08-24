@@ -773,7 +773,6 @@ var Popover = function () {
         _classCallCheck(this, Popover);
 
         this.element = element;
-        console.log('da elm', element);
         this.popover = null;
 
         this.default = {
@@ -1493,6 +1492,7 @@ var Showtime = function () {
     }, {
         key: 'next',
         value: function next() {
+            this.__proto__.isTour = true;
             var item = this._resolveChainItem();
 
             if (this.chainIndex) {
@@ -1537,6 +1537,7 @@ var Showtime = function () {
             }
             Modal.prototype.instances.length = 0;
             this.onQuit();
+            this.__proto__.isTour = false;
             return this;
         }
     }, {
@@ -1610,5 +1611,9 @@ var Showtime = function () {
 
     return Showtime;
 }();
+
+// Is set to true if tour is running. This gives developers change to check globaly.
+
+Showtime.prototype.isTour = false;
 return Showtime;
 }));

@@ -1920,6 +1920,7 @@ class Showtime {
     }
 
     next() {
+        this.__proto__.isTour = true;
         let item = this._resolveChainItem();
 
         if (this.chainIndex) {
@@ -1963,6 +1964,7 @@ class Showtime {
         }
         Modal.prototype.instances.length = 0;
         this.onQuit();
+        this.__proto__.isTour = false;
         return this;
     }
 
@@ -2030,3 +2032,6 @@ class Showtime {
     }
 
 }
+
+// Is set to true if tour is running. This gives developers change to check globaly.
+Showtime.prototype.isTour = false;
