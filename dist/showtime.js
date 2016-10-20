@@ -11,7 +11,7 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45,7 +45,7 @@ if (!Date.now) Date.now = function () {
         window.cancelAnimationFrame = window[vp + 'CancelAnimationFrame'] || window[vp + 'CancelRequestAnimationFrame'];
     }
     if (/iP(ad|hone|od).*OS 6/.test(window.navigator.userAgent) // iOS6 is buggy
-     || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
+    || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
         var lastTime = 0;
         window.requestAnimationFrame = function (callback) {
             var now = Date.now();
@@ -137,7 +137,7 @@ var getScreenPosition = function getScreenPosition(node) {
     var x = document.documentElement.offsetLeft,
         y = document.documentElement.offsetTop;
 
-    if (node.offsetParent) {
+    if (node.offsetParent || document.body) {
         do {
             x += node.offsetLeft;
             y += node.offsetTop;
@@ -416,7 +416,6 @@ var MAX_ZINDEX = 2147483647;
 var Elm = function () {
     //Simple element generator. Mootools style
     //tries to find method for keys in options and run it
-
     function Elm(type, options, parent) {
         _classCallCheck(this, Elm);
 
@@ -531,6 +530,7 @@ var Elm = function () {
 
 //TODO style fallback is injected on every tour start
 
+
 var STYLES = '\n        <style>\n        /* Modal styles */\n         body.modal-mode {\n             overflow: hidden\n         }\n         .modal-body,\n         .modal-title {\n             line-height: 1.42857143;\n             color: #333\n         }\n         .modal-footer {\n             padding: 15px;\n             text-align: center;\n             //border-top: 1px solid #e5e5e5;\n         }\n\n         .chain_modal,\n         .modal-backdrop {\n             position: fixed;\n             top: 0;\n             right: 0;\n             bottom: 0;\n             left: 0\n         }\n\n         .chain_modal {\n             z-index: ' + MAX_ZINDEX + ';\n             overflow-y: scroll;\n             -webkit-overflow-scrolling: touch;\n             outline: 0\n         }\n         .chain_dialog {\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             position: relative;\n             width: auto;\n             margin: 10px\n         }\n         .modal-content .close {\n             margin-top: -2px;\n             position: static;\n             height: 30px;\n         }\n         .modal-theme-blue .close {\n             text-shadow: none;\n             opacity: 1;\n             font-size: 31px;\n             font-weight: normal;\n         }\n         .modal-theme-blue .close span {\n             color: white;\n         }\n         .modal-theme-blue .close span:hover {\n             color: #fbc217;\n         }\n         .close.standalone {\n             position: absolute;\n             right: 15px;\n             top: 13px;\n             z-index: ' + MAX_ZINDEX + ';\n             height: 30px;\n         }\n         .modal-title {\n             margin: 0;\n             font-size: 18px;\n             font-weight: 500\n         }\n         button.close {\n             -webkit-appearance: none;\n             padding: 0;\n             cursor: pointer;\n             background: 0 0;\n             border: 0\n         }\n         .modal-content {\n             position: relative;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #999;\n             border: 1px solid rgba(0, 0, 0, .2);\n             border-radius: 2px;\n             outline: 0;\n             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)\n         }\n         .modal-theme-blue .modal-content {\n            background-color: #4a6173;\n         }\n         .modal-header {\n             min-height: 16.43px;\n             padding: 15px;\n             border-bottom: 1px solid #e5e5e5;\n             min-height: 50px\n         }\n         .modal-theme-blue .modal-header {\n            border-bottom: none;\n         }\n         .modal-body {\n             position: relative;\n             padding: 15px;\n             font-size: 14px\n         }\n         .close {\n             float: right;\n             font-size: 21px;\n             font-weight: 700;\n             line-height: 1;\n             color: #000;\n             text-shadow: 0 1px 0 #fff;\n             opacity: .2\n         }\n\n\n         /* Carousel */\n\n         .pag-dot {\n            display: inline-block;\n            width: 10px;\n            height: 10px;\n            background: white;\n            border: solid 1px #c0c0c0;\n            border-radius: 50%;\n            margin: 7px;\n         }\n         .pag-dot.active {\n            background: #c0c0c0;\n         }\n\n         @media (min-width: 768px) {\n             .chain_dialog {\n                 width: 600px;\n                 margin: 30px auto\n             }\n             .modal-content {\n                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)\n             }\n             .chain_modal-sm {\n                 width: 300px\n             }\n         }\n         @media (min-width: 992px) {\n             .chain_modal-lg {\n                 width: 900px\n             }\n         }\n\n\n         /*popover styles*/\n         .popover {\n             position: absolute;\n             box-sizing: border-box;\n             min-width: 250px;\n             top: 0;\n             left: 0;\n             z-index: ' + MAX_ZINDEX + ';\n             display: none;\n             max-width: 276px;\n             padding: 1px;\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             font-style: normal;\n             font-weight: normal;\n             letter-spacing: normal;\n             line-break: auto;\n             line-height: 1.42857143;\n             text-align: left;\n             text-align: start;\n             text-decoration: none;\n             text-shadow: none;\n             text-transform: none;\n             white-space: normal;\n             word-break: normal;\n             word-spacing: normal;\n             word-wrap: normal;\n             font-size: 14px;\n             background-color: #fff;\n             background-clip: padding-box;\n             border: 1px solid #ccc;\n             border: 1px solid rgba(0, 0, 0, 0.2);\n             border-radius: 2px;\n             -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n         }\n         .popover.top {\n             margin-top: -10px;\n         }\n         .popover.right {\n             margin-left: 10px;\n         }\n         .popover.bottom {\n             margin-top: 10px;\n         }\n         .popover.left {\n             margin-left: -10px;\n         }\n         .popover-title {\n             margin: 0;\n             padding: 8px 14px;\n             font-size: 14px;\n             background-color: #f7f7f7;\n             border-bottom: 1px solid #ebebeb;\n             border-radius: 1px 1px 0 0;\n             box-sizing: border-box;\n         }\n         .popover-content {\n             padding: 9px 14px;\n             box-sizing: border-box;\n         }\n         .popover > .arrow,\n         .popover > .arrow:after {\n             position: absolute;\n             display: block;\n             width: 0;\n             height: 0;\n             border-color: transparent;\n             border-style: solid;\n         }\n         .popover > .arrow {\n             border-width: 11px;\n         }\n         .popover > .arrow:after {\n             border-width: 10px;\n             content: "";\n         }\n         .popover.top > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-bottom-width: 0;\n             border-top-color: #999999;\n             border-top-color: rgba(0, 0, 0, 0.25);\n             bottom: -11px;\n         }\n         .popover.top > .arrow:after {\n             content: " ";\n             bottom: 1px;\n             margin-left: -10px;\n             border-bottom-width: 0;\n             border-top-color: #fff;\n         }\n         .popover.right > .arrow {\n             top: 50%;\n             left: -11px;\n             margin-top: -11px;\n             border-left-width: 0;\n             border-right-color: #999999;\n             border-right-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.right > .arrow:after {\n             content: " ";\n             left: 1px;\n             bottom: -10px;\n             border-left-width: 0;\n             border-right-color: #fff;\n         }\n         .popover.bottom > .arrow {\n             left: 50%;\n             margin-left: -11px;\n             border-top-width: 0;\n             border-bottom-color: #999999;\n             border-bottom-color: rgba(0, 0, 0, 0.25);\n             top: -11px;\n         }\n         .popover.bottom > .arrow:after {\n             content: " ";\n             top: 1px;\n             margin-left: -10px;\n             border-top-width: 0;\n             border-bottom-color: #fff;\n         }\n         .popover.left > .arrow {\n             top: 50%;\n             right: -11px;\n             margin-top: -11px;\n             border-right-width: 0;\n             border-left-color: #999999;\n             border-left-color: rgba(0, 0, 0, 0.25);\n         }\n         .popover.left > .arrow:after {\n             content: " ";\n             right: 1px;\n             border-right-width: 0;\n             border-left-color: #fff;\n             bottom: -10px;\n         }\n         .popover .btns {\n             padding: 9px 14px;\n             text-align: right;\n         }\n         .popover .popBtn {\n             color: #333;\n             font-weight: bold;\n             border: solid 1px #333;\n             display: inline-block;\n             padding: 4px 18px;\n             border-radius: 1px;\n             font-size: 13px;\n             cursor: pointer;\n             margin-left: 8px;\n         }\n\n\n         /* Focus styles */\n         .to_left,\n         .to_right,\n         .to_top,\n         .to_bottom {\n             position: absolute;\n             background: black;\n             opacity: .5;\n             filter: alpha(opacity=50);\n             z-index: 1000;\n         }\n         .ghost-focus {\n             background: transparent;\n             z-index: 1000;\n         }\n\n\n         /*** Animations ***/\n         @-webkit-keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @-webkit-keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         .fadeInDown,\n         .fadeInLeft,\n         .fadeInRight,\n         .fadeInTop,\n         .fadeOutTop{\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s;\n             animation-duration: .5s;\n             animation-fill-mode: both;\n         }\n         .fadeInDown {\n             -webkit-animation-name: fadeInDown;\n             animation-name: fadeInDown;\n         }\n         .fadeInLeft {\n             -webkit-animation-name: fadeInLeft;\n             animation-name: fadeInLeft;\n         }\n         .fadeInRight {\n             -webkit-animation-name: fadeInRight;\n             animation-name: fadeInRight;\n         }\n         .fadeInTop {\n             -webkit-animation-name: fadeInTop;\n             animation-name: fadeInTop;\n         }\n         .fadeOutTop {\n             -webkit-animation-name: fadeOutTop;\n             animation-name: fadeOutTop;\n         }\n        </style>';
 
 /**
@@ -543,7 +543,7 @@ var STYLES = '\n        <style>\n        /* Modal styles */\n         body.modal
 
 var Carousel = function () {
     function Carousel(options) {
-        var parent = arguments.length <= 1 || arguments[1] === undefined ? document.body : arguments[1];
+        var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document.body;
 
         _classCallCheck(this, Carousel);
 
@@ -568,10 +568,7 @@ var Carousel = function () {
 
                 _this2.pagers.push(new Elm('div.pag-dot', {
                     'id': 'pag-' + i
-                }, //'click': ()=> {
-                //    this.setSlide(i)
-                //}
-                _this2.parent.querySelector('.modal-footer')));
+                }, _this2.parent.querySelector('.modal-footer')));
             });
 
             this.slides[0].style.display = 'block';
@@ -679,7 +676,7 @@ var Modal = function () {
             //Add header if we have a title. if not we only add the close button.
             var header = '';
             if (this.defaults.title) {
-                header = '\n                <div class="modal-header">\n                    <button type="button" class="close"><span>×</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
+                header = '\n                <div class="modal-header">\n                    <button type="button" class="close"><span>\xD7</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
             }
             if (this.defaults.title && !this.defaults.closeButton) {
                 header = '\n                <div class="modal-header">\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
@@ -730,7 +727,7 @@ var Modal = function () {
         value: function _close() {
             var _this4 = this;
 
-            var cb = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
+            var cb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
 
             setClass(this.chainDialog, 'fadeOutTop');
             setTimeout(function () {
@@ -914,14 +911,15 @@ var Popover = function () {
             //
             ///////
 
+
             var popDim = this.popover.getBoundingClientRect();
             var bodyDim = {
                 height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                 width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
             };
 
-            var top = undefined,
-                left = undefined;
+            var top = void 0,
+                left = void 0;
             var offset = this.getOffset();
 
             //TODO this needs some love
@@ -1003,6 +1001,7 @@ var Popover = function () {
 // This Class is based on https://github.com/hakimel/Fokus. A better approach with fixed canvas as overlay and clearRect for
 // selected area
 
+
 var Focus = function () {
     function Focus(config) {
         _classCallCheck(this, Focus);
@@ -1077,8 +1076,8 @@ var Focus = function () {
                 var y = elementOffsetTop(elm) - viewportHeight / 2;
                 scrollToY(y);
             } else if (styles.top < window.scrollY) {
-                var y = styles.top;
-                scrollToY(y);
+                var _y = styles.top;
+                scrollToY(_y);
             }
         }
     }, {
@@ -1109,7 +1108,7 @@ var Focus = function () {
     }, {
         key: 'updateSelection',
         value: function updateSelection() {
-            var immediate = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+            var immediate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
             // Default to negative space
             var currentRegion = { left: Number.MAX_VALUE, top: Number.MAX_VALUE, right: 0, bottom: 0 };
@@ -1263,6 +1262,7 @@ var Showtime = function () {
     /*
      * Events Methods
      */
+
 
     _createClass(Showtime, [{
         key: 'onStart',
@@ -1613,6 +1613,7 @@ var Showtime = function () {
 }();
 
 // Is set to true if tour is running. This gives developers change to check globaly.
+
 
 Showtime.prototype.isTour = false;
 return Showtime;
