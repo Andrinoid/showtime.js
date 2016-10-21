@@ -124,7 +124,7 @@ var getScreenPosition = function (node) {
     var x = document.documentElement.offsetLeft,
         y = document.documentElement.offsetTop;
 
-    if (node.offsetParent) {
+    if (node.offsetParent || document.body) {
         do {
             x += node.offsetLeft;
             y += node.offsetTop;
