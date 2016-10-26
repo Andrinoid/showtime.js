@@ -22,6 +22,9 @@
         position: absolute;
         left: 330px;
         top: 20px;
+        position: absolute;
+        top: 300px;
+        left: 100px;
     }
 
     .two {
@@ -59,6 +62,7 @@
 <div class="two" onclick="alert()"></div>
 <div class="three">lorem ipsum</div>
 <div class="four">lorem ipsum</div>
+<div class="ball">sdfsdf</div>
 <button onclick="tour.next()" style="position: relative; z-index: 10000;">next</button>
 <button onclick="tour.play()" style="position: relative; z-index: 10000;">play</button>
 <button onclick="tour.resume()" style="position: relative; z-index: 10000;">Resume</button>
@@ -104,9 +108,9 @@
             tour.next();
         }
     })
-            .show({
-                element: document.querySelector('.two'),
-                placement: 'left',
+            tour.show({
+                element: document.querySelector('.ball'),
+                placement: 'right',
                 content: '<p>This is a box2</p>',
                 collition: 'fit',
                 buttons: false,
