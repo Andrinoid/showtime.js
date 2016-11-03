@@ -1501,7 +1501,7 @@ class Focus {
         this.overlay.style.left = 0;
         this.overlay.style.top = 0;
         this.overlay.style.zIndex = MAX_ZINDEX - 1; //just about as high as it can get
-        //this.overlay.style.pointerEvents = 'none';
+        this.overlay.style.pointerEvents = 'none';
         this.overlay.style.background = 'transparent';
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
