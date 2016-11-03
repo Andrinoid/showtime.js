@@ -1004,25 +1004,24 @@ var Popover = function () {
 
 var Focus = function () {
     function Focus(config) {
+        var _this6 = this;
+
         _classCallCheck(this, Focus);
 
         this.options = {
-            padding: 5
+            padding: 5,
+            removeOnOuterClick: false
         };
         this.options = extend(this.options, config);
-
         this.ELEMENT = null;
         // Padding around the selection
         this.PADDING = this.options.padding;
         // Opacity of the overlay
         this.OPACITY = 0.5;
-
         this.idleState = false;
-
         this._fadeIn = true;
         //padding is disregarded if cover is true
         this.cover = false;
-
         this.overlayAlpha = 0;
         // Reference to the redraw animation so it can be cancelled
         this.redrawAnimation;
@@ -1040,17 +1039,26 @@ var Focus = function () {
         this.overlay.style.left = 0;
         this.overlay.style.top = 0;
         this.overlay.style.zIndex = MAX_ZINDEX - 1; //just about as high as it can get
-        this.overlay.style.pointerEvents = 'none';
+        //this.overlay.style.pointerEvents = 'none';
         this.overlay.style.background = 'transparent';
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         //window.addEventListener('scroll', this.updateSelection.bind(this), false);
+        console.log(this.options);
+        if (this.options.removeOnOuterClick) {
+            this.overlay.addEventListener('click', function () {
+                _this6.onOuterClick();
+            }, false);
+        }
 
         // Trigger an initial resize
         this.onWindowResize();
     }
 
     _createClass(Focus, [{
+        key: 'onOuterClick',
+        value: function onOuterClick() {}
+    }, {
         key: 'fadeIn',
         value: function fadeIn() {
             this._fadeIn = true;
@@ -1174,7 +1182,7 @@ var Focus = function () {
     }, {
         key: 'redraw',
         value: function redraw() {
-            var _this6 = this;
+            var _this7 = this;
 
             //if (this.idleState) return false; // TODO deal with scroll and fadeout delema
             // Reset to a solid (less opacity) overlay fill
@@ -1218,7 +1226,7 @@ var Focus = function () {
 
                 // Stage a new animation frame
                 this.redrawAnimation = requestAnimationFrame(function () {
-                    _this6.redraw();
+                    _this7.redraw();
                 });
             } else {
                 document.body.removeChild(this.overlay);
@@ -1239,6 +1247,8 @@ var Focus = function () {
 
 var Showtime = function () {
     function Showtime(options) {
+        var _this8 = this;
+
         _classCallCheck(this, Showtime);
 
         this.chain = [];
@@ -1256,7 +1266,22 @@ var Showtime = function () {
         };
         //override default with user options
         this.defaults = extend(this.defaults, options);
+        // this.tmpSettings might change on every _callAgain as it is merged with the given settings
+        this.tmpSettings = this.defaults;
         this._createFocus();
+
+        this.focus.complete = throttle(function () {
+            console.log('throttle');
+            if (_this8.tmpSettings.popoverTimer === 'auto') {
+                _this8.popover.show();
+            }
+            if (_this8.defaults.autoplay) {
+                _this8._callAgain();
+            }
+        }, 500); //TODO can we modify this to act like once
+        this.focus.onOuterClick = function () {
+            _this8.quit();
+        };
     }
 
     /*
@@ -1297,14 +1322,15 @@ var Showtime = function () {
         key: '_createFocus',
         value: function _createFocus() {
             this.focus = new Focus({
-                padding: this.defaults.padding
+                padding: this.defaults.padding,
+                removeOnOuterClick: this.defaults.removeOnOuterClick
             });
             //TODO Focus needs to fire event on remove so we can use it here to quit tour
         }
     }, {
         key: '_callchain',
         value: function _callchain() {
-            var _this7 = this;
+            var _this9 = this;
 
             /*
              * We clone the default settings and merge it with the current chain settings.
@@ -1346,9 +1372,8 @@ var Showtime = function () {
             }
             var defaults = clone(this.defaults);
             var settings = extend(defaults, chainItem);
+            this.tmpSettings = settings; //TODO merge above
 
-            //override defaults with given for this focus
-            //this.focus.default.padding = settings.padding; //TODO fix this
             this._removePopover();
             //We create new popover for every focus point. This is easier to manage than collecting them
             this.popover = new Popover(settings.element, {
@@ -1364,17 +1389,9 @@ var Showtime = function () {
             if (defaults.popoverTimer !== 'auto') {
                 var time = parseInt(defaults.popoverTimer) || 0;
                 setTimeout(function () {
-                    _this7.popover.show();
+                    _this9.popover.show();
                 }, time);
             }
-            this.focus.complete = throttle(function () {
-                if (defaults.popoverTimer === 'auto') {
-                    _this7.popover.show();
-                }
-                if (_this7.defaults.autoplay) {
-                    _this7._callAgain();
-                }
-            }, 4000); //TODO can we modify this to act like once
 
             this.chainIndex++;
             //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
@@ -1398,10 +1415,10 @@ var Showtime = function () {
     }, {
         key: '_callAgain',
         value: function _callAgain() {
-            var _this8 = this;
+            var _this10 = this;
 
             setTimeout(function () {
-                _this8.next();
+                _this10.next();
             }, this.defaults.autoplayDelay);
         }
     }, {
@@ -1474,7 +1491,7 @@ var Showtime = function () {
     }, {
         key: 'modal',
         value: function modal(options) {
-            var _this9 = this;
+            var _this11 = this;
 
             options._type = 'modal';
             // unique id that the modal will create on the global
@@ -1485,7 +1502,7 @@ var Showtime = function () {
             // So we generate functions in the chain for each slide
             if (options.message && isArray(options.message)) {
                 var _loop = function _loop(i) {
-                    _this9.chain.push(function _carouselNext() {
+                    _this11.chain.push(function _carouselNext() {
                         window[options.uid].carousel.setSlide(i);
                     });
                 };

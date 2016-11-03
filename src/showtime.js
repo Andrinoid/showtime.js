@@ -1471,22 +1471,19 @@ class Popover {
 class Focus {
     constructor(config) {
         this.options = {
-            padding: 5
+            padding: 5,
+            removeOnOuterClick: false
         };
         this.options = extend(this.options, config);
-
         this.ELEMENT = null;
         // Padding around the selection
         this.PADDING = this.options.padding;
         // Opacity of the overlay
         this.OPACITY = 0.5;
-
         this.idleState = false;
-
         this._fadeIn = true;
         //padding is disregarded if cover is true
         this.cover = false;
-
         this.overlayAlpha = 0;
         // Reference to the redraw animation so it can be cancelled
         this.redrawAnimation;
@@ -1504,14 +1501,23 @@ class Focus {
         this.overlay.style.left = 0;
         this.overlay.style.top = 0;
         this.overlay.style.zIndex = MAX_ZINDEX - 1; //just about as high as it can get
-        this.overlay.style.pointerEvents = 'none';
+        //this.overlay.style.pointerEvents = 'none';
         this.overlay.style.background = 'transparent';
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         //window.addEventListener('scroll', this.updateSelection.bind(this), false);
+        console.log(this.options);
+        if(this.options.removeOnOuterClick) {
+            this.overlay.addEventListener('click', ()=> {
+                this.onOuterClick();
+            }, false);
+        }
 
         // Trigger an initial resize
         this.onWindowResize();
+    }
+
+    onOuterClick() {
     }
 
     fadeIn() {
@@ -1711,7 +1717,22 @@ class Showtime {
         };
         //override default with user options
         this.defaults = extend(this.defaults, options);
+        // this.tmpSettings might change on every _callAgain as it is merged with the given settings
+        this.tmpSettings = this.defaults;
         this._createFocus();
+
+        this.focus.complete = throttle(()=> {
+            console.log('throttle');
+            if (this.tmpSettings.popoverTimer === 'auto') {
+                this.popover.show();
+            }
+            if (this.defaults.autoplay) {
+                this._callAgain()
+            }
+        }, 500); //TODO can we modify this to act like once
+        this.focus.onOuterClick = ()=> {
+            this.quit();
+        }
     }
 
     /*
@@ -1746,7 +1767,8 @@ class Showtime {
 
     _createFocus() {
         this.focus = new Focus({
-            padding: this.defaults.padding
+            padding: this.defaults.padding,
+            removeOnOuterClick: this.defaults.removeOnOuterClick
         });
         //TODO Focus needs to fire event on remove so we can use it here to quit tour
     }
@@ -1792,9 +1814,8 @@ class Showtime {
         }
         let defaults = clone(this.defaults);
         let settings = extend(defaults, chainItem);
+        this.tmpSettings = settings;//TODO merge above
 
-        //override defaults with given for this focus
-        //this.focus.default.padding = settings.padding; //TODO fix this
         this._removePopover();
         //We create new popover for every focus point. This is easier to manage than collecting them
         this.popover = new Popover(settings.element, {
@@ -1813,14 +1834,7 @@ class Showtime {
                 this.popover.show();
             }, time);
         }
-        this.focus.complete = throttle(()=> {
-            if (defaults.popoverTimer === 'auto') {
-                this.popover.show();
-            }
-            if (this.defaults.autoplay) {
-                this._callAgain()
-            }
-        }, 4000); //TODO can we modify this to act like once
+
 
         this.chainIndex++;
         //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
