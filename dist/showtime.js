@@ -1044,7 +1044,6 @@ var Focus = function () {
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         //window.addEventListener('scroll', this.updateSelection.bind(this), false);
-        console.log(this.options);
         if (this.options.removeOnOuterClick) {
             this.overlay.addEventListener('click', function () {
                 _this6.onOuterClick();
@@ -1216,7 +1215,7 @@ var Focus = function () {
             // Ensure there is no overlap
             cancelAnimationFrame(this.redrawAnimation);
 
-            if (this.animationComplete()) {
+            if (this.animationComplete() && this.notify) {
                 this.complete();
             }
             // Continue so long as there is content selected or we are fading out
@@ -1270,15 +1269,18 @@ var Showtime = function () {
         this.tmpSettings = this.defaults;
         this._createFocus();
 
+        this.focus.notify = true;
         this.focus.complete = throttle(function () {
-            console.log('throttle');
-            if (_this8.tmpSettings.popoverTimer === 'auto') {
-                _this8.popover.show();
+            if (_this8.focus.notify) {
+                _this8.focus.notify = false;
+                if (_this8.tmpSettings.popoverTimer === 'auto') {
+                    _this8.popover.show();
+                }
+                if (_this8.defaults.autoplay) {
+                    _this8._callAgain();
+                }
             }
-            if (_this8.defaults.autoplay) {
-                _this8._callAgain();
-            }
-        }, 500); //TODO can we modify this to act like once
+        }, 500);
         this.focus.onOuterClick = function () {
             _this8.quit();
         };
@@ -1340,7 +1342,7 @@ var Showtime = function () {
              */
             //focus is reused until tour.quit() then it gets deleted and we have to create it again.
             if (!this.focus) this._createFocus();
-
+            this.focus.notify = true;
             var chainItem = this._resolveChainItem();
             // if chainItem is a function it means it either a carousel next function
             // or function that returns the settings object dynamically
@@ -1477,7 +1479,6 @@ var Showtime = function () {
                     item.element = item.element();
                 }
             }
-            console.log(item);
             // here the item can be named function or a settings object. do nothing
             return item;
         }

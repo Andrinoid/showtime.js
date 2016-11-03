@@ -1506,7 +1506,6 @@ class Focus {
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         //window.addEventListener('scroll', this.updateSelection.bind(this), false);
-        console.log(this.options);
         if(this.options.removeOnOuterClick) {
             this.overlay.addEventListener('click', ()=> {
                 this.onOuterClick();
@@ -1670,7 +1669,7 @@ class Focus {
         // Ensure there is no overlap
         cancelAnimationFrame(this.redrawAnimation);
 
-        if (this.animationComplete()) {
+        if (this.animationComplete() && this.notify) {
             this.complete();
         }
         // Continue so long as there is content selected or we are fading out
@@ -1721,15 +1720,18 @@ class Showtime {
         this.tmpSettings = this.defaults;
         this._createFocus();
 
+        this.focus.notify = true;
         this.focus.complete = throttle(()=> {
-            console.log('throttle');
-            if (this.tmpSettings.popoverTimer === 'auto') {
-                this.popover.show();
+            if(this.focus.notify) {
+                this.focus.notify = false;
+                if (this.tmpSettings.popoverTimer === 'auto') {
+                    this.popover.show();
+                }
+                if (this.defaults.autoplay) {
+                    this._callAgain()
+                }
             }
-            if (this.defaults.autoplay) {
-                this._callAgain()
-            }
-        }, 500); //TODO can we modify this to act like once
+        }, 500);
         this.focus.onOuterClick = ()=> {
             this.quit();
         }
@@ -1782,7 +1784,7 @@ class Showtime {
          */
         //focus is reused until tour.quit() then it gets deleted and we have to create it again.
         if (!this.focus) this._createFocus();
-
+        this.focus.notify = true;
         let chainItem = this._resolveChainItem();
         // if chainItem is a function it means it either a carousel next function
         // or function that returns the settings object dynamically
@@ -1911,7 +1913,6 @@ class Showtime {
                 item.element = item.element();
             }
         }
-        console.log(item);
         // here the item can be named function or a settings object. do nothing
         return item;
     }
