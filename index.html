@@ -1,160 +1,160 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title></title>
     <meta charset="utf-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
 </head>
+
 <body>
 
-<style>
-    body {
-        margin: 0;
-        padding: 50px;
-        height: 3000px;
-    }
-
-    .ball {
-        background: black;
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        position: absolute;
-        left: 330px;
-        top: 20px;
-        position: absolute;
-        top: 300px;
-        left: 100px;
-    }
-
-    .two {
-        position: relative;
-        left: 400px;
-        top: -70px;
-        width: 290px;
-        height: 80px;
-        background: black;
-    }
-
-    .three {
-        margin-top: 890px;
-        float: right;
-        margin-right: 40px;
-        width: 60px;
-        height: 40px;
-        background: lightblue;
-        box-shadow: 1px 0 0 2px #000;
-    }
-
-    .four {
-        margin-top: 690px;
-        float: right;
-        margin-right: 40px;
-        width: 230px;
-        height: 300px;
-        background: dodgerblue;
-        box-shadow: 1px 0 0 2px #000;
-    }
-
-</style>
-<div id="ball"></div>
-
-<div class="two" onclick="alert()"></div>
-<div class="three">lorem ipsum</div>
-<div class="four">lorem ipsum</div>
-<div class="ball">sdfsdf</div>
-<button onclick="tour.next()" style="position: relative; z-index: 10000;">next</button>
-<button onclick="tour.play()" style="position: relative; z-index: 10000;">play</button>
-<button onclick="tour.resume()" style="position: relative; z-index: 10000;">Resume</button>
-<button onclick="tour.start()" style="position: relative; z-index: 10000;">Take a tour</button>
-
-<script src="dist/showtime.js"></script>
-
-<script>
+    <!-- Static navbar -->
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"><Showtime class="js"></Showtime></a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Nav header</li>
+            <li><a href="#">Separated link</a></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="../navbar/">Default</a></li>
+        <li class="active"><a href="./">Static top <span class="sr-only">(current)</span></a></li>
+        <li><a href="../navbar-fixed-top/">Fixed top</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
 
 
-    var tour = new Showtime({
-        //nameSpace: 'nbss2',
-        autoplay: false,
-        padding: 10,
-        removeOnOuterClick: false,
-        focusClick: function () {
-            tour.next();
-        },
-        buttons: [
-            {
+<div class="container">
+
+  <!-- Main component for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <h1>Navbar example</h1>
+    <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
+    <p>To see the difference between static and fixed top navbars, just scroll.</p>
+    <p>
+      <button onclick="tour.start()" class="btn btn-lg btn-primary" id="start">Start tour</button>
+    </p>
+  </div>
+
+</div> <!-- /container -->
+    <script src="dist/showtime.js"></script>
+
+    <script>
+        var tour = new Showtime({
+            //nameSpace: 'nbss2',
+            autoplay: false,
+            padding: 10,
+            collition: 'fit',
+            removeOnOuterClick: true,
+            focusClick: function() {
+                tour.next();
+            },
+            buttons: [{
                 label: 'quit',
-                click: function () {
+                click: function() {
                     tour.quit()
                 }
-            },
-            {
+            }, {
                 label: 'next',
-                click: function () {
+                click: function() {
                     tour.next()
                 }
+            }],
+            popoverTimer: false
+        });
+
+
+        tour.modal({
+            title: 'sdfsdf',
+            message: ['skref 1. <h1>blabalbla</h2>', 'skref 2 foobar', 'skref 3 all done'],
+            onClose: function() {
+                tour.next();
+                tour.next();
+                tour.next();
             }
-        ],
-        popoverTimer: false
-    });
-
-
-    tour.modal({
-        title: 'sdfsdf',
-        message: ['skref 1. blabalbla', 'skref 2 foobar', 'skref 3 all done'],
-        onClose: function () {
-            tour.next();
-            tour.next();
-            tour.next();
-        }
-    })
-            tour.show({
-                element: document.querySelector('.ball'),
+        })
+        tour.show({
+                element: $('.navbar-nav li')[1],
                 placement: 'right',
                 content: '<p>This is a box2</p>',
-                collition: 'fit',
-                buttons: false,
-                popoverTimer: false
+                buttons: true,
+                padding: 0,
+                popoverTimer: 3000
             })
             .call(function() {
                 someTitle = 'I a brand new header';
             });
 
 
-            tour.show(function(){
-                return {
-                    element: document.querySelectorAll('.two, .four'),
-                    title: someTitle,
-                    placement: 'left',
-                    content: '<p>This is a ball</p>',
-                    padding: 10,
-                    dimentions: {
-                        height: 400
-                    },
-                    focusClick: function () {
-                        tour.next();
-                    },
-                    buttons: [
-                        {
-                            label: 'quit',
-                            click: function () {
-                                tour.quit()
-                            }
-                        },
-                        {
-                            label: 'next',
-                            click: function () {
-                                tour.next()
-                            }
-                        }
-                    ]
-                }
-            });
+        tour.show(function() {
+            return {
+                element: document.querySelectorAll('.two, .four'),
+                title: someTitle,
+                placement: 'left',
+                content: '<p>This is a ball</p>',
+                padding: 10,
+                dimentions: {//TODO
+                    height: 400
+                },
+                focusClick: function() {
+                    tour.next();
+                },
+                buttons: [{
+                    label: 'quit',
+                    click: function() {
+                        tour.quit()
+                    }
+                }, {
+                    label: 'next',
+                    click: function() {
+                        tour.next()
+                    }
+                }]
+            }
+        });
 
-            tour.show({
+        tour.show({
                 element: document.querySelector('.two'),
                 placement: 'left',
                 content: '<p>This is a box2</p>'
+            })
+            .call(function() {
+                var elm = document.createElement('div');
+                elm.classList.add('two');
+                document.body.appendChild(elm);
+                console.log('foo');
             })
             .show({
                 element: document.querySelector('.four'),
@@ -170,7 +170,7 @@
                 element: document.querySelector('.four'),
                 placement: 'bottom',
                 content: '<p>This is a box1</p>',
-                focusClick: function () {
+                focusClick: function() {
                     tour.next();
                 }
             })
@@ -187,24 +187,24 @@
             .modal({
                 title: 'sdfsdf',
                 message: 'sdfsdf',
-                onClose: function () {
+                onClose: function() {
                     tour.quit();
                 }
             });
 
-//    tour.onStart = function () {
-//        console.log('started tour');
-//    };
-//    tour.onStep = function (i, x) {
-//        console.log('step', i);
-//        console.log('max', x);
-//
-//    };
-//    tour.onQuit = function () {
-//        console.log('quit')
-//    };
-
-</script>
+        //    tour.onStart = function () {
+        //        console.log('started tour');
+        //    };
+        //    tour.onStep = function (i, x) {
+        //        console.log('step', i);
+        //        console.log('max', x);
+        //
+        //    };
+        //    tour.onQuit = function () {
+        //        console.log('quit')
+        //    };
+    </script>
 
 </body>
+
 </html>

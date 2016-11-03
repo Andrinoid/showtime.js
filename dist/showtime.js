@@ -1359,6 +1359,7 @@ var Showtime = function () {
                 offset: this._resolveOffsets(settings),
                 buttons: settings.buttons
             });
+            this.focus.PADDING = settings.padding;
             this.focus.focusOnElement(settings.element);
             if (defaults.popoverTimer !== 'auto') {
                 var time = parseInt(defaults.popoverTimer) || 0;
@@ -1454,6 +1455,12 @@ var Showtime = function () {
                     return item();
                 }
             }
+            if (item.hasOwnProperty('element')) {
+                if (typeof item.element === 'function') {
+                    item.element = item.element();
+                }
+            }
+            console.log(item);
             // here the item can be named function or a settings object. do nothing
             return item;
         }
