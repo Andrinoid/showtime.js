@@ -808,7 +808,7 @@ var STYLES = `
              padding: 9px 14px;
              text-align: right;
          }
-         .popover .popBtn {
+         .popover .popBtn, .chain_dialog .popBtn {
              -moz-appearance: none;
     		 -webkit-appearance: none;
     		 -ms-appearance: none;
@@ -829,9 +829,11 @@ var STYLES = `
     		 text-align: center;
     		 text-decoration: none;
     		 white-space: nowrap;
+         }
+         .popover .popBtn {
              margin-left: 10px;
          }
-         .popover .popBtn:hover {
+         .popover .popBtn:hover, .chain_dialog .popBtn:hover {
              border-color: #404040;
 			 color: #404040 !important;
          }
