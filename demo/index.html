@@ -127,11 +127,19 @@
         ]
     })
             .modal({
-                title: 'sdfsdf',
+                title: 'Showtime.js',
                 message: [
-                    '<h3>step 1.</h3><div class="button" onclick="tour.next();">ok next</div>',
-                    '<h3>step 1.</h3><div class="button" onclick="tour.next();">ok next</div>',
-                    '<h3>step 1.</h3><div class="button" onclick="tour.next();">ok next</div>'
+                    '<h3>step 1</h3>' +
+                    '<p>This is where we tell our users what to do</p>' +
+                    '<div class="button" onclick="tour.next();">ok next</div>',
+
+                    '<h3>step 2</h3>' +
+                    '<p>This is where we tell our users what to do next</p>' +
+                    '<div class="button" onclick="tour.next();">ok next</div>',
+
+                    '<h3>step 3</h3>' +
+                    '<p>This is the last step</p>' +
+                    '<div class="button" onclick="tour.next();">Got it</div>',
                 ],
                 onClose: function() {
                     tour.next();
