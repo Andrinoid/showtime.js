@@ -1719,19 +1719,22 @@ class Showtime {
         // this.tmpSettings might change on every _callAgain as it is merged with the given settings
         this.tmpSettings = this.defaults;
         this._createFocus();
-
         this.focus.notify = true;
-        this.focus.complete = throttle(()=> {
+        this.focus.complete = ()=> {
             if(this.focus.notify) {
                 this.focus.notify = false;
                 if (this.tmpSettings.popoverTimer === 'auto') {
-                    this.popover.show();
+                    try {
+                        this.popover.show();
+                    } catch(err) {
+                        //pass
+                    }
                 }
                 if (this.defaults.autoplay) {
                     this._callAgain()
                 }
             }
-        }, 500);
+        };
         this.focus.onOuterClick = ()=> {
             this.quit();
         }
@@ -1908,10 +1911,15 @@ class Showtime {
                 return item();
             }
         }
+
         if(item.hasOwnProperty('element')) {
             if(typeof item.element === 'function') {
                 item.element = item.element();
             }
+            if(!isElement(item.element)) {
+                //console.log('its not an element');
+            }
+
         }
         // here the item can be named function or a settings object. do nothing
         return item;
@@ -1943,8 +1951,6 @@ class Showtime {
 
     next() {
         this.__proto__.isTour = true;
-        let item = this._resolveChainItem();
-
         if (this.chainIndex) {
             // Dont close the modal if we have a function
             if (typeof(item) !== 'function') {
@@ -1952,6 +1958,7 @@ class Showtime {
             }
         }
         if (this._isNext()) {
+            let item = this._resolveChainItem();
             this._callchain();
 
             // cache the higest seen step to local storage

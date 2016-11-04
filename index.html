@@ -109,9 +109,8 @@
                 element: $('.navbar-nav li')[1],
                 placement: 'right',
                 content: '<p>This is a box2</p>',
-                buttons: true,
                 padding: 0,
-                popoverTimer: 3000
+
             })
             .call(function() {
                 someTitle = 'I a brand new header';
@@ -120,7 +119,7 @@
 
         tour.show(function() {
             return {
-                element: document.querySelectorAll('.two, .four'),
+                element: document.querySelector('h1'),
                 title: someTitle,
                 placement: 'left',
                 content: '<p>This is a ball</p>',
@@ -146,16 +145,11 @@
         });
 
         tour.show({
-                element: document.querySelector('.two'),
+                element: document.querySelector('p'),
                 placement: 'left',
                 content: '<p>This is a box2</p>'
             })
-            .call(function() {
-                var elm = document.createElement('div');
-                elm.classList.add('two');
-                document.body.appendChild(elm);
-                console.log('foo');
-            })
+
             .show({
                 element: document.querySelector('.four'),
                 placement: 'left',

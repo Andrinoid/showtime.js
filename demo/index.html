@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <!--
 	Identity by HTML5 UP
@@ -126,19 +127,23 @@
         ]
     })
             .modal({
-                closeButton: false,
-                title: 'Yeahh.',
-                message: 'We have a modals too.'
+                title: 'sdfsdf',
+                message: ['skref 1. <h1>blabalbla</h2>', 'skref 2 foobar', 'skref 3 all done'],
+                onClose: function() {
+                    tour.next();
+                    tour.next();
+                    tour.next();
+                }
             })
             .show({
-                element: '.mainHl',
+                element: document.querySelector('.mainHl'),
                 placement: 'bottom',
                 title: 'Small and independent',
                 content: 'This tour is a demostration of showtime. ' +
                 'you might be interested in viewing the source code',
             })
             .show({
-                element: 'p',
+                element: document.querySelector('p'),
                 title: 'What does it do?',
                 placement: 'top',
                 padding: 10,
@@ -146,7 +151,7 @@
                 'and shows a popover pointing at it. </p>',
             })
             .show({
-                element: '#someButton',
+                element: document.querySelector('#someButton'),
                 placement: 'right',
                 title: 'Scroll animation included',
                 content: 'Did you notice? If the element isn\'t in the viewport Showtime will take care of the scrolling for you',
@@ -154,7 +159,7 @@
                 padding: 10,
             })
             .show({
-                element: '#someButton',
+                element: document.querySelector('#someButton'),
                 placement: 'top',
                 title: 'Ohh while we are here',
                 content: 'This button works. try it!',
@@ -163,7 +168,7 @@
             })
 
             .show({
-                element: '#someButton',
+                element: document.querySelector('#someButton'),
                 placement: 'left',
                 title: 'Sometimes that\'s not what we want',
                 content: 'So we can hijack the event and do whatever we want with it. Try it again.',
@@ -173,42 +178,15 @@
                 },
 
             })
-            .modal({
-                title: 'Yeahh.',
-                message: 'We have a modals too.'
-            })
-            .show({
-                element: '#someButton',
-                placement: 'left',
-                title: 'Sometimes that\'s not what we want',
-                content: 'So we can hijack the event and do whatever we want with it. Try it again.',
-                padding: 10,
-                focusClick: function () {
-                    alert('you probably don\'t want to show alert popup in your projects');
-                }
 
-            })
-            .show({
-                element: document.querySelector('.field'),
-                title: 'hey I have a title again.',
-                placement: 'bottom',
-                content: '<p>This is a ball</p>',
-                padding: 10,
-                buttons: [
-                    {
-                        label: 'quit',
-                        click: function () {
-                            tour.quit()
-                        }
-                    },
-                    {
-                        label: 'next',
-                        click: function () {
-                            tour.next()
-                        }
-                    }
-                ]
+            .modal({
+                title: 'Modal component.',
+                message: 'Showtime tours are defined with a chainable functions.<br>',
+                onClose: function() {
+                    tour.next();
+                }
             });
+
 
     setTimeout(function () {
         tour.start();

@@ -1268,19 +1268,22 @@ var Showtime = function () {
         // this.tmpSettings might change on every _callAgain as it is merged with the given settings
         this.tmpSettings = this.defaults;
         this._createFocus();
-
         this.focus.notify = true;
-        this.focus.complete = throttle(function () {
+        this.focus.complete = function () {
             if (_this8.focus.notify) {
                 _this8.focus.notify = false;
                 if (_this8.tmpSettings.popoverTimer === 'auto') {
-                    _this8.popover.show();
+                    try {
+                        _this8.popover.show();
+                    } catch (err) {
+                        //pass
+                    }
                 }
                 if (_this8.defaults.autoplay) {
                     _this8._callAgain();
                 }
             }
-        }, 500);
+        };
         this.focus.onOuterClick = function () {
             _this8.quit();
         };
@@ -1474,9 +1477,13 @@ var Showtime = function () {
                     return item();
                 }
             }
+
             if (item.hasOwnProperty('element')) {
                 if (typeof item.element === 'function') {
                     item.element = item.element();
+                }
+                if (!isElement(item.element)) {
+                    //console.log('its not an element');
                 }
             }
             // here the item can be named function or a settings object. do nothing
@@ -1518,8 +1525,6 @@ var Showtime = function () {
         key: 'next',
         value: function next() {
             this.__proto__.isTour = true;
-            var item = this._resolveChainItem();
-
             if (this.chainIndex) {
                 // Dont close the modal if we have a function
                 if (typeof item !== 'function') {
@@ -1527,6 +1532,7 @@ var Showtime = function () {
                 }
             }
             if (this._isNext()) {
+                var _item = this._resolveChainItem();
                 this._callchain();
 
                 // cache the higest seen step to local storage
