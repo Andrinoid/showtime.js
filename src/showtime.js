@@ -809,15 +809,31 @@ var STYLES = `
              text-align: right;
          }
          .popover .popBtn {
-             color: #333;
-             font-weight: bold;
-             border: solid 1px #333;
-             display: inline-block;
-             padding: 4px 18px;
-             border-radius: 1px;
-             font-size: 13px;
-             cursor: pointer;
-             margin-left: 8px;
+             -moz-appearance: none;
+    		 -webkit-appearance: none;
+    		 -ms-appearance: none;
+    		 appearance: none;
+    		 -moz-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    		 -webkit-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    		 -ms-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    		 transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    		 display: inline-block;
+    		 height: 2.75em;
+    		 line-height: 2.75em;
+    		 padding: 0 1.5em;
+    		 background-color: transparent;
+    		 border-radius: 3px;
+    		 border: solid 1px #c8cccf;
+    		 color: #414f57 !important;
+    		 cursor: pointer;
+    		 text-align: center;
+    		 text-decoration: none;
+    		 white-space: nowrap;
+             margin-left: 10px;
+         }
+         .popover .popBtn:hover {
+             border-color: #404040;
+			 color: #404040 !important;
          }
 
 
@@ -1395,7 +1411,6 @@ class Popover {
         if (placement === 'top') {
             top = elDim.top - popDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
-            console.log('top top', top);
             //fit to top
             if (this.default.collision === 'fit' && top < 0) {
                 top = 0;
@@ -1413,7 +1428,6 @@ class Popover {
         if (placement === 'left') {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
             left = elDim.left - popDim.width + offset.x;
-            console.log('top left', top);
             //fit to left
             if (this.default.collision === 'fit' && left < 0) {
                 left = 0;
@@ -1431,7 +1445,6 @@ class Popover {
         if (placement === 'right') {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
             left = elDim.left + elDim.width + offset.x;
-            console.log('top right', top);
             //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
             //    left = bodyDim.width - popDim.width;
             //}
@@ -1439,7 +1452,6 @@ class Popover {
         if (placement === 'bottom') {
             top = elDim.top + elDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
-            console.log('top bottom', top);
             ////fit to left
             //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
             //    left = bodyDim.width - popDim.width;
@@ -1453,7 +1465,6 @@ class Popover {
             //    left = bodyDim.width - popDim.width;
             //}
         }
-        console.log('top final', top);
         this.popover.style.top = top + 'px';
         this.popover.style.left = left + 'px';
     }
