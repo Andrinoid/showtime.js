@@ -128,7 +128,11 @@
     })
             .modal({
                 title: 'sdfsdf',
-                message: ['skref 1. <h1>blabalbla</h2>', 'skref 2 foobar', 'skref 3 all done'],
+                message: [
+                    '<h3>step 1.</h3><div class="button" onclick="tour.next();">ok next</div>',
+                    '<h3>step 1.</h3><div class="button" onclick="tour.next();">ok next</div>',
+                    '<h3>step 1.</h3><div class="button" onclick="tour.next();">ok next</div>'
+                ],
                 onClose: function() {
                     tour.next();
                     tour.next();
@@ -169,7 +173,7 @@
 
             .show({
                 element: document.querySelector('#someButton'),
-                placement: 'left',
+                placement: 'right',
                 title: 'Sometimes that\'s not what we want',
                 content: 'So we can hijack the event and do whatever we want with it. Try it again.',
                 padding: 10,

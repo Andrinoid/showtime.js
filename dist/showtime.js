@@ -1525,14 +1525,15 @@ var Showtime = function () {
         key: 'next',
         value: function next() {
             this.__proto__.isTour = true;
-            if (this.chainIndex) {
-                // Dont close the modal if we have a function
-                if (typeof item !== 'function') {
-                    Modal.prototype.closeAll();
-                }
-            }
+
             if (this._isNext()) {
-                var _item = this._resolveChainItem();
+                var item = this._resolveChainItem();
+                if (this.chainIndex) {
+                    // Dont close the modal if we have a function
+                    if (typeof item !== 'function') {
+                        Modal.prototype.closeAll();
+                    }
+                }
                 this._callchain();
 
                 // cache the higest seen step to local storage

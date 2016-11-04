@@ -144,47 +144,6 @@
             }
         });
 
-        tour.show({
-                element: document.querySelector('p'),
-                placement: 'left',
-                content: '<p>This is a box2</p>'
-            })
-
-            .show({
-                element: document.querySelector('.four'),
-                placement: 'left',
-                content: '<p>This is a box2</p>'
-            })
-            .show({
-                element: document.querySelector('.three'),
-                placement: 'top',
-                content: '<p>This is a box2</p>'
-            })
-            .show({
-                element: document.querySelector('.four'),
-                placement: 'bottom',
-                content: '<p>This is a box1</p>',
-                focusClick: function() {
-                    tour.next();
-                }
-            })
-            .show({
-                element: document.querySelector('.four'),
-                placement: 'left',
-                content: '<p>This is a box2</p>'
-            })
-            .show({
-                element: document.querySelector('#ball'),
-                placement: 'bottom',
-                content: '<p>This is a box2</p>'
-            })
-            .modal({
-                title: 'sdfsdf',
-                message: 'sdfsdf',
-                onClose: function() {
-                    tour.quit();
-                }
-            });
 
         //    tour.onStart = function () {
         //        console.log('started tour');
