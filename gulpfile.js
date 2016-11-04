@@ -16,7 +16,8 @@ gulp.task('babel', function() {
 			presets: ['es2015']
 		}))
         .pipe(umd())
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('./demo/showtime'));
 });
 
 gulp.task('clean', function () {
@@ -32,7 +33,7 @@ gulp.task('watch', ['browser-sync'], function() {
 gulp.task('browser-sync', function() {
     browserSync.init({
         server: {
-            baseDir: "./"
+            baseDir: "./demo",
         }
     });
 });
