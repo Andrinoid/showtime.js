@@ -263,13 +263,18 @@ var getHigestBoundingRect = function (nodes) {
     for (let i = 0; i < nodes.length; i++) {
         let el = nodes[i];
         let r = el.getBoundingClientRect();
-        rect.bottom = Math.min(rect.bottom, r.bottom);
-        rect.height = Math.min(rect.height, r.height);
-        rect.left = Math.max(rect.left, r.left);
+        rect.bottom = Math.max(rect.bottom, r.bottom);
+        rect.height = Math.max(rect.height, r.height);
+        rect.left = rect.left === 0 ? r.left: Math.min(rect.left, r.left);
         rect.right = Math.max(rect.right, r.right);
-        rect.top = Math.max(rect.top, r.top);
-        rect.width = Math.max(rect.width, r.width);
+        rect.top = rect.top === 0 ? r.top: Math.min(rect.top, r.top);
+        //rect.width = Math.max(rect.width, r.width);
+        rect.width = r.width;
+
     }
+    rect.width = rect.right - rect.left;
+    rect.height = rect.bottom - rect. top;
+    //rect.height = rect.bottom - rect.top;
     return rect
 };
 
@@ -534,9 +539,8 @@ var STYLES = `
              color: #333
          }
          .modal-footer {
-             padding: 15px;
+             padding: 0 15px 10px 15px;
              text-align: center;
-             //border-top: 1px solid #e5e5e5;
          }
 
          .chain_modal,
@@ -1211,12 +1215,16 @@ class Modal {
     }
 
     _injectStyles() {
-        //TODO consider removing styleFallback by splitting styles for each component
-        if (!document.querySelector('.showtimeStyles')) {
-            new Elm('div.showtimeStyles', {
-                html: STYLES
-            }, document.head);
+        if (document.getElementById('showtimeStyles')) return;
+        var tag = document.createElement('style');
+        tag.type = 'text/css';
+        tag.id = 'showtimeStyles';
+        if (tag.styleSheet) {
+           tag.styleSheet.cssText = STYLES;
+        } else {
+           tag.appendChild(document.createTextNode(STYLES));
         }
+        document.getElementsByTagName('head')[0].appendChild(tag);
     }
 
     _close(cb = ()=> {
@@ -1284,12 +1292,16 @@ class Popover {
     }
 
     _injectStyles() {
-        //TODO consider removing styleFallback
-        if (!document.querySelector('.styleFallback')) {
-            new Elm('div.styleFallback', {
-                html: STYLES
-            }, document.body);
+        if (document.getElementById('showtimeStyles')) return;
+        var tag = document.createElement('style');
+        tag.type = 'text/css';
+        tag.id = 'showtimeStyles';
+        if (tag.styleSheet) {
+           tag.styleSheet.cssText = STYLES;
+        } else {
+           tag.appendChild(document.createTextNode(STYLES));
         }
+        document.getElementsByTagName('head')[0].appendChild(tag);
 
     }
 
@@ -1369,44 +1381,15 @@ class Popover {
     setPosition() {
         let placement = this.default.placement;
         let elDim = getHigestBoundingRect(this.element);
-
-        ///////
-        //for (var i = 0, len = nodes.length; i < len; i++) {
-        //    var node = nodes[i];
-        //
-        //    // Fetch the screen coordinates for this element
-        //    var position = getScreenPosition(node);
-        //
-        //    var x = position.x,
-        //        y = position.y,
-        //        w = node.offsetWidth,
-        //        h = node.offsetHeight;
-        //
-        //    // 1. offsetLeft works
-        //    // 2. offsetWidth works
-        //    // 3. Element is larger than zero pixels
-        //    // 4. Element is not <br>
-        //    if (node && typeof x === 'number' && typeof w === 'number' && ( w > 0 || h > 0 ) && !node.nodeName.match(/^br$/gi)) {
-        //        currentRegion.left = Math.min(currentRegion.left, x);
-        //        currentRegion.top = Math.min(currentRegion.top, y);
-        //        currentRegion.right = Math.max(currentRegion.right, x + w);
-        //        currentRegion.bottom = Math.max(currentRegion.bottom, y + h);
-        //    }
-        //}
-        //
-        ///////
-
-
-
         let popDim = this.popover.getBoundingClientRect();
         let bodyDim = {
             height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
             width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
         };
-
+        console.log(this.element);
+        console.log(elDim);
         let top, left;
         let offset = this.getOffset();
-
 
         //TODO this needs some love
         //the fit calculations dont work on all sides
@@ -1854,16 +1837,7 @@ class Showtime {
                 this.popover.show();
             }, time);
         }
-
-
         this.chainIndex++;
-        //if (typeof settings.focusClick === "undefined" || !settings.focusClick) {
-        //    this.focus.focusBox.middle.style.pointerEvents = 'none'
-        //}
-        //else {
-        //    this.focus.focusBox.middle.style.pointerEvents = 'auto';
-        //    this.focus.focusBox.middle.onclick = settings.focusClick;
-        //}
     }
 
     _removePopover() {
@@ -1931,8 +1905,8 @@ class Showtime {
             if(typeof item.element === 'function') {
                 item.element = item.element();
             }
-            if(!isElement(item.element)) {
-                //console.log('its not an element');
+            if(!isElement(item.element) && typeof(item.element) === 'string') {
+                item.element = document.querySelectorAll(item.element);
             }
 
         }

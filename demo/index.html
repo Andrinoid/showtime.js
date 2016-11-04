@@ -95,7 +95,7 @@
                     <label for="robot_no">No</label>
                 </div>
                 <ul class="actions">
-                    <li><a href="#" class="button" id="someButton" onclick="tour.next();">Get Started</a></li>
+                    <li><div class="button" id="someButton" onclick="tour.next();">Get Started</div></li>
                 </ul>
             </form>
             <hr/>
@@ -173,6 +173,13 @@
             .show({
                 element: document.querySelector('.mainHl'),
                 placement: 'bottom',
+                title: 'Small and independent',
+                content: 'This tour is a demostration of showtime. ' +
+                    'you might be interested in viewing the source code',
+            })
+            .show({
+                element: document.querySelectorAll('input'),
+                placement: 'right',
                 title: 'Small and independent',
                 content: 'This tour is a demostration of showtime. ' +
                     'you might be interested in viewing the source code',
