@@ -1352,9 +1352,6 @@ class Popover {
         let placement = this.default.placement;
         let elDim = getHigestBoundingRect(this.element);
 
-
-
-
         ///////
         //for (var i = 0, len = nodes.length; i < len; i++) {
         //    var node = nodes[i];
@@ -1398,6 +1395,7 @@ class Popover {
         if (placement === 'top') {
             top = elDim.top - popDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
+            console.log('top top', top);
             //fit to top
             if (this.default.collision === 'fit' && top < 0) {
                 top = 0;
@@ -1415,6 +1413,7 @@ class Popover {
         if (placement === 'left') {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
             left = elDim.left - popDim.width + offset.x;
+            console.log('top left', top);
             //fit to left
             if (this.default.collision === 'fit' && left < 0) {
                 left = 0;
@@ -1424,13 +1423,15 @@ class Popover {
                 top = 0;
             }
             //fit to bottom
-            if (this.default.collision === 'fit' && (top + popDim.height) > bodyDim.height) {
-                top = bodyDim.height - popDim.height;
-            }
+            // if (this.default.collision === 'fit' && (top + popDim.height) > bodyDim.height) {
+            //     top = bodyDim.height - popDim.height;
+            // }
+
         }
         if (placement === 'right') {
             top = elDim.top + (elDim.height / 2) - (popDim.height / 2) + offset.y + window.scrollY;
             left = elDim.left + elDim.width + offset.x;
+            console.log('top right', top);
             //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
             //    left = bodyDim.width - popDim.width;
             //}
@@ -1438,6 +1439,7 @@ class Popover {
         if (placement === 'bottom') {
             top = elDim.top + elDim.height + offset.y + window.scrollY;
             left = elDim.left + (elDim.width / 2) - (popDim.width / 2) + offset.x;
+            console.log('top bottom', top);
             ////fit to left
             //if (this.default.collision === 'fit' && (left + popDim.width) > bodyDim.width) {
             //    left = bodyDim.width - popDim.width;
@@ -1451,7 +1453,7 @@ class Popover {
             //    left = bodyDim.width - popDim.width;
             //}
         }
-
+        console.log('top final', top);
         this.popover.style.top = top + 'px';
         this.popover.style.left = left + 'px';
     }
