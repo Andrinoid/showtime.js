@@ -1386,8 +1386,6 @@ class Popover {
             height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
             width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
         };
-        console.log(this.element);
-        console.log(elDim);
         let top, left;
         let offset = this.getOffset();
 
@@ -1709,7 +1707,7 @@ class Showtime {
             autoplay: false,
             autoplayDelay: 1000,
             buttons: [],
-            //focusClick: null,
+            focusClick: null,
             removeOnOuterClick: false,
             popoverTimer: 'auto', //adjust when popover is animated. auto, false or milliseconds
             pointerEvents: 'none'
@@ -1737,6 +1735,9 @@ class Showtime {
         };
         this.focus.onOuterClick = ()=> {
             this.quit();
+        }
+        if(typeof this.defaults.focusClick === 'function'){
+            this.focus.overlay.onclick = this.defaults.focusClick;
         }
     }
 
@@ -1832,6 +1833,12 @@ class Showtime {
             buttons: settings.buttons
         });
         this.focus.PADDING = settings.padding;
+        this.focus.overlay.style.pointerEvents = settings.pointerEvents;
+        if(settings.focusClick && typeof settings.focusClick === 'function'){
+            this.focus.overlay.onclick = settings.focusClick;
+        } else {
+            this.focus.overlay.onclick = function(){};
+        }
         this.focus.focusOnElement(settings.element);
         if (defaults.popoverTimer !== 'auto') {
             let time = parseInt(defaults.popoverTimer) || 0;

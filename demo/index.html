@@ -132,7 +132,7 @@
     <script src="../dist/showtime.js"></script>
     <script>
         var tour = new Showtime({
-                pointerEvents: 'all',
+                pointerEvents: 'none',
                 buttons: [{
                     label: 'quit',
                     click: function() {
@@ -171,6 +171,7 @@
                 }
             })
             .show({
+                pointerEvents: 'all',
                 element: document.querySelector('.mainHl'),
                 placement: 'bottom',
                 title: 'Small and independent',
@@ -178,25 +179,36 @@
                     'you might be interested in viewing the source code',
             })
             .show({
+                focusClick: function() {
+                    alert('nope');
+                },
+                pointerEvents: 'all',
                 element: document.querySelectorAll('input'),
-                placement: 'bottom',
+                placement: 'top',
                 title: 'Flexable',
-                content: 'You can focus on multiple elements'
+                content: 'You can focus on multiple elements and prevent interaction. Try clicking the form'
             })
             .show({
+                pointerEvents: 'all',
                 element: document.querySelector('p'),
                 title: 'What does it do?',
-                placement: 'top',
+                placement: 'bottom',
                 padding: 10,
                 content: '<p>It <b>animates</b> a focuspoint at any given element ' +
                     'and shows a popover pointing at it. </p>',
+            })
+            .show({
+                pointerEvents: 'none',
+                element: document.querySelectorAll('input'),
+                placement: 'top',
+                title: 'Flexable',
+                content: 'try clicking the form now'
             })
             .show({
                 element: document.querySelector('#someButton'),
                 placement: 'left',
                 title: 'Scroll animation included',
                 content: 'Did you notice? If the element isn\'t in the viewport Showtime will take care of the scrolling for you',
-                focusClick: false,
                 padding: 10,
             })
             .show({
@@ -204,15 +216,17 @@
                 placement: 'right',
                 title: 'Ohh while we are here',
                 content: 'This button works. try it!',
-                focusClick: false,
                 padding: 10,
             })
             .show({
+                focusClick: function() {
+                    alert('custom event');
+                },
+                pointerEvents: 'all',
                 element: document.querySelector('#someButton'),
                 placement: 'left',
                 title: 'Sometimes that\'s not what we want',
                 content: 'So we can hijack the event and do whatever we want with it. Try it again.',
-                focusClick: false,
                 padding: 10,
 
             })
