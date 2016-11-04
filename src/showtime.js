@@ -1470,7 +1470,8 @@ class Focus {
     constructor(config) {
         this.options = {
             padding: 5,
-            removeOnOuterClick: false
+            removeOnOuterClick: false,
+            pointerEvents: 'none'
         };
         this.options = extend(this.options, config);
         this.ELEMENT = null;
@@ -1499,7 +1500,7 @@ class Focus {
         this.overlay.style.left = 0;
         this.overlay.style.top = 0;
         this.overlay.style.zIndex = MAX_ZINDEX - 1; //just about as high as it can get
-        this.overlay.style.pointerEvents = 'none';
+        this.overlay.style.pointerEvents = this.options.pointerEvents;
         this.overlay.style.background = 'transparent';
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
@@ -1708,9 +1709,10 @@ class Showtime {
             autoplay: false,
             autoplayDelay: 1000,
             buttons: [],
-            focusClick: null,
+            //focusClick: null,
             removeOnOuterClick: false,
-            popoverTimer: 'auto' //adjust when popover is animated. auto, false or milliseconds
+            popoverTimer: 'auto', //adjust when popover is animated. auto, false or milliseconds
+            pointerEvents: 'none'
         };
         //override default with user options
         this.defaults = extend(this.defaults, options);
@@ -1771,9 +1773,9 @@ class Showtime {
     _createFocus() {
         this.focus = new Focus({
             padding: this.defaults.padding,
-            removeOnOuterClick: this.defaults.removeOnOuterClick
+            removeOnOuterClick: this.defaults.removeOnOuterClick,
+            pointerEvents: this.defaults.pointerEvents
         });
-        //TODO Focus needs to fire event on remove so we can use it here to quit tour
     }
 
     _callchain() {

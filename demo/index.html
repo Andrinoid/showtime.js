@@ -132,7 +132,7 @@
     <script src="../dist/showtime.js"></script>
     <script>
         var tour = new Showtime({
-                removeOnOuterClick: false,
+                pointerEvents: 'all',
                 buttons: [{
                     label: 'quit',
                     click: function() {
@@ -179,10 +179,9 @@
             })
             .show({
                 element: document.querySelectorAll('input'),
-                placement: 'right',
-                title: 'Small and independent',
-                content: 'This tour is a demostration of showtime. ' +
-                    'you might be interested in viewing the source code',
+                placement: 'bottom',
+                title: 'Flexable',
+                content: 'You can focus on multiple elements'
             })
             .show({
                 element: document.querySelector('p'),
