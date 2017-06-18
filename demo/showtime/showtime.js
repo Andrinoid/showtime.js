@@ -623,6 +623,173 @@ var Carousel = function () {
  * ------------------------------------------------------------------------
  */
 
+// class Modal {
+//
+//     constructor(options) {
+//
+//         this.defaults = {
+//             title: '',
+//             message: '',
+//             footer: '',
+//             theme: 'classic',
+//             closeButton: true,
+//             size: 'normal',//large small
+//             uid: null, //if uid is given, the modal vill create an global var on that id and store it self.
+//             onClose: function () {
+//             },
+//             onOpen: function () {
+//             }
+//         };
+//         this.isCarousel = false; //maybe these two can merge
+//         this.carousel = null; //maybe these two can merge
+//         this.defaults = extend(this.defaults, options);
+//
+//         if (this.defaults.uid) {
+//             window[this.defaults.uid] = this;
+//         }
+//         this.__proto__.closeAll();
+//         this.__proto__.instances.push(this);
+//         this._injectStyles();
+//         this.buildTemplate();
+//     }
+//
+//     buildTemplate() {
+//         //The Modal ships with three sizes bootstrap style
+//         let sizeMap = {
+//             'small': 'chain_modal-sm',
+//             'normal': '',
+//             'large': 'chain_modal-lg'
+//         };
+//         let sizeClass = sizeMap[this.defaults.size];
+//
+//         //TODO default message can be rich html so message is not a god name for it
+//         let content = this.defaults.message;
+//
+//         //if message is array we create carousel content
+//         if (isArray(this.defaults.message)) {
+//             this.isCarousel = true;
+//             let merge = '';
+//             this.defaults.message.forEach((item, i) => {
+//                 merge += `<div class="carousel slide${i}">${item}</div>`;
+//             });
+//             content = merge;
+//         }
+//
+//         //Add header if we have a title. if not we only add the close button.
+//         let header = '';
+//         if (this.defaults.title) {
+//             header = `
+//                 <div class="modal-header">
+//                     <button type="button" class="close"><span>×</span></button>
+//                     <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
+//                 </div>`;
+//         }
+//         if (this.defaults.title && !this.defaults.closeButton) {
+//             header = `
+//                 <div class="modal-header">
+//                     <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
+//                 </div>`;
+//         }
+//         if (!this.defaults.title && this.defaults.closeButton) {
+//             header = '<button type="button" class="close standalone"><span>×</span></button>';
+//         }
+//
+//         let footer = `
+//                 <div class="modal-footer">
+//                     ${this.defaults.footer}
+//                 </div>`;
+//
+//         //TODO sameina footer of iscarousel þetta er tvítekið
+//         if (this.isCarousel) {
+//             //let pagers = '<div class="pag-dot"></div>'.repeat(slides); depricated
+//             footer = `
+//                 <div class="modal-footer">
+//                     ${this.defaults.footer}
+//                 </div>`;
+//         }
+//
+//         let main = `
+//                 <div class="chain_modal fadeInDown">
+//                     <div class="chain_dialog ${sizeClass}">
+//                         <div class="modal-content">
+//                             ${header}
+//                             <div class="modal-body">
+//                                 <div>${content}</div>
+//                             </div>
+//                             ${footer}
+//                         </div>
+//                     </div>
+//                 </div>`;
+//
+//
+//         this.modal = new Elm('div', {html: main, 'class': `modal-theme-${this.defaults.theme}`}, document.body);
+//
+//         if (this.defaults.closeButton) {
+//             let btn = this.modal.querySelector('.close');
+//             btn.onclick = ()=> {
+//                 this.close();
+//             };
+//         }
+//
+//         if (this.isCarousel) {
+//             this.carousel = new Carousel({}, this.modal);
+//         }
+//
+//         this.chainDialog = this.modal.querySelector('.chain_dialog');
+//         setClass(document.body, 'modal-mode');
+//         this.defaults.onOpen();
+//
+//     }
+//
+//     _injectStyles() {
+//         if (document.getElementById('showtimeStyles')) return;
+//         var tag = document.createElement('style');
+//         tag.type = 'text/css';
+//         tag.id = 'showtimeStyles';
+//         if (tag.styleSheet) {
+//            tag.styleSheet.cssText = STYLES;
+//         } else {
+//            tag.appendChild(document.createTextNode(STYLES));
+//         }
+//         document.getElementsByTagName('head')[0].appendChild(tag);
+//     }
+//
+//     _close(cb = ()=> {
+//     }) {
+//         setClass(this.chainDialog, 'fadeOutTop');
+//         setTimeout(()=> {
+//             // remove dom
+//             this.modal.remove();
+//             // remove instance from global
+//             ////window[this.defaults.uid] = null;
+//             // remove the modal class from body
+//             removeClass(document.body, 'modal-mode');
+//             cb();
+//         }, 500);
+//     }
+//
+//     close() {
+//         this._close(this.defaults.onClose);
+//     }
+//
+// }
+// Modal.prototype.instances = [];
+// Modal.prototype.closeAll = function () {
+//     this.instances.forEach(function (item) {
+//         item._close();
+//     });
+//     this.instances.length = 0;
+// };
+/**
+ * ------------------------------------------------------------------------
+ * Modal
+ * Creates Modal
+ * ------------------------------------------------------------------------
+ */
+
+
+var Modalstyles = '\n        /* Modal styles */\n         body.modal-mode {\n             overflow: hidden !important\n         }\n         .modal-body,\n         .modal-title {\n             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;\n             line-height: 1.42857143;\n             color: #333\n         }\n         .js_modal,\n         .modal-backdrop {\n             position: fixed;\n             top: 0;\n             right: 0;\n             bottom: 0;\n             left: 0\n         }\n         .modal-backdrop {\n             z-index: 1040;\n             background-color: #000;\n             opacity: .5\n         }\n\n         .js_modal {\n             z-index: 10000;\n             overflow-y: scroll;\n             -webkit-overflow-scrolling: touch;\n             outline: 0\n         }\n         .js_dialog {\n             position: relative;\n             width: auto;\n             margin: 10px\n         }\n         .modal-header .close {\n             margin-top: -2px;\n             position: static;\n             height: 30px;\n         }\n         .modal-theme-blue .close {\n             text-shadow: none;\n             opacity: 1;\n             font-size: 31px;\n             font-weight: normal;\n         }\n         .modal-theme-blue .close span {\n             color: white;\n         }\n         .modal-theme-blue .close span:hover {\n             color: #fbc217;\n         }\n         .close.standalone {\n             position: absolute;\n             right: 15px;\n             top: 13px;\n             z-index: 1;\n             height: 30px;\n         }\n         .modal-title {\n             margin: 0;\n             font-size: 18px;\n             font-weight: 500\n         }\n         button.close {\n             -webkit-appearance: none;\n             padding: 0;\n             cursor: pointer;\n             background: 0 0;\n             border: 0\n         }\n         .modal-content {\n             position: relative;\n             background-color: #fff;\n             background-clip: padding-box;\n             border-radius: 2px;\n             outline: 0;\n             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)\n         }\n         .modal-theme-blue .modal-content {\n            background-color: #4a6173;\n         }\n         .modal-header {\n             min-height: 16.43px;\n             padding: 15px;\n             border-bottom: 1px solid #e5e5e5;\n             min-height: 30px\n         }\n         .modal-theme-blue .modal-header {\n            border-bottom: none;\n         }\n         .modal-body {\n             position: relative;\n             padding: 15px;\n             font-size: 14px\n         }\n         .close {\n             float: right;\n             font-size: 21px;\n             font-weight: 700;\n             line-height: 1;\n             color: #000;\n             text-shadow: 0 1px 0 #fff;\n             opacity: .2\n         }\n         .js_dialog.js_modal-full {\n            margin: 0;\n            height: 100%;\n            width: 100%;\n         }\n         .js_dialog.js_modal-full .modal-content {\n            border: none;\n            box-shadow: none;\n            border-radius: 0;\n            height: 100%;\n         }\n         @media (min-width: 768px) {\n             .js_dialog {\n                 width: 600px;\n                 margin: 30px auto\n             }\n             .modal-content {\n                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)\n             }\n             .js_modal-sm {\n                 width: 300px\n             }\n         }\n         @media (min-width: 992px) {\n             .js_modal-lg {\n                 width: 980px\n             }\n         }\n\n         .ghost-focus {\n             background: transparent;\n             z-index: 1000;\n         }\n\n\n         /*** Animations ***/\n         @-webkit-keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInDown {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInTop {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, 10px, 0);\n                 transform: translate3d(0, 10px, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @keyframes fadeOutTop {\n             0% {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none\n             }\n             100% {\n                 opacity: 0;\n                 -webkit-transform: translate3d(0, -10px, 0);\n                 transform: translate3d(0, -10px, 0)\n             }\n         }\n         @-webkit-keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInLeft {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(-10px, 0, 0);\n                 transform: translate3d(-10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @-webkit-keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         @keyframes fadeInRight {\n             from {\n                 opacity: 0;\n                 -webkit-transform: translate3d(10px, 0, 0);\n                 transform: translate3d(10px, 0, 0);\n             }\n             to {\n                 opacity: 1;\n                 -webkit-transform: none;\n                 transform: none;\n             }\n         }\n         .fadeInDown,\n         .fadeInLeft,\n         .fadeInRight,\n         .fadeInTop,\n         .fadeOutTop{\n             -webkit-animation-fill-mode: both;\n             -webkit-animation-duration: .5s;\n             animation-duration: .5s;\n             animation-fill-mode: both;\n         }\n         .fadeInDown {\n             -webkit-animation-name: fadeInDown;\n             animation-name: fadeInDown;\n         }\n         .fadeInLeft {\n             -webkit-animation-name: fadeInLeft;\n             animation-name: fadeInLeft;\n         }\n         .fadeInRight {\n             -webkit-animation-name: fadeInRight;\n             animation-name: fadeInRight;\n         }\n         .fadeInTop {\n             -webkit-animation-name: fadeInTop;\n             animation-name: fadeInTop;\n         }\n         .fadeOutTop {\n             -webkit-animation-name: fadeOutTop;\n             animation-name: fadeOutTop;\n         }';
+
 var Modal = function () {
     function Modal(options) {
         _classCallCheck(this, Modal);
@@ -630,120 +797,108 @@ var Modal = function () {
         this.defaults = {
             title: '',
             message: '',
-            footer: '',
             theme: 'classic',
-            closeButton: true,
-            size: 'normal', //large small
-            uid: null, //if uid is given, the modal vill create an global var on that id and store it self.
+            withBackdrop: true,
+            size: 'normal', //large small full
+            customClass: '',
             onClose: function onClose() {},
-            onOpen: function onOpen() {}
-        };
-        this.isCarousel = false; //maybe these two can merge
-        this.carousel = null; //maybe these two can merge
-        this.defaults = extend(this.defaults, options);
+            onOpen: function onOpen() {},
+            closeOthers: true,
+            autoClose: false,
+            autoCloseTime: 2000,
+            type: 'modal',
+            parent: document.body
 
-        if (this.defaults.uid) {
-            window[this.defaults.uid] = this;
-        }
-        this.__proto__.closeAll();
+        };
+        this.defaults = extend(this.defaults, options);
+        this.parent = this.defaults.parent; //TODO resolve jquery, array like objects or proper error message
+        this.STYLES = Modalstyles;
+
+        if (this.defaults.closeOthers) this.__proto__.closeAll();
         this.__proto__.instances.push(this);
-        this._injectStyles();
         this.buildTemplate();
+        this._injectTemplate();
+        if (this.defaults.autoClose) this.autoClose();
+
+        this._injectStyles();
     }
 
     _createClass(Modal, [{
-        key: 'buildTemplate',
-        value: function buildTemplate() {
+        key: 'autoClose',
+        value: function autoClose() {
             var _this3 = this;
 
-            //The Modal ships with three sizes bootstrap style
+            setTimeout(function () {
+                _this3.close();
+            }, this.defaults.autoCloseTime);
+        }
+    }, {
+        key: 'buildTemplate',
+        value: function buildTemplate() {
+            var _this4 = this;
+
             var sizeMap = {
-                'small': 'chain_modal-sm',
+                'small': 'js_modal-sm',
                 'normal': '',
-                'large': 'chain_modal-lg'
+                'large': 'js_modal-lg',
+                'full': 'js_modal-full'
             };
             var sizeClass = sizeMap[this.defaults.size];
 
-            //TODO default message can be rich html so message is not a god name for it
-            var content = this.defaults.message;
-
-            //if message is array we create carousel content
-            if (isArray(this.defaults.message)) {
-                this.isCarousel = true;
-                var merge = '';
-                this.defaults.message.forEach(function (item, i) {
-                    merge += '<div class="carousel slide' + i + '">' + item + '</div>';
-                });
-                content = merge;
+            if (this.defaults.withBackdrop) {
+                this.backdrop = new Elm('div.modal-backdrop', document.body);
             }
 
-            //Add header if we have a title. if not we only add the close button.
-            var header = '';
-            if (this.defaults.title) {
-                header = '\n                <div class="modal-header">\n                    <button type="button" class="close"><span>\xD7</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
-            }
-            if (this.defaults.title && !this.defaults.closeButton) {
-                header = '\n                <div class="modal-header">\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>';
-            }
-            if (!this.defaults.title && this.defaults.closeButton) {
-                header = '<button type="button" class="close standalone"><span>×</span></button>';
-            }
+            var header = this.defaults.title ? '<div class="modal-header">\n                    <button type="button" class="close"><span>\xD7</span></button>\n                    <h4 class="modal-title" id="myModalLabel">' + this.defaults.title + '</h4>\n                </div>' : '<button type="button" class="close standalone"><span>×</span></button>';
 
-            var footer = '\n                <div class="modal-footer">\n                    ' + this.defaults.footer + '\n                </div>';
+            var main = '\n                <div class="js_modal fadeInDown">\n                    <div class="js_dialog ' + sizeClass + '">\n                        <div class="modal-content">\n                            ' + header + '\n                            <div class="modal-body">\n                                <div>' + this.defaults.message + '</div>\n                            </div>\n                        </div>\n                    </div>\n                </div>';
 
-            //TODO sameina footer of iscarousel þetta er tvítekið
-            if (this.isCarousel) {
-                //let pagers = '<div class="pag-dot"></div>'.repeat(slides); depricated
-                footer = '\n                <div class="modal-footer">\n                    ' + this.defaults.footer + '\n                </div>';
+            this.modal = new Elm('div', {
+                html: main, 'class': 'modal-theme-' + this.defaults.theme,
+                cls: this.defaults.customClass
+            });
+
+            var btn = this.modal.querySelectorAll('.close, .close-trigger');
+            this.chainDialog = this.modal.querySelector('.js_dialog');
+
+            for (var i = 0; i < btn.length; i++) {
+                btn[i].addEventListener('click', function () {
+                    _this4.close();
+                }, false);
             }
 
-            var main = '\n                <div class="chain_modal fadeInDown">\n                    <div class="chain_dialog ' + sizeClass + '">\n                        <div class="modal-content">\n                            ' + header + '\n                            <div class="modal-body">\n                                <div>' + content + '</div>\n                            </div>\n                            ' + footer + '\n                        </div>\n                    </div>\n                </div>';
-
-            this.modal = new Elm('div', { html: main, 'class': 'modal-theme-' + this.defaults.theme }, document.body);
-
-            if (this.defaults.closeButton) {
-                var btn = this.modal.querySelector('.close');
-                btn.onclick = function () {
-                    _this3.close();
-                };
+            if (this.defaults.type === 'modal') {
+                setClass(document.body, 'modal-mode');
             }
-
-            if (this.isCarousel) {
-                this.carousel = new Carousel({}, this.modal);
-            }
-
-            this.chainDialog = this.modal.querySelector('.chain_dialog');
-            setClass(document.body, 'modal-mode');
+        }
+    }, {
+        key: '_injectTemplate',
+        value: function _injectTemplate() {
+            this.parent.appendChild(this.modal);
             this.defaults.onOpen();
         }
     }, {
         key: '_injectStyles',
         value: function _injectStyles() {
-            if (document.getElementById('showtimeStyles')) return;
-            var tag = document.createElement('style');
-            tag.type = 'text/css';
-            tag.id = 'showtimeStyles';
-            if (tag.styleSheet) {
-                tag.styleSheet.cssText = STYLES;
-            } else {
-                tag.appendChild(document.createTextNode(STYLES));
+            if (!document.querySelector('.styleFallback')) {
+                new Elm('style.styleFallback', {
+                    html: this.STYLES
+                }, document.querySelector('head'));
             }
-            document.getElementsByTagName('head')[0].appendChild(tag);
         }
     }, {
         key: '_close',
         value: function _close() {
-            var _this4 = this;
+            var _this5 = this;
 
             var cb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
 
+            if (this.defaults.withBackdrop) {
+                fadeOutRemove(this.backdrop);
+            }
             setClass(this.chainDialog, 'fadeOutTop');
             setTimeout(function () {
-                // remove dom
-                _this4.modal.remove();
-                // remove instance from global
-                ////window[this.defaults.uid] = null;
-                // remove the modal class from body
+                _this5.modal.remove();
                 removeClass(document.body, 'modal-mode');
                 cb();
             }, 500);
@@ -751,7 +906,17 @@ var Modal = function () {
     }, {
         key: 'close',
         value: function close() {
-            this._close(this.defaults.onClose);
+            this._close(this.defaults.onClose); //TODO emmitter
+        }
+
+        // Remove modal without animation
+
+    }, {
+        key: '_remove',
+        value: function _remove() {
+            this.backdrop.remove();
+            this.modal.remove();
+            removeClass(document.body, 'modal-mode');
         }
     }]);
 
@@ -761,7 +926,7 @@ var Modal = function () {
 Modal.prototype.instances = [];
 Modal.prototype.closeAll = function () {
     this.instances.forEach(function (item) {
-        item._close();
+        item._remove();
     });
     this.instances.length = 0;
 };
@@ -852,7 +1017,7 @@ var Popover = function () {
     }, {
         key: 'setDirection',
         value: function setDirection() {
-            var _this5 = this;
+            var _this6 = this;
 
             var opposites = {
                 'top': 'Down',
@@ -861,7 +1026,7 @@ var Popover = function () {
                 'right': 'Right'
             };
             var animationClass = function animationClass() {
-                return 'fadeIn' + opposites[_this5.default.placement];
+                return 'fadeIn' + opposites[_this6.default.placement];
             };
             setClass(this.popover, this.default.placement);
             setClass(this.popover, animationClass());
@@ -986,7 +1151,7 @@ var Popover = function () {
 
 var Focus = function () {
     function Focus(config) {
-        var _this6 = this;
+        var _this7 = this;
 
         _classCallCheck(this, Focus);
 
@@ -1029,7 +1194,7 @@ var Focus = function () {
         //window.addEventListener('scroll', this.updateSelection.bind(this), false);
         if (this.options.removeOnOuterClick) {
             this.overlay.addEventListener('click', function () {
-                _this6.onOuterClick();
+                _this7.onOuterClick();
             }, false);
         }
 
@@ -1164,7 +1329,7 @@ var Focus = function () {
     }, {
         key: 'redraw',
         value: function redraw() {
-            var _this7 = this;
+            var _this8 = this;
 
             //if (this.idleState) return false; // TODO deal with scroll and fadeout delema
             // Reset to a solid (less opacity) overlay fill
@@ -1208,7 +1373,7 @@ var Focus = function () {
 
                 // Stage a new animation frame
                 this.redrawAnimation = requestAnimationFrame(function () {
-                    _this7.redraw();
+                    _this8.redraw();
                 });
             } else {
                 document.body.removeChild(this.overlay);
@@ -1225,11 +1390,10 @@ var Focus = function () {
  * This class ties it all together
  *
  */
-//TODO keep focus on scroll and resize add fit options for Popover
 
 var Showtime = function () {
     function Showtime(options) {
-        var _this8 = this;
+        var _this9 = this;
 
         _classCallCheck(this, Showtime);
 
@@ -1254,22 +1418,22 @@ var Showtime = function () {
         this._createFocus();
         this.focus.notify = true;
         this.focus.complete = function () {
-            if (_this8.focus.notify) {
-                _this8.focus.notify = false;
-                if (_this8.tmpSettings.popoverTimer === 'auto') {
+            if (_this9.focus.notify) {
+                _this9.focus.notify = false;
+                if (_this9.tmpSettings.popoverTimer === 'auto') {
                     try {
-                        _this8.popover.show();
+                        _this9.popover.show();
                     } catch (err) {
                         //pass
                     }
                 }
-                if (_this8.defaults.autoplay) {
-                    _this8._callAgain();
+                if (_this9.defaults.autoplay) {
+                    _this9._callAgain();
                 }
             }
         };
         this.focus.onOuterClick = function () {
-            _this8.quit();
+            _this9.quit();
         };
         if (typeof this.defaults.focusClick === 'function') {
             this.focus.overlay.onclick = this.defaults.focusClick;
@@ -1322,7 +1486,7 @@ var Showtime = function () {
     }, {
         key: '_callchain',
         value: function _callchain() {
-            var _this9 = this;
+            var _this10 = this;
 
             /*
              * We clone the default settings and merge it with the current chain settings.
@@ -1357,7 +1521,7 @@ var Showtime = function () {
 
             if (chainItem._type === 'modal') {
                 this._removePopover();
-                this.focus.coverAll();
+                //this.focus.coverAll();
                 var modal = new Modal(chainItem);
                 this.chainIndex++;
                 return;
@@ -1387,7 +1551,7 @@ var Showtime = function () {
             if (defaults.popoverTimer !== 'auto') {
                 var time = parseInt(defaults.popoverTimer) || 0;
                 setTimeout(function () {
-                    _this9.popover.show();
+                    _this10.popover.show();
                 }, time);
             }
             this.chainIndex++;
@@ -1405,10 +1569,10 @@ var Showtime = function () {
     }, {
         key: '_callAgain',
         value: function _callAgain() {
-            var _this10 = this;
+            var _this11 = this;
 
             setTimeout(function () {
-                _this10.next();
+                _this11.next();
             }, this.defaults.autoplayDelay);
         }
     }, {
@@ -1484,7 +1648,7 @@ var Showtime = function () {
     }, {
         key: 'modal',
         value: function modal(options) {
-            var _this11 = this;
+            var _this12 = this;
 
             options._type = 'modal';
             // unique id that the modal will create on the global
@@ -1495,7 +1659,7 @@ var Showtime = function () {
             // So we generate functions in the chain for each slide
             if (options.message && isArray(options.message)) {
                 var _loop = function _loop(i) {
-                    _this11.chain.push(function _carouselNext() {
+                    _this12.chain.push(function _carouselNext() {
                         window[options.uid].carousel.setSlide(i);
                     });
                 };

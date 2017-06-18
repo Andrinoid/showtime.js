@@ -1096,6 +1096,463 @@ class Carousel {
  * ------------------------------------------------------------------------
  */
 
+// class Modal {
+//
+//     constructor(options) {
+//
+//         this.defaults = {
+//             title: '',
+//             message: '',
+//             footer: '',
+//             theme: 'classic',
+//             closeButton: true,
+//             size: 'normal',//large small
+//             uid: null, //if uid is given, the modal vill create an global var on that id and store it self.
+//             onClose: function () {
+//             },
+//             onOpen: function () {
+//             }
+//         };
+//         this.isCarousel = false; //maybe these two can merge
+//         this.carousel = null; //maybe these two can merge
+//         this.defaults = extend(this.defaults, options);
+//
+//         if (this.defaults.uid) {
+//             window[this.defaults.uid] = this;
+//         }
+//         this.__proto__.closeAll();
+//         this.__proto__.instances.push(this);
+//         this._injectStyles();
+//         this.buildTemplate();
+//     }
+//
+//     buildTemplate() {
+//         //The Modal ships with three sizes bootstrap style
+//         let sizeMap = {
+//             'small': 'chain_modal-sm',
+//             'normal': '',
+//             'large': 'chain_modal-lg'
+//         };
+//         let sizeClass = sizeMap[this.defaults.size];
+//
+//         //TODO default message can be rich html so message is not a god name for it
+//         let content = this.defaults.message;
+//
+//         //if message is array we create carousel content
+//         if (isArray(this.defaults.message)) {
+//             this.isCarousel = true;
+//             let merge = '';
+//             this.defaults.message.forEach((item, i) => {
+//                 merge += `<div class="carousel slide${i}">${item}</div>`;
+//             });
+//             content = merge;
+//         }
+//
+//         //Add header if we have a title. if not we only add the close button.
+//         let header = '';
+//         if (this.defaults.title) {
+//             header = `
+//                 <div class="modal-header">
+//                     <button type="button" class="close"><span>×</span></button>
+//                     <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
+//                 </div>`;
+//         }
+//         if (this.defaults.title && !this.defaults.closeButton) {
+//             header = `
+//                 <div class="modal-header">
+//                     <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
+//                 </div>`;
+//         }
+//         if (!this.defaults.title && this.defaults.closeButton) {
+//             header = '<button type="button" class="close standalone"><span>×</span></button>';
+//         }
+//
+//         let footer = `
+//                 <div class="modal-footer">
+//                     ${this.defaults.footer}
+//                 </div>`;
+//
+//         //TODO sameina footer of iscarousel þetta er tvítekið
+//         if (this.isCarousel) {
+//             //let pagers = '<div class="pag-dot"></div>'.repeat(slides); depricated
+//             footer = `
+//                 <div class="modal-footer">
+//                     ${this.defaults.footer}
+//                 </div>`;
+//         }
+//
+//         let main = `
+//                 <div class="chain_modal fadeInDown">
+//                     <div class="chain_dialog ${sizeClass}">
+//                         <div class="modal-content">
+//                             ${header}
+//                             <div class="modal-body">
+//                                 <div>${content}</div>
+//                             </div>
+//                             ${footer}
+//                         </div>
+//                     </div>
+//                 </div>`;
+//
+//
+//         this.modal = new Elm('div', {html: main, 'class': `modal-theme-${this.defaults.theme}`}, document.body);
+//
+//         if (this.defaults.closeButton) {
+//             let btn = this.modal.querySelector('.close');
+//             btn.onclick = ()=> {
+//                 this.close();
+//             };
+//         }
+//
+//         if (this.isCarousel) {
+//             this.carousel = new Carousel({}, this.modal);
+//         }
+//
+//         this.chainDialog = this.modal.querySelector('.chain_dialog');
+//         setClass(document.body, 'modal-mode');
+//         this.defaults.onOpen();
+//
+//     }
+//
+//     _injectStyles() {
+//         if (document.getElementById('showtimeStyles')) return;
+//         var tag = document.createElement('style');
+//         tag.type = 'text/css';
+//         tag.id = 'showtimeStyles';
+//         if (tag.styleSheet) {
+//            tag.styleSheet.cssText = STYLES;
+//         } else {
+//            tag.appendChild(document.createTextNode(STYLES));
+//         }
+//         document.getElementsByTagName('head')[0].appendChild(tag);
+//     }
+//
+//     _close(cb = ()=> {
+//     }) {
+//         setClass(this.chainDialog, 'fadeOutTop');
+//         setTimeout(()=> {
+//             // remove dom
+//             this.modal.remove();
+//             // remove instance from global
+//             ////window[this.defaults.uid] = null;
+//             // remove the modal class from body
+//             removeClass(document.body, 'modal-mode');
+//             cb();
+//         }, 500);
+//     }
+//
+//     close() {
+//         this._close(this.defaults.onClose);
+//     }
+//
+// }
+// Modal.prototype.instances = [];
+// Modal.prototype.closeAll = function () {
+//     this.instances.forEach(function (item) {
+//         item._close();
+//     });
+//     this.instances.length = 0;
+// };
+/**
+ * ------------------------------------------------------------------------
+ * Modal
+ * Creates Modal
+ * ------------------------------------------------------------------------
+ */
+const Modalstyles = `
+        /* Modal styles */
+         body.modal-mode {
+             overflow: hidden !important
+         }
+         .modal-body,
+         .modal-title {
+             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+             line-height: 1.42857143;
+             color: #333
+         }
+         .js_modal,
+         .modal-backdrop {
+             position: fixed;
+             top: 0;
+             right: 0;
+             bottom: 0;
+             left: 0
+         }
+         .modal-backdrop {
+             z-index: 1040;
+             background-color: #000;
+             opacity: .5
+         }
+
+         .js_modal {
+             z-index: 10000;
+             overflow-y: scroll;
+             -webkit-overflow-scrolling: touch;
+             outline: 0
+         }
+         .js_dialog {
+             position: relative;
+             width: auto;
+             margin: 10px
+         }
+         .modal-header .close {
+             margin-top: -2px;
+             position: static;
+             height: 30px;
+         }
+         .modal-theme-blue .close {
+             text-shadow: none;
+             opacity: 1;
+             font-size: 31px;
+             font-weight: normal;
+         }
+         .modal-theme-blue .close span {
+             color: white;
+         }
+         .modal-theme-blue .close span:hover {
+             color: #fbc217;
+         }
+         .close.standalone {
+             position: absolute;
+             right: 15px;
+             top: 13px;
+             z-index: 1;
+             height: 30px;
+         }
+         .modal-title {
+             margin: 0;
+             font-size: 18px;
+             font-weight: 500
+         }
+         button.close {
+             -webkit-appearance: none;
+             padding: 0;
+             cursor: pointer;
+             background: 0 0;
+             border: 0
+         }
+         .modal-content {
+             position: relative;
+             background-color: #fff;
+             background-clip: padding-box;
+             border-radius: 2px;
+             outline: 0;
+             box-shadow: 0 3px 9px rgba(0, 0, 0, .5)
+         }
+         .modal-theme-blue .modal-content {
+            background-color: #4a6173;
+         }
+         .modal-header {
+             min-height: 16.43px;
+             padding: 15px;
+             border-bottom: 1px solid #e5e5e5;
+             min-height: 30px
+         }
+         .modal-theme-blue .modal-header {
+            border-bottom: none;
+         }
+         .modal-body {
+             position: relative;
+             padding: 15px;
+             font-size: 14px
+         }
+         .close {
+             float: right;
+             font-size: 21px;
+             font-weight: 700;
+             line-height: 1;
+             color: #000;
+             text-shadow: 0 1px 0 #fff;
+             opacity: .2
+         }
+         .js_dialog.js_modal-full {
+            margin: 0;
+            height: 100%;
+            width: 100%;
+         }
+         .js_dialog.js_modal-full .modal-content {
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+            height: 100%;
+         }
+         @media (min-width: 768px) {
+             .js_dialog {
+                 width: 600px;
+                 margin: 30px auto
+             }
+             .modal-content {
+                 box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
+             }
+             .js_modal-sm {
+                 width: 300px
+             }
+         }
+         @media (min-width: 992px) {
+             .js_modal-lg {
+                 width: 980px
+             }
+         }
+
+         .ghost-focus {
+             background: transparent;
+             z-index: 1000;
+         }
+
+
+         /*** Animations ***/
+         @-webkit-keyframes fadeInDown {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInDown {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @-webkit-keyframes fadeInTop {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, 10px, 0);
+                 transform: translate3d(0, 10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInTop {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, 10px, 0);
+                 transform: translate3d(0, 10px, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @-webkit-keyframes fadeOutTop {
+             0% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+             100% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0)
+             }
+         }
+         @keyframes fadeOutTop {
+             0% {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none
+             }
+             100% {
+                 opacity: 0;
+                 -webkit-transform: translate3d(0, -10px, 0);
+                 transform: translate3d(0, -10px, 0)
+             }
+         }
+         @-webkit-keyframes fadeInLeft {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(-10px, 0, 0);
+                 transform: translate3d(-10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInLeft {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(-10px, 0, 0);
+                 transform: translate3d(-10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @-webkit-keyframes fadeInRight {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(10px, 0, 0);
+                 transform: translate3d(10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         @keyframes fadeInRight {
+             from {
+                 opacity: 0;
+                 -webkit-transform: translate3d(10px, 0, 0);
+                 transform: translate3d(10px, 0, 0);
+             }
+             to {
+                 opacity: 1;
+                 -webkit-transform: none;
+                 transform: none;
+             }
+         }
+         .fadeInDown,
+         .fadeInLeft,
+         .fadeInRight,
+         .fadeInTop,
+         .fadeOutTop{
+             -webkit-animation-fill-mode: both;
+             -webkit-animation-duration: .5s;
+             animation-duration: .5s;
+             animation-fill-mode: both;
+         }
+         .fadeInDown {
+             -webkit-animation-name: fadeInDown;
+             animation-name: fadeInDown;
+         }
+         .fadeInLeft {
+             -webkit-animation-name: fadeInLeft;
+             animation-name: fadeInLeft;
+         }
+         .fadeInRight {
+             -webkit-animation-name: fadeInRight;
+             animation-name: fadeInRight;
+         }
+         .fadeInTop {
+             -webkit-animation-name: fadeInTop;
+             animation-name: fadeInTop;
+         }
+         .fadeOutTop {
+             -webkit-animation-name: fadeOutTop;
+             animation-name: fadeOutTop;
+         }`;
+
+
 class Modal {
 
     constructor(options) {
@@ -1103,153 +1560,133 @@ class Modal {
         this.defaults = {
             title: '',
             message: '',
-            footer: '',
             theme: 'classic',
-            closeButton: true,
-            size: 'normal',//large small
-            uid: null, //if uid is given, the modal vill create an global var on that id and store it self.
+            withBackdrop: true,
+            size: 'normal',//large small full
+            customClass: '',
             onClose: function () {
             },
             onOpen: function () {
-            }
-        };
-        this.isCarousel = false; //maybe these two can merge
-        this.carousel = null; //maybe these two can merge
-        this.defaults = extend(this.defaults, options);
+            },
+            closeOthers: true,
+            autoClose: false,
+            autoCloseTime: 2000,
+            type: 'modal',
+            parent: document.body
 
-        if (this.defaults.uid) {
-            window[this.defaults.uid] = this;
-        }
-        this.__proto__.closeAll();
+        };
+        this.defaults = extend(this.defaults, options);
+        this.parent = this.defaults.parent; //TODO resolve jquery, array like objects or proper error message
+        this.STYLES = Modalstyles;
+
+        if (this.defaults.closeOthers) this.__proto__.closeAll();
         this.__proto__.instances.push(this);
-        this._injectStyles();
         this.buildTemplate();
+        this._injectTemplate();
+        if (this.defaults.autoClose) this.autoClose();
+
+        this._injectStyles();
+
+    }
+
+    autoClose() {
+        setTimeout(() => {
+            this.close();
+        }, this.defaults.autoCloseTime);
     }
 
     buildTemplate() {
-        //The Modal ships with three sizes bootstrap style
         let sizeMap = {
-            'small': 'chain_modal-sm',
+            'small': 'js_modal-sm',
             'normal': '',
-            'large': 'chain_modal-lg'
+            'large': 'js_modal-lg',
+            'full': 'js_modal-full'
         };
         let sizeClass = sizeMap[this.defaults.size];
 
-        //TODO default message can be rich html so message is not a god name for it
-        let content = this.defaults.message;
-
-        //if message is array we create carousel content
-        if (isArray(this.defaults.message)) {
-            this.isCarousel = true;
-            let merge = '';
-            this.defaults.message.forEach((item, i) => {
-                merge += `<div class="carousel slide${i}">${item}</div>`;
-            });
-            content = merge;
+        if (this.defaults.withBackdrop) {
+            this.backdrop = new Elm('div.modal-backdrop', document.body);
         }
 
-        //Add header if we have a title. if not we only add the close button.
-        let header = '';
-        if (this.defaults.title) {
-            header = `
-                <div class="modal-header">
+        let header = this.defaults.title ?
+            `<div class="modal-header">
                     <button type="button" class="close"><span>×</span></button>
                     <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
-                </div>`;
-        }
-        if (this.defaults.title && !this.defaults.closeButton) {
-            header = `
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">${this.defaults.title}</h4>
-                </div>`;
-        }
-        if (!this.defaults.title && this.defaults.closeButton) {
-            header = '<button type="button" class="close standalone"><span>×</span></button>';
-        }
+                </div>` : '<button type="button" class="close standalone"><span>×</span></button>';
 
-        let footer = `
-                <div class="modal-footer">
-                    ${this.defaults.footer}
-                </div>`;
-
-        //TODO sameina footer of iscarousel þetta er tvítekið
-        if (this.isCarousel) {
-            //let pagers = '<div class="pag-dot"></div>'.repeat(slides); depricated
-            footer = `
-                <div class="modal-footer">
-                    ${this.defaults.footer}
-                </div>`;
-        }
 
         let main = `
-                <div class="chain_modal fadeInDown">
-                    <div class="chain_dialog ${sizeClass}">
+                <div class="js_modal fadeInDown">
+                    <div class="js_dialog ${sizeClass}">
                         <div class="modal-content">
                             ${header}
                             <div class="modal-body">
-                                <div>${content}</div>
+                                <div>${this.defaults.message}</div>
                             </div>
-                            ${footer}
                         </div>
                     </div>
                 </div>`;
 
+        this.modal = new Elm('div', {
+            html: main, 'class': `modal-theme-${this.defaults.theme}`,
+            cls: this.defaults.customClass
+        });
 
-        this.modal = new Elm('div', {html: main, 'class': `modal-theme-${this.defaults.theme}`}, document.body);
+        let btn = this.modal.querySelectorAll('.close, .close-trigger');
+        this.chainDialog = this.modal.querySelector('.js_dialog');
 
-        if (this.defaults.closeButton) {
-            let btn = this.modal.querySelector('.close');
-            btn.onclick = ()=> {
-                this.close();
-            };
+        for (var i=0; i<btn.length; i++) {
+            btn[i].addEventListener('click', ()=> { this.close() }, false);
         }
 
-        if (this.isCarousel) {
-            this.carousel = new Carousel({}, this.modal);
+        if (this.defaults.type === 'modal') {
+            setClass(document.body, 'modal-mode');
         }
-
-        this.chainDialog = this.modal.querySelector('.chain_dialog');
-        setClass(document.body, 'modal-mode');
-        this.defaults.onOpen();
 
     }
 
+    _injectTemplate() {
+        this.parent.appendChild(this.modal);
+        this.defaults.onOpen();
+    }
+
     _injectStyles() {
-        if (document.getElementById('showtimeStyles')) return;
-        var tag = document.createElement('style');
-        tag.type = 'text/css';
-        tag.id = 'showtimeStyles';
-        if (tag.styleSheet) {
-           tag.styleSheet.cssText = STYLES;
-        } else {
-           tag.appendChild(document.createTextNode(STYLES));
+        if (!document.querySelector('.styleFallback')) {
+            new Elm('style.styleFallback', {
+                html: this.STYLES
+            }, document.querySelector('head'));
         }
-        document.getElementsByTagName('head')[0].appendChild(tag);
     }
 
     _close(cb = ()=> {
     }) {
+        if (this.defaults.withBackdrop) {
+            fadeOutRemove(this.backdrop);
+        }
         setClass(this.chainDialog, 'fadeOutTop');
         setTimeout(()=> {
-            // remove dom
             this.modal.remove();
-            // remove instance from global
-            ////window[this.defaults.uid] = null;
-            // remove the modal class from body
             removeClass(document.body, 'modal-mode');
             cb();
         }, 500);
     }
 
     close() {
-        this._close(this.defaults.onClose);
+        this._close(this.defaults.onClose); //TODO emmitter
+    }
+
+    // Remove modal without animation
+    _remove() {
+        this.backdrop.remove();
+        this.modal.remove();
+        removeClass(document.body, 'modal-mode');
     }
 
 }
 Modal.prototype.instances = [];
 Modal.prototype.closeAll = function () {
     this.instances.forEach(function (item) {
-        item._close();
+        item._remove();
     });
     this.instances.length = 0;
 };
@@ -1693,7 +2130,6 @@ class Focus {
  * This class ties it all together
  *
  */
-    //TODO keep focus on scroll and resize add fit options for Popover
 
 class Showtime {
 
@@ -1813,7 +2249,7 @@ class Showtime {
 
         if (chainItem._type === 'modal') {
             this._removePopover();
-            this.focus.coverAll();
+            //this.focus.coverAll();
             let modal = new Modal(chainItem);
             this.chainIndex++;
             return;

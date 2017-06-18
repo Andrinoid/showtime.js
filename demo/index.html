@@ -147,26 +147,12 @@
             })
             .modal({
                 title: 'SHOWTIME.JS DEMO TOUR',
-                message: [
+                message:
                     '<h3>step 1</h3>' +
                     '<p>Showtime is a lightweight framework for easily creating stunning tours around your web app.</p>' +
                     '<div class="popBtn" onclick="tour.next();">ok next</div>',
 
-                    '<h3>step 2</h3>' +
-                    '<p>dependency free and easy to setup</p>' +
-                    '<pre><code class="xml">' +
-                        '&lt;script src="showtime.js">&lt;/script>' +
-                    '</code></pre>' +
-                    '<p>This is all we need to get started.</p>' +
-                    '<div class="popBtn" onclick="tour.next();">ok great!</div>',
-
-                    '<h3>step 3</h3>' +
-                    '<p>This is the last step</p>' +
-                    '<div class="popBtn" onclick="tour.next();">Got it</div>',
-                ],
                 onClose: function() {
-                    tour.next();
-                    tour.next();
                     tour.next();
                 }
             })
